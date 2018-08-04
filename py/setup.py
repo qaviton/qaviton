@@ -16,14 +16,11 @@
 
 import io
 import re
-from collections import OrderedDict
-
-from setuptools import setup
 
 with io.open('README.rst', 'rt', encoding='utf8') as f:
     readme = f.read()
 
-with io.open('flask/__init__.py', 'rt', encoding='utf8') as f:
+with io.open('qaviton/__init__.py', 'rt', encoding='utf8') as f:
     version = re.search(r'__version__ = \'(.*?)\'', f.read()).group(1)
 from setuptools import setup
 
@@ -31,7 +28,7 @@ from setuptools import setup
 setup(
     name='qaviton',
     version='0.0.0',
-    description='Python client for Appium 1.5',
+    description='python implementation of qaviton',
     keywords=['qaviton'],
     author='Yehonadav Bar Elan',
     author_email='yehonadav@Qaviton.com',
