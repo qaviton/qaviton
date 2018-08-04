@@ -1,0 +1,89 @@
+Qaviton
+=======
+
+The first open source project to facilitate a unified testing automation framework for Web, Mobile & IoT
+with Machine Learning, AI and much more
+
+Inspired by Appium & Selenium, Qaviton is a play on words for Graviton.
+In theories of quantum gravity, the graviton
+is the hypothetical elementary particle that mediates the force of gravity.
+Qaviton is like the Graviton in the sense that if it exists,
+it will be the solution to a fundamental problem in its field.
+
+Qaviton offers an easy framework to automate tests that can run against any driver or any testing scenario,
+and is meant to be like the React Native of software testing.
+
+
+Installing
+----------
+
+make sure you have python 3.7+ installed.
+Install and update using `pip`_:
+
+.. code-block:: text
+
+    pip install -U qaviton
+
+
+A Simple Example
+----------------
+
+.. code-block:: python
+
+    #coming soon! =)
+
+.. code-block:: text
+
+    $ qaviton create tests
+     * creating qaviton tests
+     * your testing framework is done!
+     * start testing like a boss ⚛
+     *      ______________
+     *    /   __________   \           ______
+     *   /  /            \  \         / ____ \
+     *  /  /   \      /   \  \       / /    \ \    __        __   _   ___________    _______    _     _
+     *  | |   O \    / O   | |      / |______| \   \ \      / /  |_| |____   ____|  / _____ \  | \   | |
+     *  | |                | |     |  ________  |   \ \    / /   |-|      | |      | |     | | |  \  | |
+     *  \  \  \________/  /   \    | |        | |    \ \  / /    | |      | |      | |     | | | | \ | |
+     *   \  \____________/  /\ \_  | |        | |     \ \/ /     | |      | |      | |_____| | | |\ \| |
+     *    \________________/  \__| |_|        |_|      \__/      |_|      |_|       \_______/  |_| \___|
+
+
+Contributing
+------------
+
+For guidance on setting up a development environment and how to make a
+contribution to Qaviton, see the `contributing guidelines`_.
+
+.. _contributing guidelines: https://github.com/qaviton/qaviton/blob/master/CONTRIBUTING.rst
+
+
+Donate
+------
+
+The Qaviton organization develops and supports qaviton and the libraries
+it uses. In order to grow the community of contributors and users, and
+allow the maintainers to devote more time to the projects, `please
+donate today`_.
+
+.. _please donate today: https://www.qaviton.com/donate
+
+
+Links
+-----
+
+* Website: https://www.qaviton.com
+* Documentation: https://www.qaviton.com/docs/
+* License: `BSD <https://github.com/qaviton/qaviton/blob/master/LICENSE>`_
+* Releases: https://pypi.org/project/qaviton/
+* Code: https://github.com/qaviton/qaviton
+* Issue tracker: https://github.com/pallets/flask/issues
+* Test status:
+
+  * Linux, Mac: https://travis-ci.org/qaviton/qaviton
+  * Windows: https://ci.appveyor.com/project/qaviton/qaviton
+
+* Test coverage: https://codecov.io/gh/qaviton/qaviton
+
+
+.. _pip: https://pip.pypa.io/en/stable/quickstart/
