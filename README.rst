@@ -77,7 +77,7 @@ Links
 * License: `BSD <https://github.com/qaviton/qaviton/blob/master/LICENSE>`_
 * Releases: https://pypi.org/project/qaviton/
 * Code: https://github.com/qaviton/qaviton
-* Issue tracker: https://github.com/pallets/flask/issues
+* Issue tracker: https://github.com/qaviton/qaviton/issues
 * Test status:
 
   * Linux, Mac: https://travis-ci.org/qaviton/qaviton
