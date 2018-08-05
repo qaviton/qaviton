@@ -7,23 +7,23 @@ class ByExtension(By):
     This is an extension to the By class
     use this class to choose a locating strategy for web elements!
     """
-    list = 'list'
-    tuple = 'tuple'
-    element = 'element'
-    elements = 'elements'
+    LIST = 'list'
+    TUPLE = 'tuple'
+    ELEMENT = 'element'
+    ELEMENTS = 'elements'
 
 
 class ByExtensionMap:
     """
     This extension is intended for mappings in the By class
     """
-    cls = 'class'
-    css = 'css'
-    text = 'text'
-    attribute_name = 'attribute_name'
+    CLS = 'class'
+    CSS = 'css'
+    TEXT = 'text'
+    ATTRIBUTE_NAME = 'attribute name'
 
 
-class WebLocator(object):
+class Locator(object):
     """ this is the WebPage element webLocator class
         it is intended to be inherited by other locators of real pages.
         place all common search methods under this super class:
@@ -33,13 +33,13 @@ class WebLocator(object):
             is required to change the format of its index[1] value.
             example usage:
 
-                import WebLocator
+                import Locator
 
-                class WebLocator(WebLocator):
+                class Locator(Locator):
                     button1 = ('id', 'button{}-id')
                     name = ('text', '{name}')
 
-                webLocator = WebLocator
+                webLocator = Locator
 
                 print(webLocator.format(webLocator.button1, 1))
                 print(webLocator.format(webLocator.common.name, name="louis bow"))
@@ -59,6 +59,9 @@ class WebLocator(object):
             give it any attribute name & value and get in return a tuple like so:
             (<attribute name string>, <attribute value string>)
     """
+
+    class BY(ByExtension, ByExtensionMap):
+        pass
 
     @staticmethod
     def format(locator, *args, **kw):
@@ -81,6 +84,10 @@ class WebLocator(object):
             return locator[0], locator[1] + value
 
     @staticmethod
+    def xpath_translator(by, value):
+        return By.XPATH, "//*[@{}='{}']".format(by, value)
+
+    @staticmethod
     def any(locator):
         """
         this method maps the element locating strategy to its value
@@ -94,18 +101,18 @@ class WebLocator(object):
             return locator
 
         # map to extension strategies
-        elif by == ByExtensionMap.cls:
-            return WebLocator.cls(value)
-        elif by == ByExtensionMap.css:
-            return WebLocator.css(value)
-        elif by == ByExtensionMap.text:
-            return WebLocator.text(value)
-        elif by == ByExtensionMap.attribute_name:
-            return WebLocator.attribute_name(value)
+        elif by == ByExtensionMap.CLS:
+            return Locator.cls(value)
+        elif by == ByExtensionMap.CSS:
+            return Locator.css(value)
+        elif by == ByExtensionMap.TEXT:
+            return Locator.text(value)
+        elif by == ByExtensionMap.ATTRIBUTE_NAME:
+            return Locator.attribute_name(value)
 
         # find element using any attribute
         else:
-            by, value = By.XPATH, "//*[@{}='{}']".format(by, value)
+            by, value = Locator.xpath_translator(by, value)
         return by, value
 
     @staticmethod
@@ -113,26 +120,26 @@ class WebLocator(object):
         """ return a mapped list of locators
         :type list_of_locators: list[tuple]
         :param list_of_locators: a list of locator tuples """
-        return ByExtension.list, list_of_locators
+        return ByExtension.LIST, list_of_locators
 
     @staticmethod
     def tuple(tuple_of_locators):
         """ return a mapped tuple of locators
         :type tuple_of_locators: tuple[tuple]
         :param tuple_of_locators: a tuple of locator tuples """
-        return ByExtension.tuple, tuple_of_locators
+        return ByExtension.TUPLE, tuple_of_locators
 
     @staticmethod
     def element(web_element):
         """ return a mapped web element
         :type web_element: WebElement """
-        return ByExtension.element, web_element
+        return ByExtension.ELEMENT, web_element
 
     @staticmethod
     def elements(list_of_web_elements):
         """ return a mapped list of web elements
         :type list_of_web_elements: list[WebElement] """
-        return ByExtension.elements, list_of_web_elements
+        return ByExtension.ELEMENTS, list_of_web_elements
 
     @staticmethod
     def attribute_name(attribute_name_locator):
@@ -144,7 +151,7 @@ class WebLocator(object):
     def text(text_locator):
         """ return a mapped web element by its text
         :type text_locator: string """
-        return By.XPATH, "//*[{}()='{}']".format(ByExtensionMap.text, text_locator)
+        return By.XPATH, "//*[{}()='{}']".format(ByExtensionMap.TEXT, text_locator)
 
     @staticmethod
     def xpath(xpath_locator):

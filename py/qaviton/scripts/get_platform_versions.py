@@ -32,16 +32,21 @@ def get_ie_versions():
 
 def get_opera_versions():
     r = requests.get("https://www.opera.com/docs/history/")
-    driver = XMLDriver(r.text)
-    versions = driver.get_text('//*[@id="historyTable"]//th[@colspan="2"]')
-    return [version.replace("Opera ", "") for version in versions]
+    lines = r.text\
+        .split('id="historyTable">')[1]\
+        .split("</tbody>")[0]\
+        .split("<tbody>")[0].replace("</tr>", "").replace("\n", "")\
+        .split("<tr>")
+    del lines[0]
+    return [line.split("Opera ")[1].split("<")[0] for line in lines if '<th colspan="2"' in line and "Opera " in line]
 
 
 if __name__ == "__main__":
     versions = dict(
         chrome_versions=get_chrome_versions(),
         ie_versions=get_ie_versions(),
-        firefox_versions=get_firefox_versions()
+        firefox_versions=get_firefox_versions(),
+        opera_versions=get_opera_versions()
     )
     with open('versions.json', 'w') as fp:
-        json.dump(versions, fp)
+        json.dump(versions, fp, indent=4)

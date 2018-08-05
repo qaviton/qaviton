@@ -34,17 +34,6 @@ def organize(data_lists):
         raise ZeroDivisionError("empty lists are not allowed") from e
 
 
-# data_lists = []
-# organize(data_lists)
-#
-# data_lists = [(123, '5555'),(1,2,3,0,0),(1,2),(1,2,3,4)]
-# organize(data_lists)
-#
-#
-# data_lists = [(),(1,2,3),(1,2),(1,2,3,4)]
-# organize(data_lists)
-#
-
 from appium.webdriver import Remote as MobileDriver
 from selenium.webdriver import Remote as WebdDiver
 

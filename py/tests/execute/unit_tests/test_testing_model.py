@@ -10,5 +10,5 @@ def test_organize():
     test_model.organize(data_lists)
 
     data_lists = [(), (1, 2, 3), (1, 2), (1, 2, 3, 4)]
-    with pytest.raises(Exception):
+    with pytest.raises(ZeroDivisionError):
         test_model.organize(data_lists)

@@ -2,7 +2,7 @@ Qaviton
 =======
 
 The first open source project to facilitate a unified testing automation framework for Web, Mobile & IoT
-with Machine Learning, AI and much more
+with Machine Learning, AI and much more: https://www.qaviton.com
 
 Inspired by Appium & Selenium, Qaviton is a play on words for Graviton.
 In theories of quantum gravity, the graviton
@@ -74,7 +74,7 @@ Links
 
 * Website: https://www.qaviton.com
 * Documentation: https://www.qaviton.com/docs/
-* License: `BSD <https://github.com/qaviton/qaviton/blob/master/LICENSE>`_
+* License: `Apache License 2.0 <https://github.com/qaviton/qaviton/blob/master/LICENSE>`_
 * Releases: https://pypi.org/project/qaviton/
 * Code: https://github.com/qaviton/qaviton
 * Issue tracker: https://github.com/qaviton/qaviton/issues
