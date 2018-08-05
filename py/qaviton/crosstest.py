@@ -1,6 +1,7 @@
 from appium.webdriver import Remote as MobileDriver
 from selenium.webdriver import Remote as WebDriver
-from qaviton.utils.organize import lists
+from qaviton.utils import organize
+from qaviton import settings
 
 
 class TestingTypes:
@@ -27,7 +28,9 @@ class Platforms:
         self.code = CodePlatform(self)
         self.db = DBPlatform(self)
 
+    @property
     def get(self):
+        """:rtype: [{}]"""
         return self.list_of_desired_capabilities_and_testing_types
 
 
@@ -47,7 +50,9 @@ class Platform:
         for i in desired_capabilities:
             self.add(i)
 
+    @property
     def get(self):
+        """:rtype: [{}]"""
         return self.list_of_desired_capabilities_and_testing_type
 
 
@@ -86,8 +91,8 @@ class DBPlatform(Platform):
         super(self.__class__, self).__init__(platforms, TestingTypes.DB)
 
 
-class TestModel:
-    def __init__(self, desired_capabilities=None, driver_url='http://127.0.0.1:4444/wd/hub',
+class Model:
+    def __init__(self, desired_capabilities=None, driver_url=settings.driver_url,
                  testing_type=TestingTypes.PC, data=None):
 
         # set testing type: web, mobile, iot
@@ -102,9 +107,9 @@ class TestModel:
 
             # set driver type
             if self.testing_type == TestingTypes.WEB:
-                self.remote_driver = WebDriver
+                self.driver_api = WebDriver
             elif self.testing_type == TestingTypes.MOBILE:
-                self.remote_driver = MobileDriver
+                self.driver_api = MobileDriver
 
         # send data for data driven testing
         if data is not None:
@@ -123,8 +128,8 @@ class TestModel:
         if desired_capabilities is None:
             desired_capabilities = self.desired_capabilities
 
-        return self.remote_driver(command_executor=command_executor,
-                                  desired_capabilities=desired_capabilities, **kw)
+        return self.driver_api(command_executor=command_executor,
+                               desired_capabilities=desired_capabilities, **kw)
 
     def drivers(self, command_executor=None, desired_capabilities=None, *args):
         """return the desired drivers
@@ -149,11 +154,15 @@ class TestModel:
         return drivers
 
 
-class TestModels:
-    def __init__(self, platforms: Platforms, driver_url='http://127.0.0.1:4444/wd/hub', data=None):
-        list_of_desired_capabilities_and_testing_types = platforms.get()
+class Models:
+    def __init__(self, platforms: Platforms, driver_url=settings.driver_url, data=None):
         if isinstance(data, list):
-            lists([list_of_desired_capabilities_and_testing_types, data])
+            organized_data = organize.add(platforms.get, dict(data=data))
+            self.models = [Model(driver_url=driver_url, **i) for i in organized_data]
         else:
-            test_models = [TestModel(driver_url=driver_url, data=data **i) for i in list_of_desired_capabilities_and_testing_types]
+            self.models = [Model(driver_url=driver_url, data=data, **i) for i in platforms.get]
 
+    @property
+    def get(self):
+        """:rtype: [Model]"""
+        return self.models

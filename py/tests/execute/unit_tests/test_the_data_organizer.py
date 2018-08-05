@@ -28,3 +28,31 @@ def test_dicts():
     data = dict(a=(), b=(1, 2, 3), c=(1, 2), d=(1, 2, 3, 4))
     with pytest.raises(ZeroDivisionError):
         organize.dicts(data)
+
+
+def test_add():
+    item = {"c": (3,)}
+    data = [{"a": (1,), "b": (1, 1)}, {"a": (1,), "b": (1, 2)}]
+
+    r = organize.add(data, item)
+    assert len(r) == 2
+
+    item = {"c": (3, 4)}
+    data = [{"a": (1,), "b": (1, 1)}, {"a": (1,), "b": (1, 2)}]
+
+    r = organize.add(data, item)
+    assert len(r) == 4
+
+
+def test_adds():
+    items = [{"c": (3, 4)}, {"d": (5,)}]
+    data = [{"a": (1,), "b": (1, 1)}, {"a": (1,), "b": (1, 2)}]
+
+    r = organize.adds(data, items)
+    assert len(r) == 4
+
+    items = [{"c": (3, 4)}, {"d": (5, 6)}]
+    data = [{"a": (1,), "b": (1, 1)}, {"a": (1,), "b": (1, 2)}]
+
+    r = organize.adds(data, items)
+    assert len(r) == 8

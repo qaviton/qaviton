@@ -87,3 +87,36 @@ def dicts(data):
         return organized_data
     except ZeroDivisionError as e:
         raise ZeroDivisionError("empty lists are not allowed") from e
+
+
+def add(data, item):
+    """ add named list to dict
+        example:
+
+            from qaviton.utils import organize
+
+            item = {"c":(3,4)}
+            data = [{"a":(1,),"b":(1,1)}, {"a":(1,),"b":(1,2)}]
+
+            print(organize.add(data, item))
+            will return:
+
+            [{"a":(1,),"b":(1,1),"c":(3,)}, {"a":(1,),"b":(1,1),"c":(4,)},
+             {"a":(1,),"b":(1,2),"c":(3,)}, {"a":(1,),"b":(1,2),"c":(4,)}]
+
+        :type item: {[]}
+        :type data: {[]}
+        :rtype: [{}]
+        """
+    organized_data = []
+    for i in data:
+        for d in item:
+            for z in item[d]:
+                organized_data.append({d:z, **i})
+    return organized_data
+
+
+def adds(data, items):
+    for i in items:
+        data = add(data, i)
+    return data
