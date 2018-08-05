@@ -1,58 +1,89 @@
-def organize(data_lists):
-    """
-        data_lists = [(1,),(1,2,3),(1,2),(1,2,3,4)]
-        will return:
-
-        [[1, 1, 1, 1],[1, 1, 1, 2],[1, 1, 1, 3],[1, 1, 1, 4],[1, 1, 2, 1],[1, 1, 2, 2],
-         [1, 1, 2, 3],[1, 1, 2, 4],[1, 1, 3, 1],[1, 1, 3, 2],[1, 1, 3, 3],[1, 1, 3, 4],
-         [1, 2, 1, 1],[1, 2, 1, 2],[1, 2, 1, 3],[1, 2, 1, 4],[1, 2, 2, 1],[1, 2, 2, 2],
-         [1, 2, 2, 3],[1, 2, 2, 4],[1, 2, 3, 1],[1, 2, 3, 2],[1, 2, 3, 3],[1, 2, 3, 4]]
-
-    :type data_lists: []
-    :rtype: []
-    """
-    try:
-        data_lists.sort(key=len)
-
-        all_possibilities = 1
-        for i in range(len(data_lists)):
-            all_possibilities *= len(data_lists[i])
-
-        data = [[] for _ in range(all_possibilities)]
-
-        looper = all_possibilities
-        for data_list in data_lists:
-            looper /= len(data_list)
-            d = 0
-            while d < all_possibilities:
-                for i in data_list:
-                    for _ in range(int(looper)):
-                        data[d].append(i)
-                        d += 1
-        return data
-    except ZeroDivisionError as e:
-        raise ZeroDivisionError("empty lists are not allowed") from e
-
-
 from appium.webdriver import Remote as MobileDriver
-from selenium.webdriver import Remote as WebdDiver
+from selenium.webdriver import Remote as WebDriver
+from qaviton.utils.organize import lists
 
 
 class TestingTypes:
-    WEB = 'WEB'
-    MOBILE = 'MOBILE'
-    IoT = 'IoT'
-    CLOUD = 'CLOUD'
-    PC = 'PC'
+    """values need to equal vars(Platforms())"""
+    WEB = 'web'
+    MOBILE = 'mobile'
+    IoT = 'iot'
+    CLOUD = 'cloud'
+    PC = 'pc'
+    CODE = 'code'
+    DB = 'db'
 
 
 class Platforms:
+    """all the testing platforms with drivers & desired capabilities"""
+
     def __init__(self):
-        self.web = []
-        self.mobile = []
-        self.iot = []
-        self.cloud = []
-        self.pc = []
+        self.list_of_desired_capabilities_and_testing_types = []
+        self.web = WebPlatform(self)
+        self.mobile = MobilePlatform(self)
+        self.iot = IoTPlatform(self)
+        self.cloud = CloudPlatform(self)
+        self.pc = PCPlatform(self)
+        self.code = CodePlatform(self)
+        self.db = DBPlatform(self)
+
+    def get(self):
+        return self.list_of_desired_capabilities_and_testing_types
+
+
+class Platform:
+    def __init__(self, platforms: Platforms, testing_type):
+        self.platforms = platforms
+        self.testing_type = testing_type
+        self.list_of_desired_capabilities_and_testing_type = []
+
+    def add(self, desired_capabilities: dict):
+        descaps_testtype = dict(desired_capabilities=desired_capabilities, testing_type=self.testing_type)
+        self.platforms.list_of_desired_capabilities_and_testing_types.append(descaps_testtype)
+        self.list_of_desired_capabilities_and_testing_type.append(
+            dict(desired_capabilities=desired_capabilities, testing_type=self.testing_type))
+
+    def adds(self, desired_capabilities: list):
+        for i in desired_capabilities:
+            self.add(i)
+
+    def get(self):
+        return self.list_of_desired_capabilities_and_testing_type
+
+
+class WebPlatform(Platform):
+    def __init__(self, platforms):
+        super(self.__class__, self).__init__(platforms, TestingTypes.WEB)
+
+
+class MobilePlatform(Platform):
+    def __init__(self, platforms):
+        super(self.__class__, self).__init__(platforms, TestingTypes.MOBILE)
+
+
+class IoTPlatform(Platform):
+    def __init__(self, platforms):
+        super(self.__class__, self).__init__(platforms, TestingTypes.IoT)
+
+
+class CloudPlatform(Platform):
+    def __init__(self, platforms):
+        super(self.__class__, self).__init__(platforms, TestingTypes.CLOUD)
+
+
+class PCPlatform(Platform):
+    def __init__(self, platforms):
+        super(self.__class__, self).__init__(platforms, TestingTypes.PC)
+
+
+class CodePlatform(Platform):
+    def __init__(self, platforms):
+        super(self.__class__, self).__init__(platforms, TestingTypes.CODE)
+
+
+class DBPlatform(Platform):
+    def __init__(self, platforms):
+        super(self.__class__, self).__init__(platforms, TestingTypes.DB)
 
 
 class TestModel:
@@ -71,7 +102,7 @@ class TestModel:
 
             # set driver type
             if self.testing_type == TestingTypes.WEB:
-                self.remote_driver = WebdDiver
+                self.remote_driver = WebDriver
             elif self.testing_type == TestingTypes.MOBILE:
                 self.remote_driver = MobileDriver
 
@@ -118,5 +149,11 @@ class TestModel:
         return drivers
 
 
-def create():
-    pass
+class TestModels:
+    def __init__(self, platforms: Platforms, driver_url='http://127.0.0.1:4444/wd/hub', data=None):
+        list_of_desired_capabilities_and_testing_types = platforms.get()
+        if isinstance(data, list):
+            lists([list_of_desired_capabilities_and_testing_types, data])
+        else:
+            test_models = [TestModel(driver_url=driver_url, data=data **i) for i in list_of_desired_capabilities_and_testing_types]
+
