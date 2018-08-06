@@ -3,11 +3,17 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver import Remote
 from qaviton import crosstest
 from qaviton import settings
+from qaviton.utils import path
+
 
 platforms = crosstest.Platforms()
 platforms.web.add(DesiredCapabilities.CHROME)
 platforms.web.add(DesiredCapabilities.FIREFOX)
-
+platforms.mobile.add({
+    "platformName": "Android",
+    "platformVersion": "6.0",
+    "deviceName": "emulator-5554",
+    "app": path.get(__file__)('../../../sample-code/apps/ContactManager/ContactManager.apk')})
 mod = crosstest.Models(platforms).get
 
 
