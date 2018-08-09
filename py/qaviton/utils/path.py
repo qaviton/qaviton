@@ -1,11 +1,11 @@
 import os
 
 
-def get(file):
+def of(__file__):
     """Returns abs path relative to this file and not cwd
-        eample:
+        example:
             from qaviton.utils import path
 
-            path.get(__file__)('../../path/to/file.txt')
+            path.of(__file__)('../../path/to/file.txt')
     """
-    return lambda p: os.path.abspath(os.path.join(os.path.dirname(file), p))
+    return lambda p: os.path.abspath(os.path.join(os.path.dirname(__file__), p))

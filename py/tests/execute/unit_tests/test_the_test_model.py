@@ -1,32 +1,38 @@
 import pytest
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from selenium.webdriver import Remote
+from qaviton.crosstest import WebDriver
+from qaviton.crosstest import MobileDriver
 from qaviton import crosstest
-from qaviton import settings
-from qaviton.utils import path
+from tests.settings import platforms
+from tests.settings import TESTS
+from tests.data.count_functions import from_zero_to_hero
 
 
-platforms = crosstest.Platforms()
-platforms.web.add(DesiredCapabilities.CHROME)
-platforms.web.add(DesiredCapabilities.FIREFOX)
-platforms.mobile.add({
-    "platformName": "Android",
-    "platformVersion": "6.0",
-    "deviceName": "emulator-5554",
-    "app": path.get(__file__)('../../../sample-code/apps/ContactManager/ContactManager.apk')})
-mod = crosstest.Models(platforms).get
-
-
-@pytest.mark.parametrize('platform', platforms.get, ids=(lambda test: str(test.id)))
+@pytest.mark.parametrize('platform', platforms.get(), ids=crosstest.id)
 def test_platforms(platform):
-    assert platform["testing_type"] == crosstest.TestingTypes.WEB
-    assert platform["desired_capabilities"] == DesiredCapabilities.CHROME or \
-           platform["desired_capabilities"] == DesiredCapabilities.FIREFOX
+    if platform["testing_type"] == crosstest.TestAPI.WEB:
+        assert platform["desired_capabilities"] == DesiredCapabilities.CHROME or \
+               platform["desired_capabilities"] == DesiredCapabilities.FIREFOX
+    elif platform["testing_type"] == crosstest.TestAPI.MOBILE:
+        assert platform["desired_capabilities"] == platforms.mobile.get()[0]["desired_capabilities"]
+    else:
+        raise Exception("bad testing type value: {}".format(platform["testing_type"]))
 
 
-@pytest.mark.parametrize('test', mod, ids=(lambda test: str(test.id)))
+@pytest.mark.parametrize('test', TESTS, ids=crosstest.id)
 def test_models(test: crosstest.Model):
-    assert test.desired_capabilities == DesiredCapabilities.CHROME or test.desired_capabilities == DesiredCapabilities.FIREFOX
-    assert test.testing_type == crosstest.TestingTypes.WEB
-    assert test.driver_url == settings.driver_url
-    assert test.driver_api == Remote
+    if test.desired_capabilities in platforms.web or test.desired_capabilities == DesiredCapabilities.FIREFOX:
+        assert test.test_api == crosstest.TestAPI.WEB
+        assert test.command_executor == crosstest.WebPlatform.driver_url
+        assert test.driver_api == WebDriver
+
+    elif test.desired_capabilities == platforms.mobile.get()[0]["desired_capabilities"]:
+        assert test.test_api == crosstest.TestAPI.MOBILE
+        assert test.command_executor == crosstest.MobilePlatform.driver_url
+        assert test.driver_api == MobileDriver
+
+    else:
+        raise Exception("desired capabilities not as expected: {}".format(test.desired_capabilities))
+
+    assert test.data == from_zero_to_hero
+

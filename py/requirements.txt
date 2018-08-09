@@ -1,2 +1,2 @@
-threaders==0.2.11
+threaders==0.2.12
 virtualenv==16.0.0

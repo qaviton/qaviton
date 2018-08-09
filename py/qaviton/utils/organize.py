@@ -6,7 +6,7 @@ def lists(data):
         from qaviton.utils import organize
 
         organize_list = [(1,),(1,2,3),(1,2),(1,2,3,4)]
-        print(organize.dicts(organize_list))
+        print(organize.lists(organize_list))
 
         will return:
 
