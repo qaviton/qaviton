@@ -4,11 +4,13 @@ from selenium.webdriver.remote.command import Command
 from qaviton.utils import organize
 from qaviton import settings
 from threaders import threaders
+from qaviton.exceptions import MissingRequiredCapabilitiesException
+from qaviton.exceptions import RequiredCapabilitiesException
 
 
 # TODO: add more platforms
 
-class TestAPI:
+class API:
     """values need to equal vars(Platforms())"""
     WEB = WebDriver
     MOBILE = MobileDriver
@@ -22,8 +24,9 @@ class TestAPI:
 class Platforms:
     """all the testing platforms with drivers & desired capabilities"""
 
-    def __init__(self):
+    def __init__(self, sessionTimeout: int = 600):
         self.platform_list = []
+        self.sessionTimeout = sessionTimeout
         self.web = WebPlatform(self)
         self.mobile = MobilePlatform(self)
         # self.iot = IoTPlatform(self)
@@ -37,7 +40,7 @@ class Platforms:
         return self.platform_list
 
 
-class Platform:
+class _Platform:
     def __init__(self, platforms: Platforms, test_api):
         self.platforms = platforms
         self.test_api = test_api
@@ -47,18 +50,17 @@ class Platform:
         :param platform: send dictionary of desired capabilities or a list of them
         :type platform: dict or list
         """
-        self.add(platform)
-        return self
+        return self.add(platform)
 
     def add(self, platform):
         if isinstance(platform, list):
             for p in platform:
                 self.add(p)
-        self.platforms.platform_list.append(platform)
+        self.platforms.platform_list.append(Platform(platform))
         return self
 
 
-class WebPlatform(Platform):
+class WebPlatform(_Platform):
     """ The WebPlatform is using Selenium Remote Webdriver API:
         Controls a browser by sending commands to a remote server.
         This server is expected to be running the WebDriver wire protocol
@@ -74,10 +76,11 @@ class WebPlatform(Platform):
         """
 
     def __init__(self, platforms: Platforms):
-        super(self.__class__, self).__init__(platforms, TestAPI.WEB)
+        super(self.__class__, self).__init__(platforms, API.WEB)
 
-    def __call__(self, desired_capabilities, app, size, command_executor,
-                 browser_profile, proxy, keep_alive, file_detector, options):
+    def __call__(self, desired_capabilities, command_executor=settings.webdriver_url,
+                 browser_profile=None, proxy=None,
+                 keep_alive=False, file_detector=None, options=None):
         """
         Add a new platform of webdriver configuration that will issue commands using the wire protocol.
 
@@ -103,10 +106,35 @@ class WebPlatform(Platform):
         platform['api'] = self.test_api
         super(self.__class__, self).__call__(platform)
 
-class MobilePlatform(Platform):
+
+class MobilePlatform(_Platform):
 
     def __init__(self, platforms):
-        super(self.__class__, self).__init__(platforms, TestAPI.MOBILE)
+        super(self.__class__, self).__init__(platforms, API.MOBILE)
+
+    def __call__(self, desired_capabilities, command_executor=settings.mobiledriver_url,
+                 browser_profile=None, proxy=None, keep_alive=False):
+        """
+        Add a new platform of webdriver configuration that will issue commands using the wire protocol.
+
+            :Args:
+                 - app - your app url/file
+                 - size - window size; can be 'max', 'min', '800x600' or None for headless/nonesizable browsers
+                 - command_executor - Either a string representing URL of the remote server or a custom
+                     remote_connection.RemoteConnection object. Defaults to 'http://127.0.0.1:4444/wd/hub'.
+                 - desired_capabilities - A dictionary of capabilities to request when
+                     starting the browser session. Required parameter.
+                 - browser_profile - A selenium.webdriver.firefox.firefox_profile.FirefoxProfile object.
+                     Only used if Firefox is requested. Optional.
+                 - proxy - A selenium.webdriver.common.proxy.Proxy object. The browser session will
+                     be started with given proxy settings, if possible. Optional.
+                 - keep_alive - Whether to configure remote_connection.RemoteConnection to use
+                     HTTP keep-alive. Defaults to False.
+        """
+        platform = locals()
+        del platform['self']
+        platform['api'] = self.test_api
+        super(self.__class__, self).__call__(platform)
 
 
 # class IoTPlatform(Platform):
@@ -114,7 +142,7 @@ class MobilePlatform(Platform):
 #     driver_url = WebPlatform.driver_url
 #
 #     def __init__(self, platforms):
-#         super(self.__class__, self).__init__(platforms, TestAPI.IoT)
+#         super(self.__class__, self).__init__(platforms, API.IoT)
 #
 #
 # class CloudPlatform(Platform):
@@ -122,7 +150,7 @@ class MobilePlatform(Platform):
 #     driver_url = WebPlatform.driver_url
 #
 #     def __init__(self, platforms):
-#         super(self.__class__, self).__init__(platforms, TestAPI.CLOUD)
+#         super(self.__class__, self).__init__(platforms, API.CLOUD)
 #
 #
 # class PCPlatform(Platform):
@@ -130,7 +158,7 @@ class MobilePlatform(Platform):
 #     driver_url = WebPlatform.driver_url
 #
 #     def __init__(self, platforms):
-#         super(self.__class__, self).__init__(platforms, TestAPI.PC)
+#         super(self.__class__, self).__init__(platforms, API.PC)
 #
 #
 # class CodePlatform(Platform):
@@ -138,7 +166,7 @@ class MobilePlatform(Platform):
 #     driver_url = WebPlatform.driver_url
 #
 #     def __init__(self, platforms):
-#         super(self.__class__, self).__init__(platforms, TestAPI.CODE)
+#         super(self.__class__, self).__init__(platforms, API.CODE)
 #
 #
 # class DBPlatform(Platform):
@@ -146,40 +174,64 @@ class MobilePlatform(Platform):
 #     driver_url = WebPlatform.driver_url
 #
 #     def __init__(self, platforms):
-#         super(self.__class__, self).__init__(platforms, TestAPI.DB)
+#         super(self.__class__, self).__init__(platforms, API.DB)
 
 
-class Model:
-    def __init__(self, platform: dict, data=None):
+class Platform:
+    def __init__(self, platform: dict):
 
+        self.platform = dict(platform)
+
+    def setup(self, request):
+        """ use this from inside the test to get a matching
+        :param request: pytest fixture request
+        :rtype: TestCase
+        """
+        name = request.node.name
+        self.platform["desired_capabilities"]["name"] = name
+        self.platform["desired_capabilities"]["logName"] = name + '.log'
+        self.platform["desired_capabilities"]["videoName"] = name + '.mp4'
+        self.platform["desired_capabilities"]["enableVNC"] = True
+        self.platform["desired_capabilities"]["enableVideo"] = True
+        for k in ('app', 'sessionTimeout', 'screenResolution'):
+            if k not in self.platform["desired_capabilities"].keys():
+                raise MissingRequiredCapabilitiesException("missing capability: "+k)
+        return TestCase(self.platform)
+
+
+class TestCase:
+    def __init__(self, platform):
         self.platform = platform
-
-        # send data for data driven testing
-        if data is not None:
-            self.data = data
+        self.name = platform["desired_capabilities"]["name"]
 
     def driver(self, platform=None, connection_timeout=None, page_load_timeout=None, retry=None):
-        """return the desired driver
+        """return desired driver
         if platform is a list of platforms then you can use the drivers function
 
         platform = {desired_capabilities, app, size, command_executor,
                  browser_profile, proxy, keep_alive, file_detector, options}
 
-        :param command_executor: it's the remote driver url: default='http://127.0.0.1:4444/wd/hub'
-        :param desired_capabilities: {"browserName": "chrome", "version": "67.0", "platform": "WINDOWS"}
-        :param kw: browser_profile=None, proxy=None, keep_alive=False, file_detector=None, options=None
+        :param platform: dictionary with:
+                    command_executor: it's the remote driver url: default='http://127.0.0.1:4444/wd/hub'
+                    desired_capabilities: {"browserName": "chrome", "version": "67.0", "platform": "WINDOWS"}
+                    browser_profile=None, proxy=None, keep_alive=False, file_detector=None, options=None
+        :param connection_timeout:
+        :param page_load_timeout:
+        :param retry:
         :rtype: WebDriver or MobileDriver
         """
+
         if platform is None:
             platform = self.platform
 
-        if platform['test_api'] == TestAPI.WEB:
+        if platform['test_api'] == API.WEB:
             # set retry
             if retry is None:
                 retry = settings.webdriver_retries
 
-            # create thread for timeout actions
-            pool = threaders.ThreadPool()
+            # set page load timeout
+            if connection_timeout is None:
+                connection_timeout = settings.webdriver_connection_timeout
 
             # get remote connection
             for r in range(retry+1):
@@ -194,8 +246,7 @@ class Model:
                         keep_alive=platform['keep_alive'],
                         file_detector=platform['file_detector'],
                         options=platform['options']
-                    ).get_and_join(timeout=settings.webdriver_connection_timeout)
-
+                    ).get_and_join(timeout=connection_timeout)
                     break
                 except Exception as e:
                     print(e)
@@ -208,35 +259,38 @@ class Model:
             # get app url
             for r in range(retry + 1):
                 try:
+                    # page load from thread with timeout
                     threaders.thread(driver.execute, Command.GET, {'url': platform["app"]}).get_and_join(timeout=page_load_timeout)
                     break
                 except Exception as e:
                     print(e)
-                finally:
-                    pool.join()
-                    driver.get(platform["app"])
                 raise Exception("url could not be loaded")
 
-            if platform["size"] is not None:
-                try:
-                    if platform["size"] == "max":
-                        driver.maximize_window()
-                    elif platform["size"] == "min":
-                        driver.minimize_window()
-                    elif ":" in platform["size"]:
-                        size = platform["size"].split("x")
-                        driver.set_window_size(int(size[0]), int(size[1]))
-                except Exception as e:
-                    raise ValueError("size capability valid values are: 'max', 'min', '800x600' or any set of numbers matching this format 'NxN'") from e
+            try:
+                resolution = platform["desired_capabilities"]['screenResolution'].split("x")
+                driver.set_window_position(0, 0)
+                driver.set_window_size(int(resolution[0]), int(resolution[1]))
+            except Exception as e:
+                raise RequiredCapabilitiesException("setting screen size failed: please make sure your screenResolution capability is correct - example: 800x600x24 ") from e
             driver.set_page_load_timeout(settings)
 
-        if platform['test_api'] == TestAPI.MOBILE:
-            driver = platform['test_api'](
-                command_executor=platform['command_executor'],
-                desired_capabilities=platform['desired_capabilities'],
-                browser_profile=platform['browser_profile'],
-                proxy=platform['proxy'],
-                keep_alive=platform['keep_alive'])
+        if platform['test_api'] == API.MOBILE:
+            # set page load timeout
+            if connection_timeout is None:
+                connection_timeout = settings.mobiledriver_connection_timeout
+            for r in range(retry + 1):
+                try:
+                    driver: MobileDriver = threaders.thread(platform['test_api'](
+                        command_executor=platform['command_executor'],
+                        desired_capabilities=platform['desired_capabilities'],
+                        browser_profile=platform['browser_profile'],
+                        proxy=platform['proxy'],
+                        keep_alive=platform['keep_alive'])
+                    ).get_and_join(timeout=connection_timeout)
+                    break
+                except Exception as e:
+                    print(e)
+                raise Exception("webdriver connection could not be established")
         return driver
 
     def drivers(self, platforms=None):
@@ -254,19 +308,6 @@ class Model:
         for i in platforms:
             drivers.append(self.driver(i))
         return drivers
-
-
-class Models:
-    def __init__(self, platforms: Platforms, command_executor='http://127.0.0.1:4444/wd/hub', data=None):
-        if isinstance(data, list):
-            organized_data = organize.add(platforms.get(), dict(data=data))
-            self.models = [Model(driver_url=driver_url, **i) for i in organized_data]
-        else:
-            self.models = [Model(driver_url=driver_url, data=data, **i) for i in platforms.get()]
-
-    def get(self):
-        """:rtype: [Model]"""
-        return self.models
 
 
 # generate test id

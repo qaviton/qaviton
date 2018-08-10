@@ -7,7 +7,7 @@ mobiledriver_url = 'http://localhost:4723/wd/hub'
 
 webdriver_retries = 2
 webdriver_page_load_timeout = 30
-webdriver_connection_timeout = 30
+webdriver_connection_timeout = 60
 
 mobiledriver_retries = 0
 mobiledriver_page_load_timeout = 30

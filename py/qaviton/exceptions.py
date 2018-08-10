@@ -19,17 +19,41 @@
 Exceptions that may happen in the qaviton code.
 """
 
-# TODO: add exceptions
-# class DesiredCapabilitiesException(Exception):
-#     """
-#     Thrown when an invalid DesiredCapabilities is used.
-#     """
-#
-#     def __init__(self, msg=None):
-#         self.msg = msg
-#
-#     def __str__(self):
-#         exception_msg = "Message: %s\n" % self.msg
-#         return exception_msg
+
+class RequiredCapabilitiesException(Exception):
+    """
+    Thrown when a mandatory capability is missing of configured with invalid value: from DesiredCapabilities.
+    """
+
+    def __init__(self, msg=None):
+        self.msg = msg
+
+    def __str__(self):
+        exception_msg = "Message: %s\n" % self.msg
+        return exception_msg
 
 
+class MissingRequiredCapabilitiesException(Exception):
+    """
+    Thrown when a mandatory capability is missing: from DesiredCapabilities.
+    """
+
+    def __init__(self, msg=None):
+        self.msg = msg
+
+    def __str__(self):
+        exception_msg = "Message: %s\n" % self.msg
+        return exception_msg
+
+
+class DriverConnectionException(Exception):
+    """
+    Thrown when a remote connection to desired driver is not possible due to error with the driver or network failure.
+    """
+
+    def __init__(self, msg=None):
+        self.msg = msg
+
+    def __str__(self):
+        exception_msg = "Message: %s\n" % self.msg
+        return exception_msg

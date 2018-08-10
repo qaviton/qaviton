@@ -1,38 +1,44 @@
 import pytest
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from qaviton.crosstest import WebDriver
 from qaviton.crosstest import MobileDriver
 from qaviton import crosstest
 from tests.settings import platforms
-from tests.settings import TESTS
 from tests.data.count_functions import from_zero_to_hero
+from qaviton import settings
 
 
-@pytest.mark.parametrize('platform', platforms.get(), ids=crosstest.id)
+@pytest.mark.parametrize('platform', platforms.get(), ids=crosstest.id)  # test per platform
 def test_platforms(platform):
-    if platform["testing_type"] == crosstest.TestAPI.WEB:
-        assert platform["desired_capabilities"] == DesiredCapabilities.CHROME or \
-               platform["desired_capabilities"] == DesiredCapabilities.FIREFOX
-    elif platform["testing_type"] == crosstest.TestAPI.MOBILE:
-        assert platform["desired_capabilities"] == platforms.mobile.get()[0]["desired_capabilities"]
+
+    if platform.platform["api"] == crosstest.API.WEB:
+        assert platform.platform["desired_capabilities"]["browserName"] in ("firefox", "chrome", "internet explorer")
+    elif platform.platform["api"] == crosstest.API.MOBILE:
+        assert platform.platform["desired_capabilities"]['platformName'] in ("Android",)
     else:
-        raise Exception("bad testing type value: {}".format(platform["testing_type"]))
+        raise Exception("bad testing type value: {}".format(platform.platform["api"]))
 
 
-@pytest.mark.parametrize('test', TESTS, ids=crosstest.id)
-def test_models(test: crosstest.Model):
-    if test.desired_capabilities in platforms.web or test.desired_capabilities == DesiredCapabilities.FIREFOX:
-        assert test.test_api == crosstest.TestAPI.WEB
-        assert test.command_executor == crosstest.WebPlatform.driver_url
-        assert test.driver_api == WebDriver
+@pytest.mark.parametrize('platform', platforms.get(), ids=crosstest.id)  # get test platform layer x4
+@pytest.mark.parametrize('data', [from_zero_to_hero, from_zero_to_hero], ids=crosstest.id)  # get test data layer x2
+def test_platforms_and_data(platform: crosstest.Platform, data, request):
+    test = platform.setup(request)
 
-    elif test.desired_capabilities == platforms.mobile.get()[0]["desired_capabilities"]:
-        assert test.test_api == crosstest.TestAPI.MOBILE
-        assert test.command_executor == crosstest.MobilePlatform.driver_url
-        assert test.driver_api == MobileDriver
+    if test.platform["api"] == WebDriver:
+        assert test.platform["command_executor"] == settings.webdriver_url
+        assert test.platform["desired_capabilities"]["browserName"] in ("firefox", "chrome", "internet explorer")
+
+    elif test.platform["api"] == MobileDriver:
+        assert test.platform["command_executor"] == settings.mobiledriver_url
+        assert test.platform["desired_capabilities"]['platformName'] in ("Android",)
 
     else:
-        raise Exception("desired capabilities not as expected: {}".format(test.desired_capabilities))
+        raise Exception("test case object not as expected: {}".format(vars(test)))
 
-    assert test.data == from_zero_to_hero
+    assert data == from_zero_to_hero
 
+
+# it works
+# @pytest.mark.parametrize('test', [0.0,1.0,2.0], ids=crosstest.id)
+# @pytest.mark.parametrize('data', [0,1,2,3], ids=crosstest.id)
+# def test_2_layered_data(test, data):
+#     print(test, data)
