@@ -73,7 +73,7 @@ Links
 -----
 
 * Website: https://www.qaviton.com
-* Documentation: https://www.qaviton.com/docs/
+* Documentation: https://github.com/qaviton/qaviton/blob/master/docs/
 * License: `Apache License 2.0 <https://github.com/qaviton/qaviton/blob/master/LICENSE>`_
 * Releases: https://pypi.org/project/qaviton/
 * Code: https://github.com/qaviton/qaviton
