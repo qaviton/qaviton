@@ -17,7 +17,6 @@ Installing
 make sure you have python 3.7+ installed.
 Install and update using `pip`_:
 
-.. code-block:: text
 
     pip install -U qaviton
 
@@ -26,7 +25,7 @@ A Simple Example
 ----------------
 
 more will be coming soon! =)
-git
+
     $ qaviton create tests
      * creating qaviton tests
      * your testing framework is done!
