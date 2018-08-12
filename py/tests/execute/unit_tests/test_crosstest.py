@@ -42,3 +42,21 @@ def test_platforms_and_data(platform: crosstest.Platform, data, request):
 # @pytest.mark.parametrize('data', [0,1,2,3], ids=crosstest.id)
 # def test_2_layered_data(test, data):
 #     print(test, data)
+
+
+def test_all_threads_are_done():
+    import threading
+    assert threading.active_count() == 1
+
+
+def test_all_drivers_are_done():
+    import psutil
+
+    for proc in psutil.process_iter():
+        try:
+            if "chrome" in proc.name():
+                p = psutil.Process(proc.pid)
+                # if 'SYSTEM' not in p.username:
+                proc.kill()
+        except Exception as e:
+            print(e)

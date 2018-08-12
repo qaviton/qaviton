@@ -1,11 +1,10 @@
 from appium.webdriver import Remote as MobileDriver
 from selenium.webdriver import Remote as WebDriver
 from selenium.webdriver.remote.command import Command
-from qaviton.utils import organize
 from qaviton import settings
 from threaders import threaders
 from qaviton.exceptions import MissingRequiredCapabilitiesException
-from qaviton.exceptions import RequiredCapabilitiesException
+from selenium.webdriver.remote.file_detector import UselessFileDetector
 
 
 # TODO: add more platforms
@@ -41,9 +40,9 @@ class Platforms:
 
 
 class _Platform:
-    def __init__(self, platforms: Platforms, test_api):
+    def __init__(self, platforms: Platforms, api):
         self.platforms = platforms
-        self.test_api = test_api
+        self.api = api
 
     def __call__(self, platform):
         """ add platforms to test against
@@ -77,8 +76,9 @@ class WebPlatform(_Platform):
 
     def __init__(self, platforms: Platforms):
         super(self.__class__, self).__init__(platforms, API.WEB)
+        self.command_executor = settings.webdriver_url
 
-    def __call__(self, desired_capabilities, command_executor=settings.webdriver_url,
+    def __call__(self, desired_capabilities, command_executor=None,
                  browser_profile=None, proxy=None,
                  keep_alive=False, file_detector=None, options=None):
         """
@@ -101,9 +101,12 @@ class WebPlatform(_Platform):
                      then default LocalFileDetector() will be used.
                  - options - instance of a driver options.Options class
         """
+        if command_executor is None:
+            command_executor = self.command_executor
+
         platform = locals()
         del platform['self']
-        platform['api'] = self.test_api
+        platform['api'] = self.api
         super(self.__class__, self).__call__(platform)
 
 
@@ -111,6 +114,7 @@ class MobilePlatform(_Platform):
 
     def __init__(self, platforms):
         super(self.__class__, self).__init__(platforms, API.MOBILE)
+        self.command_executor = settings.mobiledriver_url
 
     def __call__(self, desired_capabilities, command_executor=settings.mobiledriver_url,
                  browser_profile=None, proxy=None, keep_alive=False):
@@ -131,9 +135,12 @@ class MobilePlatform(_Platform):
                  - keep_alive - Whether to configure remote_connection.RemoteConnection to use
                      HTTP keep-alive. Defaults to False.
         """
+        if command_executor is None:
+            command_executor = self.command_executor
+
         platform = locals()
         del platform['self']
-        platform['api'] = self.test_api
+        platform['api'] = self.api
         super(self.__class__, self).__call__(platform)
 
 
@@ -224,7 +231,7 @@ class TestCase:
         if platform is None:
             platform = self.platform
 
-        if platform['test_api'] == API.WEB:
+        if platform['api'] == API.WEB:
             # set retry
             if retry is None:
                 retry = settings.webdriver_retries
@@ -236,9 +243,18 @@ class TestCase:
             # get remote connection
             for r in range(retry+1):
                 try:
+                    # from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+                    # driver: WebDriver = platform['api'](
+                    #     command_executor=platform['command_executor'],
+                    #     desired_capabilities=platform['desired_capabilities'],
+                    #     browser_profile=platform['browser_profile'],
+                    #     proxy=platform['proxy'],
+                    #     keep_alive=platform['keep_alive'],
+                    #     file_detector=platform['file_detector'],
+                    #     options=platform['options'])
                     # get driver from thread with timeout for connection
                     driver: WebDriver = threaders.thread(
-                        platform['test_api'],
+                        platform['api'],
                         command_executor=platform['command_executor'],
                         desired_capabilities=platform['desired_capabilities'],
                         browser_profile=platform['browser_profile'],
@@ -249,8 +265,11 @@ class TestCase:
                     ).get_and_join(timeout=connection_timeout)
                     break
                 except Exception as e:
-                    print(e)
-                raise Exception("webdriver connection could not be established")
+                    if r == retry:
+                        raise Exception("webdriver connection could not be established") from e
+
+            # set local file detector
+            driver.file_detector = UselessFileDetector()
 
             # set page load timeout
             if page_load_timeout is None:
@@ -260,27 +279,40 @@ class TestCase:
             for r in range(retry + 1):
                 try:
                     # page load from thread with timeout
-                    threaders.thread(driver.execute, Command.GET, {'url': platform["app"]}).get_and_join(timeout=page_load_timeout)
+                    threaders.thread(driver.execute, Command.GET, {'url': platform["desired_capabilities"]["app"]}).get_and_join(timeout=page_load_timeout)
+                    # driver.get(platform["desired_capabilities"]["app"])
                     break
                 except Exception as e:
-                    print(e)
-                raise Exception("url could not be loaded")
+                    if r == retry:
+                        driver.quit()
+                        raise Exception("url could not be loaded") from e
 
-            try:
-                resolution = platform["desired_capabilities"]['screenResolution'].split("x")
-                driver.set_window_position(0, 0)
-                driver.set_window_size(int(resolution[0]), int(resolution[1]))
-            except Exception as e:
-                raise RequiredCapabilitiesException("setting screen size failed: please make sure your screenResolution capability is correct - example: 800x600x24 ") from e
-            driver.set_page_load_timeout(settings)
+            # try:
+            #     resolution = platform["desired_capabilities"]['screenResolution'].split("x")
+            #     # driver.execute_script("window.moveTo(arguments[0], arguments[1]);", 0, 0)
+            #     try:
+            #         driver.set_window_position(0, 0)
+            #     except Exception as e:
+            #         print(e)
+            #     try:
+            #         driver.set_window_size(int(resolution[0]), int(resolution[1]))
+            #     except:
+            #         driver.maximize_window()
+            # except Exception as e:
+            #     # driver.quit()
+            #     # raise RequiredCapabilitiesException("setting screen size failed: please make sure your screenResolution capability is correct - example: 800x600x24 ") from e
+            #     print("cannot set the screen size")
 
-        if platform['test_api'] == API.MOBILE:
+        if platform['api'] == API.MOBILE:
+            # set retry
+            if retry is None:
+                retry = settings.mobiledriver_retries
             # set page load timeout
             if connection_timeout is None:
                 connection_timeout = settings.mobiledriver_connection_timeout
             for r in range(retry + 1):
                 try:
-                    driver: MobileDriver = threaders.thread(platform['test_api'](
+                    driver: MobileDriver = threaders.thread(platform['api'](
                         command_executor=platform['command_executor'],
                         desired_capabilities=platform['desired_capabilities'],
                         browser_profile=platform['browser_profile'],
@@ -289,8 +321,12 @@ class TestCase:
                     ).get_and_join(timeout=connection_timeout)
                     break
                 except Exception as e:
-                    print(e)
-                raise Exception("webdriver connection could not be established")
+                    if r == retry:
+                        try:
+                            driver.quit()
+                        except:
+                            pass
+                        raise Exception("webdriver connection could not be established") from e
         return driver
 
     def drivers(self, platforms=None):
