@@ -103,7 +103,7 @@ def find_string_between_first_two_sub_strings(string, substring1, substring2):
             a = r.next
             r = find_substring(string, substring2, a)
             if r.result is True:
-                b = r.stop
+                b = r.start
                 return string[a:b]
         if i == len(string) - 1:
             return ''

@@ -57,3 +57,18 @@ class DriverConnectionException(Exception):
     def __str__(self):
         exception_msg = "Message: %s\n" % self.msg
         return exception_msg
+
+
+class DiffException(Exception):
+    """
+    Thrown when unexpected difference is detected.
+    """
+
+    def __init__(self, msg=None):
+        self.msg = msg
+
+    def __str__(self):
+        exception_msg = "Message: %s\n" % self.msg
+        return exception_msg
+
+

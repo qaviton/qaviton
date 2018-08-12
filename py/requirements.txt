@@ -1,3 +1,13 @@
+Faker==0.8.17
+imageio==2.3.0
+jsondiff==1.1.2
+keyboard==0.13.2
+mouse==0.7.0
+numpy==1.15.0
+Pillow==5.2.0
 psutil==5.4.6
+python-dateutil==2.7.3
+six==1.11.0
+text-unidecode==1.2
 threaders==0.2.12
 virtualenv==16.0.0

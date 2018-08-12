@@ -1,9 +1,10 @@
 import pytest
 from qaviton import crosstest
+from qaviton.utils.uuid_generator import testid
 from tests.settings import platforms
 
 
-@pytest.mark.parametrize('platform', platforms.get(), ids=crosstest.id)
+@pytest.mark.parametrize('platform', platforms.get(), ids=testid)
 def test_models_with_drivers(platform: crosstest.Platform, request):
     test = platform.setup(request)
     print(test.platform)

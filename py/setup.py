@@ -48,5 +48,11 @@ setup(
         'Topic :: Software Development :: Quality Assurance',
         'Topic :: Software Development :: Testing'
     ],
-    install_requires=['Appium-Python-Client>=0.28']
+    install_requires=[
+        'Appium-Python-Client>=0.28',
+        'Faker>=0.8.17',
+        'keyboard>=0.13.2',
+        'mouse>=0.7.0',
+        'imageio>=2.3.0'
+    ]
 )
