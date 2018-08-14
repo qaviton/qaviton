@@ -23,6 +23,29 @@ def random_number(minimum, maximum):
     return random.SystemRandom().choice(numbers)
 
 
+def no_space_egdes(string, s):
+    if s.endswith(' '):
+        string = string.replace(" ", "")
+        if len(string) == 0:
+            raise ValueError("random string cannot end with ' ' space.")
+
+        if s.startswith(' '):
+            s = random.SystemRandom().choice(string) + s[1:-1] + random.SystemRandom().choice(string)
+        else:
+            s = s[:-1] + random.SystemRandom().choice(string)
+
+    elif s.startswith(' '):
+        string = string.replace(" ", "")
+        if len(string) == 0:
+            raise ValueError("random string cannot start with ' ' space.")
+
+        if s.endswith(' '):
+            s = random.SystemRandom().choice(string) + s[1:-1] + random.SystemRandom().choice(string)
+        else:
+            s = random.SystemRandom().choice(string) + s[1:]
+    return s
+
+
 def random_string(string, length=1):
     """ get a random string from a string
     string cannot start/end with ' '
@@ -30,19 +53,7 @@ def random_string(string, length=1):
     :type string: str
     :rtype: str
     """
-    string = ''.join(random.SystemRandom().choice(str(string)) for _ in range(length))
-    s = ''
-    for a in range(len(string)):
-        if string[a] != ' ':
-            flag = False
-            for b in reversed(range(len(string))):
-                if string[b] != ' ':
-                    s = string[a:b+1]
-                    flag = True
-                    break
-            if flag is True:
-                break
-    return s
+    return no_space_egdes(string, ''.join(random.SystemRandom().choice(string) for _ in range(length)))
 
 
 class strings:

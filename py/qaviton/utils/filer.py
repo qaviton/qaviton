@@ -8,6 +8,7 @@ from fnmatch import fnmatch
 from io import BytesIO
 import imageio
 from qaviton.utils.operating_system import s
+import yaml
 
 
 #############################################################################
@@ -17,31 +18,24 @@ from qaviton.utils.operating_system import s
 #############################################################################
 
 
-def get_root_directory():
+def get_directory(__file__: str):
     return os.path.dirname(os.path.abspath(__file__))
 
 
-def get_project_directory(project_name):
-    project_directory = os.path.realpath(__file__).split(project_name)
-    if len(project_directory) > 2:
-        raise Exception('project name {} appear more then once in the file path {}'.format(project_name, project_directory))
-    return project_directory[0] + project_name
-
-
-def get_report_directory(project_name):
-    return get_project_directory(project_name) + s + 'reports'
-
-
-def create_directory(directory_path):
+def create_directory(directory_path: str):
     if not os.path.exists(os.path.dirname(directory_path)):
         try:
             os.makedirs(os.path.dirname(directory_path))
-        except OSError as exc: # Guard against race condition
+        except OSError as exc:  # Guard against race condition
             if exc.errno != errno.EEXIST:
                 raise
 
 
-def get_subdirectories(directory_path):
+def get_subdirectories(directory_path: str):
+    """ example:
+    default_products_directory = settings.project_directory + 'products' + s
+    default_products_directories = file_handler.get_subdirectories(default_products_directory)
+    """
     for i in os.walk(directory_path):
         results = []
         for subdir_name in i[1]:
@@ -49,28 +43,13 @@ def get_subdirectories(directory_path):
         return results
 
 
-def get_subdirectories_deep(directory_path):
+def get_subdirectories_deep(directory_path: str):
+    """get all subdirectories under root dir"""
     return [x[0] for x in os.walk(directory_path)]
 
 
-def get_repository(root_directory, repository_name):
-    """
-    this function will get the neighboring repository relative
-    to your root directory with the same parent directory
-    example:
-        parent_dir:
-            root_dir
-            repo_dir
-    :param root_directory: str
-    :param repository_name: str
-    :return:
-    """
-    if root_directory[-1] == s:
-        root_directory = root_directory[:-1]
-    return root_directory.rsplit(s, 1)[0] + s + repository_name + s
-
-
-def clean_directory(root_directory, pattern):
+def clean_directory(root_directory: str, pattern: str):
+    """delete all files with the pattern under root dir"""
     files = deep_files_search(root_directory, '*' + pattern)
     for file in files:
         if pattern in str(file):
@@ -78,7 +57,10 @@ def clean_directory(root_directory, pattern):
                 os.unlink(file)
 
 
-def delete_directory_contents(root_directory):
+def delete_directory_contents(root_directory: str):
+    """ example:
+    delete_directory_contents(test_report_directory_path)
+    """
     for the_file in os.listdir(root_directory):
         file_path = os.path.join(root_directory, the_file)
         if os.path.isfile(file_path):
@@ -195,9 +177,21 @@ def open_zip_from_inside_zip(zip_obj, zfile_name):
     return zipfile.ZipFile(zfiledata)
 
 
+#############################################################################
+#                                                                           #
+#                                 YAML                                      #
+#                                                                           #
+#############################################################################
+
+class parse:
+    @staticmethod
+    def yaml(file_path: str):
+        with open(file_path) as y:
+            return yaml.load(y.read())
 
 
-
-
-
-
+class dump:
+    @staticmethod
+    def yaml(dump_to_file_path: str, parsed_yaml: dict):
+        with open(dump_to_file_path, 'w') as y:
+            y.write(yaml.dump(parsed_yaml, default_flow_style=False))

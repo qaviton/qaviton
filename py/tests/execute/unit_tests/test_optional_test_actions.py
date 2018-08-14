@@ -1,10 +1,10 @@
 import pytest
 from qaviton.utils.optional_test_action import Optional
 from qaviton.utils import condition
-from qaviton.utils.uuid_generator import testid
+from qaviton.utils import unique_id
 
 
-@pytest.mark.parametrize('n', [0]*20, ids=testid)
+@pytest.mark.parametrize('n', [0] * 20, ids=unique_id.id)
 def test_optional(n):
     class Cat:
         def __init__(self, name):

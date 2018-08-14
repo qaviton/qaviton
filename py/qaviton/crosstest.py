@@ -312,12 +312,13 @@ class TestCase:
                 connection_timeout = settings.mobiledriver_connection_timeout
             for r in range(retry + 1):
                 try:
-                    driver: MobileDriver = threaders.thread(platform['api'](
+                    driver: MobileDriver = threaders.thread(
+                        platform['api'],
                         command_executor=platform['command_executor'],
                         desired_capabilities=platform['desired_capabilities'],
                         browser_profile=platform['browser_profile'],
                         proxy=platform['proxy'],
-                        keep_alive=platform['keep_alive'])
+                        keep_alive=platform['keep_alive']
                     ).get_and_join(timeout=connection_timeout)
                     break
                 except Exception as e:
