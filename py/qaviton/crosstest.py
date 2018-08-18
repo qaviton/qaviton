@@ -1,10 +1,10 @@
-from appium.webdriver import Remote as MobileDriver
-from selenium.webdriver import Remote as WebDriver
-from selenium.webdriver.remote.command import Command
-from qaviton import settings
-from threaders import threaders
-from qaviton.exceptions import MissingRequiredCapabilitiesException
 from selenium.webdriver.remote.file_detector import UselessFileDetector
+from selenium.webdriver.remote.command import Command
+from threaders import threaders
+from qaviton.drivers.webdriver import WebDriver
+from qaviton.drivers.mobile_driver import MobileDriver
+from qaviton import settings
+from qaviton.exceptions import MissingRequiredCapabilitiesException
 
 
 # TODO: add more platforms

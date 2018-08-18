@@ -50,12 +50,15 @@ setup(
     ],
     install_requires=[
         'Appium-Python-Client>=0.28',
+        'selenium>=3.14.0',
         'Faker>=0.8.17',
         'keyboard>=0.13.2',
         'mouse>=0.7.0',
         'imageio>=2.3.0',
         'pytest>=3.7.1',
         'pytest-xdist>=1.22.5',
-        'pytest-cov>=2.5.1'
+        'pytest-cov>=2.5.1',
+        'threaders>=0.2.12',
+        'PyYAML>=3.13'
     ]
 )

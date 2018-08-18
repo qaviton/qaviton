@@ -1,5 +1,7 @@
-from selenium.webdriver.remote.webelement import WebElement
+from appium.webdriver.webelement import WebElement
 from selenium.webdriver.common.by import By
+from appium.webdriver.common.mobileby import MobileBy
+from qaviton.utils.condition import value_in_many_any
 
 
 class ByExtension(By):
@@ -23,7 +25,7 @@ class ByExtensionMap:
     ATTRIBUTE_NAME = 'attribute name'
 
 
-class Locator(object):
+class Locator:
     """ this is the WebPage element webLocator class
         it is intended to be inherited by other locators of real pages.
         place all common search methods under this super class:
@@ -60,7 +62,7 @@ class Locator(object):
             (<attribute name string>, <attribute value string>)
     """
 
-    class BY(ByExtension, ByExtensionMap):
+    class BY(ByExtension, ByExtensionMap, MobileBy):
         pass
 
     @staticmethod
@@ -97,7 +99,7 @@ class Locator(object):
         by, value = locator
 
         # match to existing strategies
-        if by in vars(ByExtension).values() or by in vars(By).values():
+        if value_in_many_any(by, (vars(ByExtension).values(), vars(By).values(), vars(MobileBy).values())):
             return locator
 
         # map to extension strategies
@@ -142,61 +144,100 @@ class Locator(object):
         return ByExtension.ELEMENTS, list_of_web_elements
 
     @staticmethod
-    def attribute_name(attribute_name_locator):
-        """ return a mapped web element by its attribute name
-        :type attribute_name_locator: string """
+    def attribute_name(attribute_name_locator: str):
+        """ return a mapped web element by its attribute name"""
         return By.XPATH, "//*[starts-with(@{},'')]".format(attribute_name_locator)
 
     @staticmethod
-    def text(text_locator):
-        """ return a mapped web element by its text
-        :type text_locator: string """
+    def text(text_locator: str):
+        """ return a mapped web element by its text"""
         return By.XPATH, "//*[{}()='{}']".format(ByExtensionMap.TEXT, text_locator)
 
     @staticmethod
-    def xpath(xpath_locator):
-        """ return a mapped web element by xpath
-        :type xpath_locator: string """
+    def xpath(xpath_locator: str):
+        """ return a mapped web element by xpath"""
         return By.XPATH, xpath_locator
 
     @staticmethod
-    def css(css_locator):
-        """ return a mapped web element by css
-        :type css_locator: string """
+    def css(css_locator: str):
+        """ return a mapped web element by css"""
         return By.CSS_SELECTOR, css_locator
 
     @staticmethod
-    def cls(class_locator):
-        """ return a mapped web element by its class
-        :type class_locator: string """
+    def cls(class_locator: str):
+        """ return a mapped web element by its class"""
         return By.CLASS_NAME, class_locator
 
     @staticmethod
-    def id(id_locator):
-        """ return a mapped web element by its id
-        :type id_locator: string """
+    def id(id_locator: str):
+        """ return a mapped web element by its id"""
         return By.ID, id_locator
 
     @staticmethod
-    def link_text(link_text_locator):
-        """ return a mapped web element by its link text
-        :type link_text_locator: string """
+    def link_text(link_text_locator: str):
+        """ return a mapped web element by its link text"""
         return By.LINK_TEXT, link_text_locator
 
     @staticmethod
-    def partial_link_text(partial_link_text_locator):
-        """ return a mapped web element by its partial link text
-        :type partial_link_text_locator: string """
+    def partial_link_text(partial_link_text_locator: str):
+        """ return a mapped web element by its partial link text"""
         return By.PARTIAL_LINK_TEXT, partial_link_text_locator
 
     @staticmethod
-    def tag_name(tag_name_locator):
-        """ return a mapped web element by its html tag name
-        :type tag_name_locator: string """
+    def tag_name(tag_name_locator: str):
+        """ return a mapped web element by its html tag name"""
         return By.TAG_NAME, tag_name_locator
 
     @staticmethod
-    def name(name_locator):
-        """ return a mapped web element by its name property
-        :type name_locator: string """
+    def name(name_locator: str):
+        """ return a mapped web element by its name property"""
         return By.NAME, name_locator
+
+    @staticmethod
+    def ios_predicate(ios_predicate_locator: str):
+        """ return a mapped web element by its ios predicate string"""
+        return MobileBy.IOS_PREDICATE, ios_predicate_locator
+
+    @staticmethod
+    def ios_ui_automation(ios_ui_automation_locator: str):
+        """ return a mapped web element by its ios ui automation"""
+        return MobileBy.IOS_UIAUTOMATION, ios_ui_automation_locator
+
+    @staticmethod
+    def ios_class_chain(ios_class_chain_locator: str):
+        """ return a mapped web element by its ios class chain"""
+        return MobileBy.IOS_CLASS_CHAIN, ios_class_chain_locator
+
+    @staticmethod
+    def android_ui_automation(android_ui_automation_locator: str):
+        """ return a mapped web element by its android ui automation"""
+        return MobileBy.ANDROID_UIAUTOMATOR, android_ui_automation_locator
+
+    @staticmethod
+    def accessibility_id(accessibility_id_locator: str):
+        """ return a mapped web element by its accessibility id"""
+        return MobileBy.ACCESSIBILITY_ID, accessibility_id_locator
+
+    @staticmethod
+    def image(image_locator: str):
+        """ return a mapped web element by image"""
+        return MobileBy.IMAGE, image_locator
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

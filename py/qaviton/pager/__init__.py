@@ -1,168 +1,111 @@
-from logging import Logger
 from time import sleep
 from time import time
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver import ActionChains
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.wait import POLL_FREQUENCY
-from qaviton.core.utils.web.locator import WebLocator
-from qaviton.core.utils.web import expected_conditions_extension as EC
-from qaviton.core.utils.web.page_interface import PageInterface
-from qaviton.core.utils.web.page_interface import selenium_decorator
+
+from qaviton.locator import Locator
+from qaviton.drivers.support import expected_conditions_extension as EC
+from qaviton.pager.interface import PageInterface
+from qaviton.drivers.common.webelement import WebElement
+from qaviton.crosstest import WebDriver, MobileDriver
+from qaviton import settings
 
 
-class WebPage(PageInterface):
+class Page(PageInterface):
 
-    def __init__(self, log, driver, url, timeout=60, log_file_directories=None):
+    def __init__(self, driver, timeout=settings.page_timeout, url=None):
         """
-        :type log: Logger
-        :type driver: WebDriver
+        :type driver: WebDriver or MobileDriver
         :type url: str
         :type timeout: int | float
-        :type log_file_directories: list[str]
         """
-        PageInterface.__init__(self, log, driver, url, timeout, log_file_directories)
+        PageInterface.__init__(self, driver, timeout)
+        self.driver = driver
+        self.url = url
 
-    def wait_until_page_loads(self, timeout=None, driver=None):
+    def find(self, locator: tuple, timeout: int = 0, index=0):
+        """find element with locator value
+        :param locator: locate by method like id and value
+        :param timeout: how long to search
+        :param index: parameter for special cases
+                  where a list of elements is in the locator,
+                  the default element to return is elements[0]
+        :rtype: WebElement
+        """
+        return self.driver.find(locator, timeout, index)
+
+    def find_all(self, locator: tuple, timeout: int = 0):
+        """find all elements with locator value
+        :param timeout: how long to search
+        :param locator: locate by method like id and value
+        :rtype: list[WebElement]"""
+        return self.driver.find_all(locator, timeout)
+
+    def try_to_find(self, locator: tuple, timeout=0, index=0):
+        """try to find element
+        :param index: parameter for special cases
+                      where a list of elements is in the locator,
+                      the default element to return is elements[0]
+        :param timeout: how long to search
+        :param locator: locate by method like id and value
+        :rtype: WebElement | None"""
+        return self.driver.try_to_find(locator, timeout, index)
+
+    def try_to_find_all(self, locator: tuple, timeout=0):
+        """try to find elements
+        :param timeout: how long to search
+        :param locator: locate by method like id and value
+        :rtype: list[WebElement] | None"""
+        return self.driver.try_to_find_all(locator, timeout)
+
+    def get_elements_text(self, locator, timeout=0):
+        """ get text from elements
+        :type locator: tuple(str, str | list[WebElement] | WebElement)
+        :type timeout: int
+        :rtype: list[str]
+        """
+        return self.driver.get_elements_text(locator, timeout)
+
+    def zoom(self, percent=200, element=None, steps=50):
+        self.driver.zoom(percent=percent, element=element, steps=steps)
+        return self
+
+    def get_page(self, url=None):
+        """works for web, not mobile"""
+        if url is None:
+            url = self.url
+        self.driver.get(url)
+        return self
+
+    def wait_until_page_loads(self, timeout=None):
+        """check that the page has finished loading and all elements are present"""
+        timeout = self._get_timeout(timeout)
         t = time()
-        driver, timeout = self._get_driver(driver), self._get_timeout(timeout)
-        self.wait(driver, timeout).until(lambda x: driver.execute_script("return document.readyState;") == "complete")
+        self.wait(self.driver, timeout).until(
+            lambda x: self.driver.execute_script("return document.readyState;") == "complete")
         while True:
-            c1 = self.count_all_elements(driver)
+            c1 = self.count_all_elements_in_the_page()
             sleep(POLL_FREQUENCY)
-            c2 = self.count_all_elements(driver)
+            c2 = self.count_all_elements_in_the_page()
             sleep(POLL_FREQUENCY)
-            c3 = self.count_all_elements(driver)
+            c3 = self.count_all_elements_in_the_page()
             if c1 == c2 == c3:
                 break
             elif timeout <= time()-t:
                 raise TimeoutException
+        return self
 
-    def count_all_elements(self, driver=None):
-        return len(self.find_all_elements(driver))
+    def count_all_elements_in_the_page(self):
+        """:rtype: int"""
+        return len(self.find_all_elements_in_the_page())
 
-    def find_all_elements(self, driver=None):
-        if driver is None:
-            driver = self.driver
-        return driver.find_elements_by_css_selector("*")
+    def find_all_elements_in_the_page(self):
+        """:rtype: list[WebElement]"""
+        return self.driver.find_elements_by_css_selector("*")
 
-    def find_elements(self, locator, driver=None):
-        """ find elements
-        :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type driver: WebDriver | WebElement
-        :rtype: list[WebElement]
-        """
-        return self._find_elements(locator, driver)
 
-    def find_element(self, locator, driver=None, index=0):
-        """ find element
-        :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type driver: WebDriver | WebElement
-        :type index: int
-        :rtype: WebElement
-        """
-        return self._find_element(locator, driver, index)
-
-    def find_elements_explicitly(self, locator, timeout=None, driver=None):
-        """ wait until element is found
-        :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type timeout: int
-        :type driver: WebDriver | WebElement
-        :rtype: list[WebElement]
-        """
-        return self._find_elements_explicitly(locator, timeout, driver)
-
-    def find_element_explicitly(self, locator, timeout=None, driver=None, index=0):
-        """ wait until element is found
-        :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type timeout: int
-        :type driver: WebDriver | WebElement
-        :type index: int
-        :rtype: WebElement
-        """
-        return self._find_element_explicitly(locator, timeout, driver, index)
-
-    def try_to_find_elements(self, locator, driver=None):
-        """ try to find elements if any exist
-        :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type driver: WebDriver | WebElement
-        :rtype: list[WebElement] | []
-        """
-        return self._try_to_find_elements(locator, driver)
-
-    def try_to_find_element(self, locator, driver=None, index=0):
-        """ try to find element if it exist
-        :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type driver: WebDriver | WebElement
-        :type index: int
-        :rtype: WebElement | None
-        """
-        return self._try_to_find_element(locator, driver, index)
-
-    def try_to_find_elements_explicitly(self, locator, timeout=None, driver=None):
-        """ try to wait & find elements if any exist
-        :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type timeout: int
-        :type driver: WebDriver | WebElement
-        :rtype: list[WebElement] | []
-        """
-        return self._try_to_find_elements_explicitly(locator, timeout, driver)
-
-    def try_to_find_element_explicitly(self, locator, timeout=None, driver=None, index=0):
-        """ try to wait & find element if it exist
-        :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type timeout: int
-        :type driver: WebDriver | WebElement
-        :type index: int
-        :rtype: WebElement | None
-        """
-        return self._try_to_find_element_explicitly(locator, timeout, driver, index)
-
-    def get_elements_text(self, locator, timeout=None, driver=None):
-        """ get text from elements
-        :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type timeout: int
-        :type driver: WebDriver | WebElement
-        :rtype: list[str]
-        """
-        element_list, elements_text = self._find_elements_explicitly(locator, timeout, driver), []
-        for i in range(len(element_list)):
-            elements_text.append(element_list[i].text)
-        return elements_text
-
-    def get_elements_last_children(self, locator, timeout=None, driver=None):
-        """ get the last children from located elements
-        :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type timeout: int
-        :type driver: WebDriver | WebElement
-        :rtype: list[WebElement]
-        """
-        elements = self.find_elements_explicitly(locator, timeout, driver)
-        return self._get_elements_last_children(elements)
-
-    def try_to_get_elements_text(self, locator, timeout=None, driver=None):
-        """ get text from elements if any elements are located
-        :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type timeout: int
-        :type driver: WebDriver | WebElement
-        :rtype: list[str] | []
-        """
-        element_list, elements_text = self.try_to_find_elements_explicitly(locator, timeout, driver), []
-        for i in range(len(element_list)):
-            elements_text.append(element_list[i].text)
-        return elements_text
-
-    def click_on_element(self, locator, timeout=None, driver=None, index=0):
-        """ click on an element
-        :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type timeout: int
-        :type driver: WebDriver | WebElement
-        :type index: int
-        :rtype: WebElement
-        """
-        return self.wait(driver, timeout).until(EC.element_to_be_clickable(locator, index)).click()
 
     def click_on_elements(self, locator, timeout=None, driver=None):
         """ click on all located elements
@@ -173,7 +116,7 @@ class WebPage(PageInterface):
         """
         elements = self._try_to_find_elements_explicitly(locator, timeout, driver)
         for element in elements:
-            self.wait(driver, timeout).until(EC.element_to_be_clickable(WebLocator.element(element))).click()
+            self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(element))).click()
         return elements
 
     def drag_element_to_element(self, locator_from, locator_to, timeout=None, driver=None):
@@ -257,7 +200,7 @@ class WebPage(PageInterface):
         """
         elements = self._find_elements_explicitly(locator, timeout, driver)
         for i in range(len(elements)):
-            self.send_characters_to_element(WebLocator.element(elements[i]), characters),
+            self.send_characters_to_element(Locator.element(elements[i]), characters),
         return elements
 
     def send_in_chunks_to_element(self, locator, text='', size=1, timeout=None, driver=None):
@@ -305,7 +248,7 @@ class WebPage(PageInterface):
         """
         elements = self._find_elements_explicitly(locator, timeout, driver)
         for i in range(len(elements)):
-            self.send_to_element(WebLocator.element(elements[i]), text),
+            self.send_to_element(Locator.element(elements[i]), text),
         return elements
 
     def select_element_from_list(self, locator, choice, timeout=None, driver=None):
@@ -337,8 +280,8 @@ class WebPage(PageInterface):
         elements = self._get_elements_last_children(self._find_elements_explicitly(locator_list, timeout, driver))
         for element in elements:
             if element.text == choice:
-                self.wait(driver, timeout).until(EC.element_to_be_clickable(WebLocator.element(element))).click()
-                self.wait(driver, timeout).until(EC.element_to_be_clickable(WebLocator.element(element_to_open_or_close_list))).click()
+                self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(element))).click()
+                self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(element_to_open_or_close_list))).click()
                 return element
 
     def replace_url(self, pattern, replace):
@@ -363,7 +306,7 @@ class WebPage(PageInterface):
         for i in range(tries):
             t = time()
             try:
-                self.wait(driver, timeout).until(EC.element_to_be_clickable(WebLocator.element(locator_to_click))).click()
+                self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(locator_to_click))).click()
                 element_condition = self.try_to_find_elements_explicitly(locator_condition, timeout, driver)
                 if len(element_condition) >= condition_expected_results:
                     return element_condition
@@ -389,7 +332,7 @@ class WebPage(PageInterface):
         for i in range(tries):
             t = time()
             try:
-                self.wait(driver, timeout).until(EC.element_to_be_clickable(WebLocator.element(locator_to_click))).click()
+                self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(locator_to_click))).click()
                 element_condition = self.try_to_find_elements_explicitly(locator_condition, timeout, driver)
                 if len(element_condition) >= condition_expected_results:
                     return element_condition
@@ -414,7 +357,7 @@ class WebPage(PageInterface):
         for i in range(tries):
             t = time()
             try:
-                self.wait(driver, timeout).until(EC.element_to_be_clickable(WebLocator.element(locator_to_click))).click()
+                self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(locator_to_click))).click()
                 element_condition = self.try_to_find_elements_explicitly(locator_condition, timeout, driver)
                 if len(element_condition) == condition_expected_results:
                     return element_condition
@@ -439,7 +382,7 @@ class WebPage(PageInterface):
         for i in range(tries):
             t = time()
             try:
-                self.wait(driver, timeout).until(EC.element_to_be_clickable(WebLocator.element(locator_to_click))).click()
+                self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(locator_to_click))).click()
                 element_condition = self.try_to_find_elements_explicitly(locator_condition, timeout, driver)
                 if len(element_condition) == condition_expected_results:
                     return element_condition
@@ -466,7 +409,7 @@ class WebPage(PageInterface):
         for i in range(tries):
             t = time()
             try:
-                self.wait(driver, timeout).until(EC.element_to_be_clickable(WebLocator.element(locator_to_click))).click()
+                self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(locator_to_click))).click()
                 element_condition = self.try_to_find_elements_explicitly(locator_condition, timeout, driver)
                 if len(element_condition) <= condition_expected_results:
                     return element_condition
@@ -494,7 +437,7 @@ class WebPage(PageInterface):
             t = time()
             try:
                 self.wait(driver, timeout).until(
-                    EC.element_to_be_clickable(WebLocator.element(locator_to_click))).click()
+                    EC.element_to_be_clickable(Locator.element(locator_to_click))).click()
                 element_condition = self.try_to_find_elements_explicitly(locator_condition, timeout, driver)
                 if len(element_condition) <= condition_expected_results:
                     return element_condition
@@ -607,7 +550,7 @@ class WebPage(PageInterface):
         """
         element = self.wait(driver, timeout).until(EC.presence_of_element_located(locator, index))
         try:
-            self.wait(driver, timeout).until(EC.element_to_be_clickable(WebLocator.element(element))).click()
+            self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(element))).click()
         except:
             return element
         raise Exception("element should not be clickable")

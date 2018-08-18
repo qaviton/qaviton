@@ -12,3 +12,5 @@ webdriver_connection_timeout = 60
 mobiledriver_retries = 0
 mobiledriver_page_load_timeout = 30
 mobiledriver_connection_timeout = 500
+
+page_timeout = 60
