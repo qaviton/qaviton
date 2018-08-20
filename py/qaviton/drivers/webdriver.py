@@ -17,8 +17,12 @@
 
 """The WebDriver implementation."""
 
+from time import sleep
 from selenium.webdriver import Remote
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.wait import POLL_FREQUENCY
 from qaviton.drivers.common.webdriver import WebDriver as WE
+from qaviton.drivers.common.webelement import WebElement
 
 
 class WebDriver(WE, Remote):
@@ -36,8 +40,22 @@ class WebDriver(WE, Remote):
      - error_handler - errorhandler.ErrorHandler object used to handle errors.
     """
 
+    def __init__(self, command_executor='http://127.0.0.1:4444/wd/hub',
+                 desired_capabilities=None, browser_profile=None, proxy=None,
+                 keep_alive=False, file_detector=None, options=None):
+
+        Remote.__init__(self, command_executor, desired_capabilities, browser_profile,
+                        proxy, keep_alive, file_detector, options)
+
+    def create_web_element(self, element_id):
+        """
+        Creates a web element with the specified element_id.
+        Overrides method and appium Selenium WebDriver in order to always create the qaviton extended WebElement
+        """
+        return WebElement(self, element_id)
+
     def zoom(self, percent=200, *args, **kwargs):
-        """ zoom like appium for selenium (works in)
+        """ zoom like appium for selenium (will not work for all browsers)
             Zooms in on an element a certain amount
 
                 :Args:
@@ -45,6 +63,35 @@ class WebDriver(WE, Remote):
                  - args/kwargs - catch any unwanted arguments that may come from appium zoom
 
                 :Usage:
-                    driver.zoom(element)
+                    driver.zoom(150)
+                    driver.zoom(50)
+                    driver.zoom(100)
                 """
         self.execute_script("document.body.style.zoom = arguments[0]+'%';", str(percent))
+        return self
+
+    def drag_and_drop(self, origin_el, destination_el):
+        """Drag the origin element to the destination element
+
+        :Args:
+         - originEl - the element to drag
+         - destinationEl - the element to drag to
+        """
+        ActionChains(self).drag_and_drop(origin_el, destination_el).perform()
+        return self
+
+    def scroll_element_into_view(self, element, retries=4):
+        """ selenium only: scrolling function to scroll until element is visible (whole window scroll)
+        :type element: WebElement
+        :param retries: integer bigger or equal to 0
+        :rtype: WebElement
+        """
+        for retry in range(1+retries):
+            try:
+                self.execute_script("arguments[0].scrollIntoView(true);", element)
+                return element
+            except Exception as e:
+                if retry == retries:
+                    raise e
+                sleep(POLL_FREQUENCY)
+        return element

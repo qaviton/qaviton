@@ -19,10 +19,9 @@
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.remote.command import Command
-from qaviton.drivers.common.web_functions import WebFunctions
+from qaviton.drivers.common.functions import WebFunctions
 from qaviton.drivers.common.webelement import WebElement
-from qaviton.drivers.support import expected_conditions_extension as EC
-from qaviton.locator import Locator
+from qaviton.drivers.support import expected_conditions as EC
 
 
 class WebDriver(WebFunctions):
@@ -53,52 +52,77 @@ class WebDriver(WebFunctions):
         element._execute(Command.CLICK_ELEMENT)
         return element
 
-    def get_element_last_children(self, element, timeout=3):
+    @staticmethod
+    def find_element_last_children(element, timeout=0):
         """ get the last elements in the tree from the root element
         :type element: WebElement
-        :rtype: list[WebElement]
-        """
-        locator = Locator.xpath('./*')
-        elements = []
-        while True:
-            try:
-                elements = element.find_all(locator, timeout)
-                locator = (locator[0], locator[1] + '/*')
-            except:
-                return elements
-
-    def get_elements_last_children(self, elements):
-        """ get the last elements in the tree from the root element
-        :type elements: list[WebElement]
-        :rtype: list[WebElement]
-        """
-        children_elements = []
-        for element in elements:
-            children_elements += self.get_element_last_children(element)
-        return children_elements
-
-    def get_element_children(self, element, timeout=3):
-        """ get the last element in the tree from the root element
-        :type element: WebElement
+        :type timeout: int
         :rtype: list[WebElement] | []
         """
-        try:
-            return element.find_all(Locator.xpath('./*'), timeout)
-        except:
-            return []
+        return element.find_last_children(timeout)
 
-    def get_elements_children(self, elements):
-        """:rtype: list[WebElement]"""
+    @staticmethod
+    def find_elements_last_children(elements, timeout=0):
+        """ get the last elements in the tree from the root element
+        :type elements: list[WebElement]
+        :type timeout: int
+        :rtype: list[WebElement] | []
+        """
         children_elements = []
         for element in elements:
-            children_elements += self.get_element_children(element)
+            children_elements += element.find_last_children(timeout)
         return children_elements
 
+    @staticmethod
+    def find_element_children(element, timeout=0):
+        """ get the last element in the tree from the root element
+        :type element: WebElement
+        :type timeout: int
+        :rtype: list[WebElement] | []
+        """
+        return element.find_children(timeout)
 
+    @staticmethod
+    def get_elements_children(elements, timeout=0):
+        """ get elements children
+        :type timeout: int
+        :rtype: list[WebElement] | []
+        """
+        children_elements = []
+        for element in elements:
+            children_elements += element.find_children(timeout)
+        return children_elements
 
+    @staticmethod
+    def drag_to_offset(origin_el, xoffset, yoffset):
+        """
+        Holds down the left mouse button on the source element,
+           then moves to the target offset and releases the mouse button.
 
+        :Args:
+         - source: The element to mouse down.
+         - xoffset: X offset to move to.
+         - yoffset: Y offset to move to.
+         :type origin_el: WebElement
+         :rtype: WebDriver
+        """
+        return origin_el.drag_to_offset(xoffset, yoffset)
 
+    @staticmethod
+    def hover(element):
+        """ hover/move cursor to element
+        :type element: WebElement
+        :rtype: WebDriver
+        """
+        return element.hover()
 
+    @staticmethod
+    def hover_and_click(element):
+        """ hover/move cursor to element and click
+        :type element: WebElement
+        :rtype: WebDriver
+        """
+        return element.hover_and_click()
 
 
 

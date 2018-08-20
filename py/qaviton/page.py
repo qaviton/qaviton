@@ -1,17 +1,37 @@
+# Licensed to the Software Freedom Conservancy (SFC) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The SFC licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+"""
+the page implementation for GUI model based testing
+"""
+
 from time import sleep
 from time import time
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver import ActionChains
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.wait import POLL_FREQUENCY
 
 from qaviton.locator import Locator
-from qaviton.drivers.support import expected_conditions_extension as EC
+from qaviton.drivers.support import expected_conditions as EC
 from qaviton.pager.interface import PageInterface
 from qaviton.drivers.common.webelement import WebElement
 from qaviton.crosstest import WebDriver, MobileDriver
 from qaviton import settings
-
+from qaviton.utils.helpers import dynamic_delay
 
 class Page(PageInterface):
 
@@ -68,15 +88,60 @@ class Page(PageInterface):
         """
         return self.driver.get_elements_text(locator, timeout)
 
+    def find_last_children(self, locator, timeout=0):
+        """ get the last elements in the tree from the root element
+        :type locator: tuple(str, str | list[WebElement] | WebElement)
+        :type timeout: int
+        :rtype: list[WebElement]
+        """
+        return self.find(locator, timeout).find_last_children(timeout)
+
+    def find_all_last_children(self, locator, timeout=0):
+        """ get the last elements in the tree from the root elements
+        :type locator: tuple(str, str | list[WebElement] | WebElement)
+        :type timeout: int
+        :rtype: list[WebElement]
+        """
+        children_elements = []
+        for element in self.find_all(locator, timeout):
+            children_elements += element.find_last_children(timeout)
+        return children_elements
+
+    def find_children(self, locator, timeout=0):
+        """ get the child elements of the parent
+        :type locator: tuple(str, str | list[WebElement] | WebElement)
+        :type timeout: int
+        :rtype: list[WebElement] | []
+        """
+        return self.find(locator, timeout).find_children(timeout)
+
+    def find_all_children(self, locator, timeout=0):
+        """ get elements children
+        :type locator: tuple(str, str | list[WebElement] | WebElement)
+        :type timeout: int
+        :rtype: list[WebElement]
+        """
+        children_elements = []
+        for element in self.find_all(locator, timeout):
+            children_elements += element.find_children(timeout)
+        return children_elements
+
     def zoom(self, percent=200, element=None, steps=50):
-        self.driver.zoom(percent=percent, element=element, steps=steps)
-        return self
+        """zoom in/out (might not work for any webbrowser)"""
+        return self.driver.zoom(percent=percent, element=element, steps=steps)
 
     def get_page(self, url=None):
-        """works for web, not mobile"""
-        if url is None:
-            url = self.url
-        self.driver.get(url)
+        """works for web, not mobile
+        if url is set to None nothing will happen
+        """
+        if self.url is None:
+            if url is None:
+                return self
+            self.driver.get(url)
+            return self
+        elif url is None:
+            self.driver.get(self.url)
+            return self
         return self
 
     def wait_until_page_loads(self, timeout=None):
@@ -105,183 +170,135 @@ class Page(PageInterface):
         """:rtype: list[WebElement]"""
         return self.driver.find_elements_by_css_selector("*")
 
+    def click(self, locator, timeout=0, index=0):
+        """ click on an element
+        :type locator: tuple(str, str | list[WebElement] | WebElement)
+        :type timeout: int
+        :type index: int
+        :rtype: WebElement
+        """
+        return self.driver.click(locator, timeout, index)
 
-
-    def click_on_elements(self, locator, timeout=None, driver=None):
+    def click_all(self, locator, timeout=0):
         """ click on all located elements
         :type locator: tuple(str, str | list[WebElement] | WebElement)
         :type timeout: int
-        :type driver: WebDriver | WebElement
         :rtype: list[WebElement]
         """
-        elements = self._try_to_find_elements_explicitly(locator, timeout, driver)
+        elements = self.find_all(locator, timeout)
         for element in elements:
-            self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(element))).click()
+            element.click(timeout=timeout)
         return elements
 
-    def drag_element_to_element(self, locator_from, locator_to, timeout=None, driver=None):
+    def drag_and_drop(self, source_locator, target_locator, timeout=0):
         """ drag and drop source element on a target element or on a (x,y) offset
-        :type locator_from: tuple(str, str | list[WebElement] | WebElement)
-        :type locator_to: tuple(str, str | list[WebElement] | WebElement)
+        :type source_locator: tuple(str, str | list[WebElement] | WebElement)
+        :type target_locator: tuple(str, str | list[WebElement] | WebElement)
         :type timeout: int
-        :type driver: WebDriver | WebElement
-        :rtype: tuple(WebElement)
+        :rtype: WebElement
         """
-        source = self._find_element_explicitly(locator_from, timeout, driver)
-        target = self._find_element_explicitly(locator_to, timeout, driver)
-        ActionChains(self.driver).drag_and_drop(source, target).perform()
-        return source, target
+        source = self.find(source_locator, timeout)
+        self.driver.drag_and_drop(source, self.find(target_locator, timeout))
+        return source
 
-    def drag_element_to_offset(self, locator, offset_x, offset_y, timeout=None, driver=None):
+    def drag_to_offset(self, locator, offset_x, offset_y, timeout=0):
         """ drag and drop source element on a target element or on a (x,y) offset
         :type locator: tuple(str, str | list[WebElement] | WebElement)
         :type offset_x: int
         :type offset_y: int
         :type timeout: int
-        :type driver: WebDriver | WebElement
         :rtype: WebElement
         """
-        source = self._find_element_explicitly(locator, timeout, driver)
-        ActionChains(self.driver).drag_and_drop_by_offset(source, offset_x, offset_y).perform()
+        return self.driver.drag_to_offset(self.find(locator, timeout), offset_x, offset_y)
 
-    def hover_on_element(self, locator, timeout=None, driver=None):
+    def hover(self, locator, timeout=0):
         """ drag and drop source element on a target element or on a (x,y) offset
         :type locator: tuple(str, str | list[WebElement] | WebElement)
         :type timeout: int
-        :type driver: WebDriver | WebElement
-        :rtype: WebElement
+        :rtype: Page
         """
-        element = self._find_element_explicitly(locator, timeout, driver)
-        ActionChains(self.driver).move_to_element(element).perform()
-        return element
+        return self.driver.hover(self.find(locator, timeout))
 
-    def scroll_element_into_view(self, locator, timeout=None, driver=None):
-        """ This is a scrolling function to scroll until element is visible (whole window scroll)
+    def hover_and_click(self, locator, timeout=0):
+        """ hover/move cursor to element and click
         :type locator: tuple(str, str | list[WebElement] | WebElement)
         :type timeout: int
-        :type driver: WebDriver | WebElement
-        :rtype: WebElement
+        :rtype: Page
         """
-        element = self._find_element_explicitly(locator, timeout, driver)
-        try:
-            self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
-            return element
-        except Exception as error:
-            self.log.exception(error)
+        return self.driver.hover_and_click(self.find(locator, timeout))
 
-    def scroll_page(self, x, y):
-        """ this is a page scrolling function
-        :type x: int
-        :type y: int"""
-        self.driver.execute_script("scroll(arguments[0], arguments[1]);", x, y)
-
-    def send_characters_to_element(self, locator, characters='', timeout=None, driver=None):
-        """ click on element, clear element text, send individual characters to element
-        :type locator: (tuple(str, str | list[WebElement] | WebElement)
-        :type characters: str
-        :type timeout: float | int
-        :type driver: selenium WebDriver/WebElement
-        :rtype: WebElement
-        """
-        element = self.click_on_element(locator, timeout, driver)
-        element.clear()
-        s = str(characters)
-        for i in range(len(s)):
-            element.send_keys(s[i])
-        return element
-
-    def send_characters_to_elements(self, locator, characters='', timeout=None, driver=None):
-        """ send text to multiple elements
-        :type locator: (tuple(str, str | list[WebElement] | WebElement)
-        :type text: str
-        :type timeout: float | int
-        :type driver: selenium WebDriver/WebElement
-        :rtype: WebElement
-        """
-        elements = self._find_elements_explicitly(locator, timeout, driver)
-        for i in range(len(elements)):
-            self.send_characters_to_element(Locator.element(elements[i]), characters),
-        return elements
-
-    def send_in_chunks_to_element(self, locator, text='', size=1, timeout=None, driver=None):
-        """ write in chunks
-        :type locator: (tuple(str, str | list[WebElement] | WebElement)
-        :type text: str
-        :type size: int
-        :type timeout: float | int
-        :type driver: selenium WebDriver/WebElement
-        :rtype: WebElement
-        """
-        i, element = 0, self.wait(driver, timeout).until(EC.element_to_be_clickable(locator)).click()
-        element.clear()
-        while i < len(text):
-            if i + size > len(text):
-                end_point = len(text)
-                if i == 0:
-                    s_chunk = text
-                else:
-                    s_chunk = text[i:end_point]
-            else:
-                end_point = i + size
-                s_chunk = text[i:end_point]
-            element.send_keys(s_chunk)
-            i += size
-        return element
-
-    def send_to_element(self, locator, text='', timeout=None, driver=None):
-        """ send text to element
+    def scroll_element_into_view(self, locator, timeout=0, retries=5):
+        """ selenium only: scrolling function to scroll until element is visible (whole window scroll)
         :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type text: str
-        :type timeout: float | int
-        :type driver: selenium WebDriver/WebElement
+        :type timeout: int
+        :param retries: integer bigger or equal to 0
         :rtype: WebElement
         """
-        return self._find_element_explicitly(locator, timeout, driver).send_keys(text)
+        return self.driver.scroll_element_into_view(self.driver.find(locator, timeout), retries)
 
-    def send_to_elements(self, locator, text='', timeout=None, driver=None):
+    def clear(self, locator, timeout=0):
+        return self.find(locator, timeout).clear()
+
+    def send(self, locator, keys, timeout=0):
+        """ click on element, clear element text, send keys to element.
+        :type locator: (tuple(str, str | list[WebElement] | WebElement)
+        :type keys: str
+        :type timeout: float | int
+        :rtype: WebElement
+        """
+        return self.click(locator, timeout).clear().send_keys(keys)
+
+    def send_chars(self, locator, chars='', timeout=0):
+        """ click on element, clear element text, send individual characters to element.
+        this function is useful in flacky applications, where the send keys function can cause issues.
+        :type locator: (tuple(str, str | list[WebElement] | WebElement)
+        :type chars: str
+        :type timeout: float | int
+        :rtype: WebElement
+        """
+        return self.click(locator, timeout).clear().send_chars(chars)
+
+    def send_all(self, locator, keys, timeout=0):
         """ send text to multiple elements
         :type locator: (tuple(str, str | list[WebElement] | WebElement)
-        :type text: str
+        :type keys: str
         :type timeout: float | int
-        :type driver: selenium WebDriver/WebElement
         :rtype: WebElement
         """
-        elements = self._find_elements_explicitly(locator, timeout, driver)
-        for i in range(len(elements)):
-            self.send_to_element(Locator.element(elements[i]), text),
+        elements = self.find_all(locator, timeout)
+        for element in elements:
+            element.click(timeout=timeout).clear().send_keys(keys)
         return elements
 
-    def select_element_from_list(self, locator, choice, timeout=None, driver=None):
-        """ select an option off a list
+    def select_from_dropdown(self, locator, choice, timeout=0):
+        """ select a choice from a drop down list
         :type locator: (tuple(str, str | list[WebElement] | WebElement)
         :type choice: str
         :type timeout: float | int
-        :type driver: selenium WebDriver/WebElement
         :rtype: WebElement
         """
-        elements = self._get_elements_last_children(self._find_elements_explicitly(locator, timeout, driver))
-        element = self._try_to_find_element_explicitly(locator, timeout, driver)
-        element.send_keys(str(choice))
+        elements = self.find_all_last_children(self.find_all(locator, timeout))
+        element = self.try_to_find(locator, timeout)
+        element.send_keys(choice)
         for element in elements:
             if element.text == choice:
                 element.click()
                 return element
 
-    def select_element_from_multilist(self, locator_open_list, locator_list, choice, timeout=None, driver=None):
+    def multi_select_from_dropdown(self, locator_open_list, locator_list, choice, timeout=0):
         """ select a choice from a multi drop down list
         :type locator_open_list: tuple(str, str | list[WebElement] | WebElement)
         :type locator_list: tuple(str, str | list[WebElement] | WebElement)
         :type choice: str
         :type timeout: float | int
-        :type driver: selenium WebDriver/WebElement
         :rtype: WebElement
         """
-        element_to_open_or_close_list = self.wait(driver, timeout).until(EC.element_to_be_clickable(locator_open_list)).click()
-        elements = self._get_elements_last_children(self._find_elements_explicitly(locator_list, timeout, driver))
+        element_to_open_or_close_list = self.click(locator_open_list, timeout)
+        elements = self.find_all_last_children(self.find_all(locator_list, timeout))
         for element in elements:
             if element.text == choice:
-                self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(element))).click()
-                self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(element_to_open_or_close_list))).click()
+                element.click(timeout=timeout)
+                element_to_open_or_close_list.click(timeout=timeout)
                 return element
 
     def replace_url(self, pattern, replace):
@@ -291,59 +308,62 @@ class Page(PageInterface):
         """
         self.driver.get(self.driver.current_url.replace(pattern, replace))
 
-    def try_to_click_until_element_is_created(self, locator_to_click, locator_condition, condition_expected_results=1,
-                                              tries=8, timeout=2, delay=0.5, driver=None):
-        """ try to click on element, check if condition element created, if not, click again
-        :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
-        :type locator_condition: tuple(str, str | list[WebElement] | WebElement)
-        :type condition_expected_results: int
-        :type tries: int
-        :type timeout: float | int
-        :type delay: float | int
-        :type driver: selenium WebDriver/WebElement
-        :rtype: list[WebElement]
-        """
-        for i in range(tries):
-            t = time()
-            try:
-                self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(locator_to_click))).click()
-                element_condition = self.try_to_find_elements_explicitly(locator_condition, timeout, driver)
-                if len(element_condition) >= condition_expected_results:
-                    return element_condition
-            except: pass
-            t = time() - t
-            if t < delay:
-                sleep(delay - t)
-        return []
+    def try_to_click_until_element_is_created(self, locator_to_click, locator_of_created_element,
+                                              retries=7, timeout=2, delay=POLL_FREQUENCY):
+        """ try to click on element, check if condition element is created, if not, click again.
+        return True for success and NoSuchElementException for failure,
+        if an exception occurred in the last try, it will be returned.
 
-    @selenium_decorator()
-    def click_until_element_is_created(self, locator_to_click, locator_condition, condition_expected_results=1,
-                                       tries=8, timeout=2, delay=0.5, driver=None):
-        """ click on element, check if condition element created, if not, click again
         :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
-        :type locator_condition: tuple(str, str | list[WebElement] | WebElement)
-        :type condition_expected_results: int
-        :type tries: int
+        :type locator_of_created_element: tuple(str, str | list[WebElement] | WebElement)
+        :type retries: int
         :type timeout: float | int
         :type delay: float | int
-        :type driver: selenium WebDriver/WebElement
-        :rtype: list[WebElement]
+        :rtype: bool | Exception
         """
-        for i in range(tries):
+        for i in range(1+retries):
             t = time()
             try:
-                self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(locator_to_click))).click()
-                element_condition = self.try_to_find_elements_explicitly(locator_condition, timeout, driver)
-                if len(element_condition) >= condition_expected_results:
-                    return element_condition
-            except: pass
-            t = time() - t
-            if t < delay:
-                sleep(delay - t)
-        raise NoSuchElementException
+                initial_results = self.try_to_find_all(locator_of_created_element)
+                self.click(locator_to_click, timeout)
+                if len(self.try_to_find_all(locator_of_created_element, timeout)) > len(initial_results):
+                    return True
+                elif i == retries:
+                    return NoSuchElementException("element might have been clicked but nothing happened")
+            except Exception as e:
+                if i == retries:
+                    return e
+            dynamic_delay(t, delay)
+
+    def click_until_element_is_created(self, locator_to_click, locator_of_created_element,
+                                       retries=7, timeout=2, delay=POLL_FREQUENCY):
+        """ click on element, check if condition element is created, if not, click again.
+        return True for success raise NoSuchElementException for failure.
+
+        :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
+        :type locator_of_created_element: tuple(str, str | list[WebElement] | WebElement)
+        :type retries: int
+        :type timeout: float | int
+        :type delay: float | int
+        :rtype: list[WebElement]
+        """
+        for i in range(1+retries):
+            t = time()
+            try:
+                initial_results = self.try_to_find_all(locator_of_created_element)
+                self.click(locator_to_click, timeout)
+                if len(self.try_to_find_all(locator_of_created_element, timeout)) > len(initial_results):
+                    return True
+                elif i == retries:
+                    raise NoSuchElementException("element might have been clicked but nothing happened")
+            except Exception as e:
+                if i == retries:
+                    raise NoSuchElementException("element might have been clicked but nothing happened") from e
+            dynamic_delay(t, delay)
 
     def try_to_click_until_condition_as_expected(self, locator_to_click, locator_condition,
-                                                 condition_expected_results, tries=8, timeout=2, delay=0.5, driver=None):
+                                                 condition_expected_results,
+                                                 retries=7, timeout=2, delay=POLL_FREQUENCY):
         """ try to click on element, check if condition element is deleted, if not, click again
         :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
         :type locator_condition: tuple(str, str | list[WebElement] | WebElement)
@@ -354,17 +374,15 @@ class Page(PageInterface):
         :type driver: selenium WebDriver/WebElement
         :rtype: list[WebElement]
         """
-        for i in range(tries):
+        for i in range(1+retries):
             t = time()
             try:
-                self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(locator_to_click))).click()
-                element_condition = self.try_to_find_elements_explicitly(locator_condition, timeout, driver)
-                if len(element_condition) == condition_expected_results:
+                self.click(locator_to_click, timeout)
+                if len(self.try_to_find_all(locator_condition, timeout)) == condition_expected_results:
                     return element_condition
-            except: pass
-            t = time() - t
-            if t < delay:
-                sleep(delay - t)
+            except:
+                pass
+            dynamic_delay(t, delay)
         return []
 
     def click_until_condition_as_expected(self, locator_to_click, locator_condition, condition_expected_results,
@@ -386,10 +404,9 @@ class Page(PageInterface):
                 element_condition = self.try_to_find_elements_explicitly(locator_condition, timeout, driver)
                 if len(element_condition) == condition_expected_results:
                     return element_condition
-            except: pass
-            t = time() - t
-            if t < delay:
-                sleep(delay - t)
+            except:
+                pass
+            dynamic_delay(t, delay)
         raise Exception("condition expectation failed")
 
     def try_to_click_until_element_is_deleted(self, locator_to_click, locator_condition=None,
@@ -413,10 +430,9 @@ class Page(PageInterface):
                 element_condition = self.try_to_find_elements_explicitly(locator_condition, timeout, driver)
                 if len(element_condition) <= condition_expected_results:
                     return element_condition
-            except: pass
-            t = time() - t
-            if t < delay:
-                sleep(delay - t)
+            except:
+                pass
+            dynamic_delay(t, delay)
         return []
 
     def click_until_element_is_deleted(self, locator_to_click, locator_condition=None,
@@ -443,9 +459,7 @@ class Page(PageInterface):
                     return element_condition
             except:
                 pass
-            t = time() - t
-            if t < delay:
-                sleep(delay - t)
+            dynamic_delay(t, delay)
         raise Exception("element could not be deleted")
 
     def try_to_confirm_element_is_deleted(self, locator, expected_results=0,
@@ -467,9 +481,7 @@ class Page(PageInterface):
                     return True
             except:
                 pass
-            t = time() - t
-            if t < delay:
-                sleep(delay - t)
+            dynamic_delay(t, delay)
         return False
 
     def confirm_element_is_deleted(self, locator, expected_results=0,
@@ -491,9 +503,7 @@ class Page(PageInterface):
                     return elements
             except:
                 pass
-            t = time() - t
-            if t < delay:
-                sleep(delay - t)
+            dynamic_delay(t, delay)
         raise Exception("element is expected to be deleted but did not")
 
     def refresh_page_until_element_is_found(self, locator, timeout=30, tries=3, driver=None):

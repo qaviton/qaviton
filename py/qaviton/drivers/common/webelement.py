@@ -1,18 +1,28 @@
 from selenium.webdriver import Remote
-from selenium.webdriver.remote.webelement import WebElement as we
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.command import Command
+from selenium.webdriver.common.utils import keys_to_typing
 from appium.webdriver.webelement import WebElement as WE
-from qaviton.drivers.common.web_functions import WebFunctions
-from qaviton.drivers.support import expected_conditions_extension as EC
+from qaviton.drivers.common.functions import WebFunctions
+from qaviton.drivers.support import expected_conditions as EC
 from qaviton.locator import Locator
+
+
+def web_clear(self):
+    """override appium and selenium clear method
+    in case driver is webbased(selenium).
+    Clears the text if it's a text entry element.
+    :rtype: WebElement"""
+    self._execute(Command.CLEAR_ELEMENT)
+    return self
 
 
 class WebElement(WebFunctions, WE):
     def __init__(self, parent, id_, w3c=False):
         super(self.__class__, self).__init__(parent, id_, w3c)
         if isinstance(parent, Remote):
-            self.clear = we.clear
+            self.clear = web_clear
 
     def click(self, locator=None, timeout=0, index=0):
         """ click on an element
@@ -25,17 +35,17 @@ class WebElement(WebFunctions, WE):
             if timeout == 0:
                 self._execute(Command.CLICK_ELEMENT)
             else:
-                WebDriverWait(self, timeout).until(EC.element_to_be_clickable(Locator.element(self), index))._execute(
-                    Command.CLICK_ELEMENT)
+                WebDriverWait(self.parent, timeout)\
+                    .until(EC.element_to_be_clickable(Locator.element(self), index))._execute(Command.CLICK_ELEMENT)
             return self
         else:
-            element = WebDriverWait(self, timeout).until(EC.element_to_be_clickable(locator, index))
+            element = WebDriverWait(self.parent, timeout).until(EC.element_to_be_clickable(locator, index))
             element._execute(Command.CLICK_ELEMENT)
             return element
 
-    def get_element_last_children(self, timeout=3):
+    def find_last_children(self, timeout=0):
         """ get the last elements in the tree from the root element
-        :type element: WebElement
+        :type timeout: int
         :rtype: list[WebElement]
         """
         locator = Locator.xpath('./*')
@@ -47,9 +57,10 @@ class WebElement(WebFunctions, WE):
             except:
                 return elements
 
-    def get_element_children(self, timeout=3):
+    def find_children(self, timeout=0):
         """ get the last element in the tree from the root element
-        :type element: WebElement
+
+        :type timeout: int
         :rtype: list[WebElement] | []
         """
         try:
@@ -57,3 +68,66 @@ class WebElement(WebFunctions, WE):
         except:
             return []
 
+    def drag_to_offset(self, xoffset, yoffset):
+        """
+        Holds down the left mouse button on the source element,
+           then moves to the target offset and releases the mouse button.
+
+        :Args:
+         - source: The element to mouse down.
+         - xoffset: X offset to move to.
+         - yoffset: Y offset to move to.
+         :rtype: WebElement
+        """
+        ActionChains(self.parent).drag_and_drop_by_offset(self, xoffset, yoffset).perform()
+        return self
+
+    def hover(self):
+        """ hover/move cursor to element
+        :rtype: WebElement
+        """
+        ActionChains(self.parent).move_to_element(self).perform()
+        return self
+
+    def hover_and_click(self):
+        """ hover/move cursor to element and click
+        :rtype: WebElement
+        """
+        ActionChains(self.parent).move_to_element(self).click(self).perform()
+        return self
+
+    def send_keys(self, *value):
+        """Simulates typing into the element.
+
+        :Args:
+            - value - A string for typing, or setting form fields.  For setting
+              file inputs, this could be a local file path.
+
+        Use this to send simple key events or to fill out form fields::
+
+            form_textfield = driver.find_element_by_name('username')
+            form_textfield.send_keys("admin")
+
+        This can also be used to set file inputs.
+
+        ::
+
+            file_input = driver.find_element_by_name('profilePic')
+            file_input.send_keys("path/to/profilepic.gif")
+            # Generally it's better to wrap the file path in one of the methods
+            # in os.path to return the actual path to support cross OS testing.
+            # file_input.send_keys(os.path.abspath("path/to/profilepic.gif"))
+
+        """
+        WE.send_keys(self, *value)
+        return self
+
+    def send_chars(self, chars=''):
+        """send individual characters to element.
+        this function is useful in flacky applications, where the send keys function can cause issues.
+        :type chars: str
+        :rtype: WebElement
+        """
+        for c in chars:
+            self.send_keys(c)
+        return self

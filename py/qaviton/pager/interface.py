@@ -1,5 +1,5 @@
-from qaviton.drivers.common import web_functions as base_functions
-from qaviton.drivers.support import expected_conditions_extension as EC
+from qaviton.drivers.common import functions as base_functions
+from qaviton.drivers.support import expected_conditions as EC
 from selenium.webdriver.remote.webdriver import WebDriver
 from appium.webdriver.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait

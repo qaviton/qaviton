@@ -88,3 +88,16 @@ def swap(items, a, b):
     """swap between list/dict items values"""
     items[a], items[b] = items[b], items[a]
     return items
+
+
+def dynamic_delay(t, max_delay):
+    """ sleep dynamically by measuring the time passed
+    since t started and sleeping the
+    remaining of the delay
+
+    :param t: time.time()
+    :param max_delay: in seconds
+    """
+    t = time.time() - t
+    if t < max_delay:
+        time.sleep(max_delay - t)

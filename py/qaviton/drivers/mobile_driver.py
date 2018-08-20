@@ -18,7 +18,9 @@
 """The WebDriver implementation."""
 
 from appium.webdriver import Remote
+from selenium.webdriver.common.action_chains import ActionChains
 from qaviton.drivers.common.webdriver import WebDriver as WE
+from qaviton.drivers.common.webelement import WebElement
 
 
 class MobileDriver(WE, Remote):
@@ -36,4 +38,13 @@ class MobileDriver(WE, Remote):
      - error_handler - errorhandler.ErrorHandler object used to handle errors.
     """
 
+    def __init__(self, command_executor='http://127.0.0.1:4444/wd/hub',
+                 desired_capabilities=None, browser_profile=None, proxy=None, keep_alive=False):
+        Remote.__init__(self, command_executor, desired_capabilities, browser_profile, proxy, keep_alive)
 
+    def create_web_element(self, element_id):
+        """
+        Creates a web element with the specified element_id.
+        Overrides method and appium Selenium WebDriver in order to always create the qaviton extended WebElement
+        """
+        return WebElement(self, element_id)

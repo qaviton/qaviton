@@ -1,6 +1,6 @@
 from appium.webdriver.webelement import WebElement
 from selenium.webdriver.support.expected_conditions import *
-from qaviton.drivers.common import web_functions
+from qaviton.drivers.common.functions import WebFunctions
 
 
 def _element_if_visible(element, visibility=True):
@@ -20,7 +20,7 @@ class presence_of_element_located(object):
         self.index = index
 
     def __call__(self, driver):
-        return web_functions.find_element(self.locator, driver, self.index)
+        return WebFunctions.find(self.locator, driver, self.index)
 
 
 class visibility_of_element_located(object):
@@ -36,7 +36,7 @@ class visibility_of_element_located(object):
 
     def __call__(self, driver):
         try:
-            return _element_if_visible(web_functions.find_element(self.locator, driver, self.index))
+            return _element_if_visible(WebFunctions.find(self.locator, driver, self.index))
         except StaleElementReferenceException:
             return False
 
@@ -52,7 +52,7 @@ class presence_of_all_elements_located(object):
         self.locator = locator
 
     def __call__(self, driver):
-        return web_functions.find_elements(self.locator, driver)
+        return WebFunctions.find_all(self.locator, driver)
 
 
 class visibility_of_any_elements_located(object):
@@ -66,7 +66,7 @@ class visibility_of_any_elements_located(object):
 
     def __call__(self, driver):
         """:rtype: list[WebElement]"""
-        return [element for element in web_functions.find_elements(self.locator, driver) if _element_if_visible(element)]
+        return [element for element in WebFunctions.find_all(self.locator, driver) if _element_if_visible(element)]
 
 
 class visibility_of_all_elements_located(object):
@@ -82,7 +82,7 @@ class visibility_of_all_elements_located(object):
     def __call__(self, driver):
         """:rtype: list[WebElement]"""
         try:
-            elements = web_functions.find_elements(self.locator, driver)
+            elements = WebFunctions.find_all(self.locator, driver)
             for element in elements:
                 if _element_if_visible(element, visibility=False):
                     return False
@@ -103,7 +103,7 @@ class text_to_be_present_in_element(object):
 
     def __call__(self, driver):
         try:
-            element_text = web_functions.find_element(self.locator, driver, self.index).text
+            element_text = WebFunctions.find(self.locator, driver, self.index).text
             return self.text in element_text
         except StaleElementReferenceException:
             return False
@@ -121,7 +121,7 @@ class text_to_be_present_in_element_value(object):
 
     def __call__(self, driver):
         try:
-            element_text = web_functions.find_element(self.locator, driver, self.index).get_attribute("value")
+            element_text = WebFunctions.find(self.locator, driver, self.index).get_attribute("value")
             if element_text:
                 return self.text in element_text
             else:
@@ -142,7 +142,7 @@ class invisibility_of_element_located(object):
 
     def __call__(self, driver):
         try:
-            return _element_if_visible(web_functions.find_element(self.locator, driver, self.index), False)
+            return _element_if_visible(WebFunctions.find(self.locator, driver, self.index), False)
         except (NoSuchElementException, StaleElementReferenceException):
             # In the case of NoSuchElement, returns true because the element is
             # not present in DOM. The try block checks if the element is present
@@ -178,7 +178,7 @@ class element_located_to_be_selected(object):
 
     def __call__(self, driver):
         """:rtype: WebElement"""
-        return web_functions.find_element(self.locator, driver, self.index).is_selected()
+        return WebFunctions.find(self.locator, driver, self.index).is_selected()
 
 
 class element_located_selection_state_to_be(object):
@@ -194,7 +194,7 @@ class element_located_selection_state_to_be(object):
 
     def __call__(self, driver):
         try:
-            element = web_functions.find_element(self.locator, driver, self.index)
+            element = WebFunctions.find(self.locator, driver, self.index)
             return element.is_selected() == self.is_selected
         except StaleElementReferenceException:
             return False
