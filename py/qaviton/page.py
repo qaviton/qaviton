@@ -25,7 +25,6 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.wait import POLL_FREQUENCY
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from qaviton.exceptions import ClickExpectationException
 from qaviton.exceptions import ElementPresenceException
