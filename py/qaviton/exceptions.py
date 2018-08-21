@@ -19,6 +19,8 @@
 Exceptions that may happen in the qaviton code.
 """
 
+from selenium.common.exceptions import WebDriverException
+
 
 class RequiredCapabilitiesException(Exception):
     """
@@ -72,3 +74,52 @@ class DiffException(Exception):
         return exception_msg
 
 
+class ClickExpectationException(WebDriverException):
+    """
+    Thrown after click expectation fail.
+    an example would be clicking on a button
+    while expecting a dom element to be created or deleted but turns out it didn't.
+    """
+
+    def __str__(self):
+        exception_msg = "element might have been clicked but nothing happened: %s\n" % self.msg
+        if self.screen is not None:
+            exception_msg += "Screenshot: available via screen\n"
+        if self.stacktrace is not None:
+            stacktrace = "\n".join(self.stacktrace)
+            exception_msg += "Stacktrace:\n%s" % stacktrace
+        return exception_msg
+
+
+class DisabledElementClickException(WebDriverException):
+    """
+    Thrown after click expectation fail.
+    an example would be clicking on a button that should be disabled
+    but click action was permitted.
+    """
+
+    def __str__(self):
+        exception_msg = "element is click-able: %s\n" % self.msg
+        if self.screen is not None:
+            exception_msg += "Screenshot: available via screen\n"
+        if self.stacktrace is not None:
+            stacktrace = "\n".join(self.stacktrace)
+            exception_msg += "Stacktrace:\n%s" % stacktrace
+        return exception_msg
+
+
+class ElementPresenceException(WebDriverException):
+    """
+    Thrown when element is unexpectedly present in the dom.
+    an example would be navigating to another page
+    while expecting a dom element to be deleted but turns out it didn't.
+    """
+
+    def __str__(self):
+        exception_msg = "element is still present: %s\n" % self.msg
+        if self.screen is not None:
+            exception_msg += "Screenshot: available via screen\n"
+        if self.stacktrace is not None:
+            stacktrace = "\n".join(self.stacktrace)
+            exception_msg += "Stacktrace:\n%s" % stacktrace
+        return exception_msg

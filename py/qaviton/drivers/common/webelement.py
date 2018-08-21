@@ -2,7 +2,6 @@ from selenium.webdriver import Remote
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.command import Command
-from selenium.webdriver.common.utils import keys_to_typing
 from appium.webdriver.webelement import WebElement as WE
 from qaviton.drivers.common.functions import WebFunctions
 from qaviton.drivers.support import expected_conditions as EC

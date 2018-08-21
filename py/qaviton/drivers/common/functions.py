@@ -172,10 +172,7 @@ class WebFunctions:
         :type timeout: int
         :rtype: list[str]
         """
-        element_list, elements_text = self.find_all(locator, timeout), []
-        for i in range(len(element_list)):
-            elements_text.append(element_list[i].text)
-        return elements_text
+        return [element.text for element in self.find_all(locator, timeout)]
 
     def try_to_find(self, locator: tuple, timeout=0, index=0):
         """try to find element
@@ -194,11 +191,11 @@ class WebFunctions:
         """try to find elements
         :param timeout: how long to search
         :param locator: locate by method like id and value
-        :rtype: list[WebElement] | None"""
+        :rtype: list[WebElement]"""
         try:
             return self.find_all(locator, timeout)
         except:
-            return None
+            return []
 
     def try_to_get_elements_text(self, locator, timeout=0):
         """ get text from elements if any elements are located
@@ -208,5 +205,8 @@ class WebFunctions:
         """
         element_list, elements_text = self.try_to_find_all(locator, timeout), []
         for i in range(len(element_list)):
-            elements_text.append(element_list[i].text)
+            try:
+                elements_text.append(element_list[i].text)
+            except:
+                pass
         return elements_text

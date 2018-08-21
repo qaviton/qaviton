@@ -24,16 +24,18 @@ from time import time
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.wait import POLL_FREQUENCY
-
-from qaviton.locator import Locator
-from qaviton.drivers.support import expected_conditions as EC
-from qaviton.pager.interface import PageInterface
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
+from qaviton.exceptions import ClickExpectationException
+from qaviton.exceptions import ElementPresenceException
 from qaviton.drivers.common.webelement import WebElement
 from qaviton.crosstest import WebDriver, MobileDriver
 from qaviton import settings
 from qaviton.utils.helpers import dynamic_delay
 
-class Page(PageInterface):
+
+class Page:
 
     def __init__(self, driver, timeout=settings.page_timeout, url=None):
         """
@@ -41,9 +43,13 @@ class Page(PageInterface):
         :type url: str
         :type timeout: int | float
         """
-        PageInterface.__init__(self, driver, timeout)
+        self.timeout = timeout
         self.driver = driver
         self.url = url
+
+    @property
+    def title(self):
+        return self.driver.title
 
     def find(self, locator: tuple, timeout: int = 0, index=0):
         """find element with locator value
@@ -77,7 +83,7 @@ class Page(PageInterface):
         """try to find elements
         :param timeout: how long to search
         :param locator: locate by method like id and value
-        :rtype: list[WebElement] | None"""
+        :rtype: list[WebElement]"""
         return self.driver.try_to_find_all(locator, timeout)
 
     def get_elements_text(self, locator, timeout=0):
@@ -146,9 +152,10 @@ class Page(PageInterface):
 
     def wait_until_page_loads(self, timeout=None):
         """check that the page has finished loading and all elements are present"""
-        timeout = self._get_timeout(timeout)
+        if timeout is None:
+            timeout = self.timeout
         t = time()
-        self.wait(self.driver, timeout).until(
+        WebDriverWait(self.driver, timeout).until(
             lambda x: self.driver.execute_script("return document.readyState;") == "complete")
         while True:
             c1 = self.count_all_elements_in_the_page()
@@ -178,6 +185,18 @@ class Page(PageInterface):
         :rtype: WebElement
         """
         return self.driver.click(locator, timeout, index)
+
+    def try_to_click(self, locator, timeout=0, index=0):
+        """ try to click on an element
+        :type locator: tuple(str, str | list[WebElement] | WebElement)
+        :type timeout: int
+        :type index: int
+        :rtype: WebElement | None
+        """
+        try:
+            return self.driver.click(locator, timeout, index)
+        except:
+            return None
 
     def click_all(self, locator, timeout=0):
         """ click on all located elements
@@ -270,6 +289,14 @@ class Page(PageInterface):
             element.click(timeout=timeout).clear().send_keys(keys)
         return elements
 
+    def select(self, locator, choice=None, timeout=0, index=None):
+        select = Select(self.driver.find(locator, timeout))
+        if choice is not None:
+            select.select_by_value(choice)
+        elif index is not None:
+            select.select_by_index(index)
+        return select
+
     def select_from_dropdown(self, locator, choice, timeout=0):
         """ select a choice from a drop down list
         :type locator: (tuple(str, str | list[WebElement] | WebElement)
@@ -311,7 +338,7 @@ class Page(PageInterface):
     def try_to_click_until_element_is_created(self, locator_to_click, locator_of_created_element,
                                               retries=7, timeout=2, delay=POLL_FREQUENCY):
         """ try to click on element, check if condition element is created, if not, click again.
-        return True for success and NoSuchElementException for failure,
+        return True for success or Exception for failure,
         if an exception occurred in the last try, it will be returned.
 
         :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
@@ -321,15 +348,16 @@ class Page(PageInterface):
         :type delay: float | int
         :rtype: bool | Exception
         """
+        initial_results = len(self.try_to_find_all(locator_of_created_element))
+
         for i in range(1+retries):
             t = time()
             try:
-                initial_results = self.try_to_find_all(locator_of_created_element)
                 self.click(locator_to_click, timeout)
-                if len(self.try_to_find_all(locator_of_created_element, timeout)) > len(initial_results):
+                if len(self.try_to_find_all(locator_of_created_element, timeout)) > initial_results:
                     return True
                 elif i == retries:
-                    return NoSuchElementException("element might have been clicked but nothing happened")
+                    return ClickExpectationException("element creation failed")
             except Exception as e:
                 if i == retries:
                     return e
@@ -338,243 +366,303 @@ class Page(PageInterface):
     def click_until_element_is_created(self, locator_to_click, locator_of_created_element,
                                        retries=7, timeout=2, delay=POLL_FREQUENCY):
         """ click on element, check if condition element is created, if not, click again.
-        return True for success raise NoSuchElementException for failure.
+        return True for success or raise Exception for failure.
 
         :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
         :type locator_of_created_element: tuple(str, str | list[WebElement] | WebElement)
         :type retries: int
         :type timeout: float | int
         :type delay: float | int
-        :rtype: list[WebElement]
+        :rtype: bool
         """
+        initial_results = len(self.try_to_find_all(locator_of_created_element))
+
         for i in range(1+retries):
             t = time()
             try:
-                initial_results = self.try_to_find_all(locator_of_created_element)
                 self.click(locator_to_click, timeout)
-                if len(self.try_to_find_all(locator_of_created_element, timeout)) > len(initial_results):
+                if len(self.try_to_find_all(locator_of_created_element, timeout)) > initial_results:
                     return True
                 elif i == retries:
-                    raise NoSuchElementException("element might have been clicked but nothing happened")
+                    raise ClickExpectationException("element creation failed")
             except Exception as e:
                 if i == retries:
-                    raise NoSuchElementException("element might have been clicked but nothing happened") from e
+                    raise ClickExpectationException("element creation failed") from e
             dynamic_delay(t, delay)
 
     def try_to_click_until_condition_as_expected(self, locator_to_click, locator_condition,
-                                                 condition_expected_results,
+                                                 condition_expected_count_results,
                                                  retries=7, timeout=2, delay=POLL_FREQUENCY):
-        """ try to click on element, check if condition element is deleted, if not, click again
+        """ try to click on element, check if:
+        locator_condition count is equal to condition_expected_count_results, if not, click again.
+        return True for success or Exception for failure,
+        if an exception occurred in the last try, it will be returned.
+
         :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
         :type locator_condition: tuple(str, str | list[WebElement] | WebElement)
-        :type condition_expected_results: int
-        :type tries: int
+        :type condition_expected_count_results: int
+        :type retries: int
         :type timeout: float | int
         :type delay: float | int
-        :type driver: selenium WebDriver/WebElement
-        :rtype: list[WebElement]
+        :rtype: bool | Exception
         """
         for i in range(1+retries):
             t = time()
             try:
                 self.click(locator_to_click, timeout)
-                if len(self.try_to_find_all(locator_condition, timeout)) == condition_expected_results:
-                    return element_condition
-            except:
-                pass
-            dynamic_delay(t, delay)
-        return []
-
-    def click_until_condition_as_expected(self, locator_to_click, locator_condition, condition_expected_results,
-                                          tries=8, timeout=2, delay=0.5, driver=None):
-        """ click on element, check if condition element is deleted, if not, click again
-        :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
-        :type locator_condition: tuple(str, str | list[WebElement] | WebElement)
-        :type condition_expected_results: int
-        :type tries: int
-        :type timeout: float | int
-        :type delay: float | int
-        :type driver: selenium WebDriver/WebElement
-        :rtype: list[WebElement]
-        """
-        for i in range(tries):
-            t = time()
-            try:
-                self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(locator_to_click))).click()
-                element_condition = self.try_to_find_elements_explicitly(locator_condition, timeout, driver)
-                if len(element_condition) == condition_expected_results:
-                    return element_condition
-            except:
-                pass
-            dynamic_delay(t, delay)
-        raise Exception("condition expectation failed")
-
-    def try_to_click_until_element_is_deleted(self, locator_to_click, locator_condition=None,
-                                              condition_expected_results=0, tries=8, timeout=2, delay=0.5, driver=None):
-        """ try to find element, try to click, check if element exist... if its not deleted retry!
-        :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
-        :type locator_condition: tuple(str, str | list[WebElement] | WebElement)
-        :type condition_expected_results: int
-        :type tries: int
-        :type timeout: float | int
-        :type delay: float | int
-        :type driver: selenium WebDriver/WebElement
-        :rtype: list[WebElement]
-        """
-        if locator_condition is None:
-            locator_condition = locator_to_click
-        for i in range(tries):
-            t = time()
-            try:
-                self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(locator_to_click))).click()
-                element_condition = self.try_to_find_elements_explicitly(locator_condition, timeout, driver)
-                if len(element_condition) <= condition_expected_results:
-                    return element_condition
-            except:
-                pass
-            dynamic_delay(t, delay)
-        return []
-
-    def click_until_element_is_deleted(self, locator_to_click, locator_condition=None,
-                                       condition_expected_results=0, tries=8, timeout=2, delay=0.5, driver=None):
-        """ try to find element, try to click, check if element exist... if its not deleted retry!
-        :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
-        :type locator_condition: tuple(str, str | list[WebElement] | WebElement)
-        :type condition_expected_results: int
-        :type tries: int
-        :type timeout: float | int
-        :type delay: float | int
-        :type driver: selenium WebDriver/WebElement
-        :rtype: list[WebElement]
-        """
-        if locator_condition is None:
-            locator_condition = locator_to_click
-        for i in range(tries):
-            t = time()
-            try:
-                self.wait(driver, timeout).until(
-                    EC.element_to_be_clickable(Locator.element(locator_to_click))).click()
-                element_condition = self.try_to_find_elements_explicitly(locator_condition, timeout, driver)
-                if len(element_condition) <= condition_expected_results:
-                    return element_condition
-            except:
-                pass
-            dynamic_delay(t, delay)
-        raise Exception("element could not be deleted")
-
-    def try_to_confirm_element_is_deleted(self, locator, expected_results=0,
-                                          tries=8, timeout=2, delay=0.5, driver=None):
-        """ try to find element, confirm element deleted, check if element exist... if its not deleted retry!
-        :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type expected_results: int
-        :type tries: int
-        :type timeout: float | int
-        :type delay: float | int
-        :type driver: selenium WebDriver/WebElement
-        :rtype: list[WebElement]
-        """
-        for i in range(tries):
-            t = time()
-            try:
-                elements = self.try_to_find_elements_explicitly(locator, timeout, driver)
-                if len(elements) <= expected_results:
+                if len(self.try_to_find_all(locator_condition, timeout)) == condition_expected_count_results:
                     return True
-            except:
-                pass
+                elif i == retries:
+                    return ClickExpectationException("elements count expectation failed")
+            except Exception as e:
+                if i == retries:
+                    return e
             dynamic_delay(t, delay)
-        return False
 
-    def confirm_element_is_deleted(self, locator, expected_results=0,
-                                   tries=8, timeout=2, delay=0.5, driver=None):
-        """ try to find element, confirm element deleted, check if element exist... if its not deleted retry!
-        :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type expected_results: int
-        :type tries: int
+    def click_until_condition_as_expected(self, locator_to_click, locator_condition,
+                                          condition_expected_count_results,
+                                          retries=7, timeout=2, delay=POLL_FREQUENCY):
+        """ click on element, check if:
+        locator_condition count is equal to condition_expected_count_results, if not, click again.
+        return True for success or raise Exception for failure.
+
+        :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
+        :type locator_condition: tuple(str, str | list[WebElement] | WebElement)
+        :type condition_expected_count_results: int
+        :type retries: int
         :type timeout: float | int
         :type delay: float | int
-        :type driver: selenium WebDriver/WebElement
-        :rtype: list[WebElement]
+        :rtype: bool
         """
-        for i in range(tries):
+        for i in range(1+retries):
             t = time()
             try:
-                elements = self.try_to_find_elements_explicitly(locator, timeout, driver)
-                if len(elements) <= expected_results:
-                    return elements
-            except:
-                pass
+                self.click(locator_to_click, timeout)
+                if len(self.try_to_find_all(locator_condition, timeout)) == condition_expected_count_results:
+                    return True
+                elif i == retries:
+                    raise ClickExpectationException("elements count expectation failed")
+            except Exception as e:
+                if i == retries:
+                    raise ClickExpectationException("elements count expectation failed") from e
             dynamic_delay(t, delay)
-        raise Exception("element is expected to be deleted but did not")
 
-    def refresh_page_until_element_is_found(self, locator, timeout=30, tries=3, driver=None):
-        """ method to find element, if element is not found method will refresh the page and retry
+    def try_to_click_until_element_is_deleted(self, locator_to_click, locator_of_deleted_element=None,
+                                              retries=7, timeout=2, delay=POLL_FREQUENCY):
+        """ try to click on element, check if:
+        locator_of_deleted_element has been deleted, if its not deleted retry!
+        return True for success or return Exception for failure.
+
+        :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
+        :type locator_of_deleted_element: tuple(str, str | list[WebElement] | WebElement)
+        :type retries: int
+        :type timeout: float | int
+        :type delay: float | int
+        :rtype: bool | Exception
+        """
+        if locator_of_deleted_element is None:
+            locator_of_deleted_element = locator_to_click
+
+        initial_results = len(self.try_to_find_all(locator_of_deleted_element))
+
+        for i in range(1+retries):
+            t = time()
+            try:
+                self.click(locator_to_click, timeout)
+                if len(self.try_to_find_all(locator_of_deleted_element, timeout)) < initial_results:
+                    return True
+                elif i == retries:
+                    return ClickExpectationException("element deletion failed")
+            except Exception as e:
+                if i == retries:
+                    return e
+            dynamic_delay(t, delay)
+
+    def click_until_element_is_deleted(self, locator_to_click, locator_of_deleted_element=None,
+                                       retries=7, timeout=2, delay=POLL_FREQUENCY):
+        """ click on element, check if:
+        locator_of_deleted_element has been deleted, if its not deleted retry!
+        return True for success or raise Exception for failure.
+
+        :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
+        :type locator_of_deleted_element: tuple(str, str | list[WebElement] | WebElement)
+        :type retries: int
+        :type timeout: float | int
+        :type delay: float | int
+        :rtype: bool
+        """
+        if locator_of_deleted_element is None:
+            locator_of_deleted_element = locator_to_click
+
+        initial_results = len(self.try_to_find_all(locator_of_deleted_element))
+
+        for i in range(1+retries):
+            t = time()
+            try:
+                self.click(locator_to_click, timeout)
+                if len(self.try_to_find_all(locator_of_deleted_element, timeout)) < initial_results:
+                    return True
+                elif i == retries:
+                    raise ClickExpectationException("element deletion failed")
+            except Exception as e:
+                if i == retries:
+                    raise ClickExpectationException("element deletion failed") from e
+            dynamic_delay(t, delay)
+
+    def try_to_confirm_element_is_deleted(self, locator, expected_count_results=0,
+                                          retries=7, timeout=2, delay=POLL_FREQUENCY):
+        """ try to find element, confirm element has been deleted with expected_count_results,
+        check if element exist... if its not deleted retry!
+        return True for success or return Exception for failure.
+
+        :type locator: tuple(str, str | list[WebElement] | WebElement)
+        :type expected_count_results: int
+        :type retries: int
+        :type timeout: float | int
+        :type delay: float | int
+        :rtype: bool | Exception
+        """
+        for i in range(1 + retries):
+            t = time()
+            try:
+                if len(self.try_to_find_all(locator, timeout)) <= expected_count_results:
+                    return True
+                elif i == retries:
+                    return ElementPresenceException("element should not exist")
+            except Exception as e:
+                if i == retries:
+                    return e
+            dynamic_delay(t, delay)
+
+    def confirm_element_is_deleted(self, locator, expected_count_results=0,
+                                   retries=7, timeout=2, delay=POLL_FREQUENCY):
+        """ try to find element, confirm element has been deleted with expected_count_results,
+        check if element exist... if its not deleted retry!
+        return True for success or raise Exception for failure.
+
+        :type locator: tuple(str, str | list[WebElement] | WebElement)
+        :type expected_count_results: int
+        :type retries: int
+        :type timeout: float | int
+        :type delay: float | int
+        :rtype: bool
+        """
+        for i in range(1 + retries):
+            t = time()
+            try:
+                if len(self.try_to_find_all(locator, timeout)) <= expected_count_results:
+                    return True
+                elif i == retries:
+                    raise ElementPresenceException("element should not exist")
+            except Exception as e:
+                if i == retries:
+                    raise ElementPresenceException("element should not exist") from e
+            dynamic_delay(t, delay)
+
+    def refresh_page_until_element_is_found(self, locator, timeout=30, retries=2):
+        """ let's say you landed on an unexpected page/content
+        and you want to refresh and assert you have the correct content (really weird scenario)
+        method to find element, if element is not found method will refresh the page and retry.
+
         :type locator: tuple(str, str | list[WebElement] | WebElement)
         :type timeout: int
-        :type tries: int
-        :type driver: WebDriver | WebElement
+        :type retries: int
         :rtype: list[WebElement]
         """
-        for i in range(tries):
-            elements = self._try_to_find_elements_explicitly(locator, timeout, driver)
+        for i in range(1+retries):
+            elements = self.try_to_find_all(locator, timeout)
             if len(elements) == 0:
-                self.log.debug(self.driver.current_url)
                 self.driver.refresh()
+                try:
+                    self.wait_until_page_loads()
+                except Exception as e:
+                    if i == retries:
+                        raise e
             else:
                 return elements
         raise NoSuchElementException("elements are not present after page refresh")
 
-    def click_until_url_changes(self, locator, url_change, tries=5, index=0, timeout=2, delay=2, driver=None):
+    def click_until_url_changes(self, locator, retries=5, timeout=2, delay=POLL_FREQUENCY):
         """ click on element, check if url changed, if not, click again
         :type locator: tuple(str, str | list[WebElement] | WebElement)
-        :type url_change: str
-        :type tries: int
-        :type index: int
+        :type retries: int
         :type timeout: int
         :type delay: int
-        :type driver: WebDriver | WebElement
         :rtype: list[WebElement]
         """
-        for i in range(tries):
-            sleep(delay)
-            elements = self._try_to_find_elements_explicitly(locator, timeout, driver)
-            url = self.driver.current_url
-            if url_change == url or url_change in url:
-                return elements
-            else:
-                if len(elements) > index:
-                    try:
-                        elements[index].click()
-                    except Exception as error:
-                        self.log.exception(error)
-                else:
-                    raise NoSuchElementException
-        raise Exception("element has been clicked but url change did not occur")
+        url = self.driver.current_url
+        for i in range(1+retries):
+            t = time()
+            try:
+                self.click(locator, timeout)
+            except Exception as e:
+                if i == retries:
+                    raise ClickExpectationException("url did not change") from e
+            if url != self.driver.current_url:
+                return True
+            elif i == retries:
+                raise ClickExpectationException("url did not change")
+            dynamic_delay(t, delay)
 
-    def element_is_not_clickable(self, locator, timeout=None, driver=None, index=0):
-        """
+    def not_clickable(self, locator, timeout=0):
+        """ use this with assert, example:
+                assert page.not_clickable(locator.ID("dis-button"), timeout=3)
+
+        some elements might be click-able but the click action does nothing,
+        in that case use something like click_do_nothing(locator_to_click, locator_expectation)
+        where you can check if some event happened.
+
         :type locator: tuple(str, str | list[WebElement] | WebElement)
         :type timeout: int
-        :type driver: WebDriver | WebElement
-        :type index: int
-        :rtype: WebElement
+        :rtype: bool
         """
-        element = self.wait(driver, timeout).until(EC.presence_of_element_located(locator, index))
         try:
-            self.wait(driver, timeout).until(EC.element_to_be_clickable(Locator.element(element))).click()
+            self.click(locator, timeout=timeout)
         except:
-            return element
-        raise Exception("element should not be clickable")
+            return True
+        return False
 
-    def element_is_deleted(self, locator, expected_elements=0, timeout=None, driver=None):
+    def click_do_nothing(self, locator_to_click, locator_expectation=None,
+                         retries=1, timeout=2, delay=POLL_FREQUENCY):
+        """ use this with assert, example:
+                assert page.click_do_nothing(locator.ID("dis-button"), timeout=3)
+
+        check if some event(locator_expectation) happened after trying to click.
+
+        :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
+        :type locator_expectation: tuple(str, str | list[WebElement] | WebElement)
+        :type retries: int
+        :type timeout: float | int
+        :type delay: float | int
+        :rtype: bool
         """
+        if locator_expectation is None:
+            locator_expectation = locator_to_click
+
+        initial_results = len(self.try_to_find_all(locator_expectation))
+
+        for i in range(1+retries):
+            t = time()
+            try:
+                self.click(locator_to_click, timeout)
+                if len(self.find_all(locator_expectation, timeout)) != initial_results:
+                    return False
+            except:
+                return True
+            dynamic_delay(t, delay)
+        return True
+
+    def no_such_element(self, locator, expected_elements=0, timeout=0):
+        """ use this with assert, example:
+                assert page.no_such_element(locator.ID("no-el"), timeout=3)
+
+        check if some event(locator_expectation) happened after trying to click.
         search for element, expect not to find it
         :type locator: tuple(str, str | list[WebElement] | WebElement)
         :type expected_elements: int
         :type timeout: int
-        :type driver: WebDriver | WebElement
-        :rtype: WebElement
+        :rtype: bool
         """
-        elements = self._try_to_find_elements_explicitly(locator, timeout, driver)
-        if len(elements) > expected_elements:
-            raise Exception('{} found {} elements that should not exist'.format(locator, len(elements)))
-        return elements
+        if len(self.try_to_find_all(locator, timeout)) > expected_elements:
+            return False
+        return True
