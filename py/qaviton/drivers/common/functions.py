@@ -24,10 +24,24 @@ possible for automating simple and complex scenarios
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
-from qaviton.drivers.common.webelement import WebElement
 from qaviton.locator import ByExtension
 from qaviton.locator import Locator
-from qaviton.drivers.support import expected_conditions as EC
+
+
+class presence_of_element_located(object):
+    """ An expectation for checking that an element is present on the DOM
+    of a page. This does not necessarily mean that the element is visible.
+    webLocator - used to find the element
+    returns the WebElement once it is located
+    :rtype: WebElement
+    """
+
+    def __init__(self, locator, index=0):
+        self.locator = locator
+        self.index = index
+
+    def __call__(self, driver):
+        return WebFunctions.find(self.locator, driver, self.index)
 
 
 class WebFunctions:

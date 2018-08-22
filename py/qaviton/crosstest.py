@@ -4,7 +4,7 @@ from threaders import threaders
 from qaviton.drivers.webdriver import WebDriver
 from qaviton.drivers.mobile_driver import MobileDriver
 from qaviton import settings
-from qaviton.exceptions import MissingRequiredCapabilitiesException
+from qaviton.exceptions import MissingRequiredCapabilitiesException, DriverConnectionException
 
 
 # TODO: add more platforms
@@ -266,7 +266,7 @@ class TestCase:
                     break
                 except Exception as e:
                     if r == retry:
-                        raise Exception("webdriver connection could not be established") from e
+                        raise DriverConnectionException("webdriver connection could not be established") from e
 
             # set local file detector
             driver.file_detector = UselessFileDetector()
@@ -327,7 +327,7 @@ class TestCase:
                             driver.quit()
                         except:
                             pass
-                        raise Exception("webdriver connection could not be established") from e
+                        raise DriverConnectionException("webdriver connection could not be established") from e
         return driver
 
     def drivers(self, platforms=None):

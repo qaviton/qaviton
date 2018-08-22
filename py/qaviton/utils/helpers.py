@@ -80,7 +80,7 @@ def object_to_dict(object):
 def pop_by_name(items, name):
     """pop list item by its value"""
     if name in items:
-        items.remove(name)
+        items.pop(name)
     return name
 
 

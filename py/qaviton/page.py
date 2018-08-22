@@ -36,12 +36,14 @@ from qaviton.utils.helpers import dynamic_delay
 
 class Page:
 
-    def __init__(self, driver, timeout=settings.page_timeout, url=None):
+    def __init__(self, driver, timeout=None, url=None):
         """
         :type driver: WebDriver or MobileDriver
         :type url: str
         :type timeout: int | float
         """
+        if timeout is None:
+            timeout = settings.page_timeout
         self.timeout = timeout
         self.driver = driver
         self.url = url
