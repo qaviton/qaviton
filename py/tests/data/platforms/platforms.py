@@ -1,6 +1,6 @@
 from qaviton import crosstest
 from qaviton.utils import path
-from tests.private import hubip
+from tests.data.private import hubip
 
 
 app = [

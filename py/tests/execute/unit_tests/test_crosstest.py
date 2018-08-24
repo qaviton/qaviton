@@ -2,7 +2,7 @@
 import pytest
 
 # things for the tests
-from tests.platforms import platforms
+from tests.data.platforms import platforms
 from tests.data.count_functions import from_zero_to_hero
 
 # things to test

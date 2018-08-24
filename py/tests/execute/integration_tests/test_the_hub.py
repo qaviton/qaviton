@@ -1,7 +1,7 @@
 import pytest
 from qaviton import crosstest
 from qaviton.utils import unique_id
-from tests.platforms import platforms
+from tests.data.platforms import platforms
 
 
 @pytest.mark.parametrize('platform', platforms.get(), ids=unique_id.id)

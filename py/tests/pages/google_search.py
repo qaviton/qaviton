@@ -1,5 +1,5 @@
 from qaviton.page import Page
-from tests.pages.locators import locator
+from tests.services.locators import locator
 
 
 class GoogleSearchPage(Page):
@@ -8,3 +8,4 @@ class GoogleSearchPage(Page):
 
     def navigate_to_LinkedinHomePage(self):
         self.google_linkedin_search_result().click()
+        self.wait_until_page_loads()

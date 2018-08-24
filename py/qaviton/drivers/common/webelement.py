@@ -23,6 +23,10 @@ class WebElement(WebFunctions, WE):
         if isinstance(parent, Remote):
             self.clear = web_clear
 
+    def click_at(self):
+        ActionChains(self.parent).move_to_element_with_offset(self, self.size["width"]/2, self.size["height"]/2).click().perform()
+        return self
+
     def click(self, locator=None, timeout=0, index=0):
         """ click on an element
         :type locator: tuple(str, str | list[WebElement] | WebElement)
