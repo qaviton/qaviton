@@ -53,13 +53,9 @@ Community
 ------------
 
 Please checkout our public test repository at: https://github.com/qaviton/test_repository
-
 The Qaviton team wants to contribute and share testing experience.
-
 You can use our tests and utilities in your project 
-
 and even share your own tests code, functions and experience.
-
 Be part of something big.
 
 
