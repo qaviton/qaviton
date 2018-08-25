@@ -6,7 +6,7 @@ def test_graph():
     graph = Graph()
 
     # add nodes
-    graph.nodes({'S', 'a', 'b', 'c', 'd', 'e', 'f', 'h', 'p', 'q', 'r', 'G'})
+    graph.add_nodes({'S', 'a', 'b', 'c', 'd', 'e', 'f', 'h', 'p', 'q', 'r', 'G'})
 
     # describe node connections
     graph.connect('S', 'd', 'S -> d', 3)
@@ -27,5 +27,9 @@ def test_graph():
     graph.connect('r', 'f', 'r -> f', 1)
 
     # find shortest path
-    path = graph.find_path(start_node_id='S', goal_node_id='G')
-    assert str(path) == "(10, ['S -> d', 'd -> e', 'e -> r', 'r -> f', 'f -> G'])"
+    cost, path, nodes = graph.find_path(start='S', goal='G')
+    assert cost == 10
+    assert str(path) == "['S -> d', 'd -> e', 'e -> r', 'r -> f', 'f -> G']"
+    expected_nodes = ('d', 'e', 'r', 'f', 'G')
+    for i in range(len(expected_nodes)):
+        assert expected_nodes[i] == nodes[i].object
