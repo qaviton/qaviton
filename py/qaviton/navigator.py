@@ -105,7 +105,7 @@ class Graph:
             reached_goal, cumulative_cost_goal = False, -1
 
             while not queue.is_empty():
-                # pop queue item: tuple(neighbor, cumulative_cost, [real functions to take])
+                # pop queue item: tuple(cumulative_cost, [real functions to take], [nodes])
                 cost, actions, nodes = queue.pop()
 
                 # if goal has been reached
@@ -126,7 +126,7 @@ class Graph:
                         queue.insert((cumulative_cost, new_actions, new_nodes), cumulative_cost)
 
             if reached_goal:
-                return cumulative_cost_goal, actions
+                return cumulative_cost_goal, actions, nodes
             else:
                 raise Exception('path is unreachable')
 
@@ -222,6 +222,7 @@ class Navigator:
         """
         self.current_page = landing_page
         self.from_page = landing_page
+        self.nodes = []
         self.actions = []
         self.cost = None
         self.graph = Graph()
@@ -399,16 +400,16 @@ class Navigator:
 
         :type page: Page
         """
-        self.cost, self.actions = self.graph.find_path(self.from_page, page)
+        self.cost, self.actions, self.nodes = self.graph.find_path(self.from_page, page)
         return self
 
     def perform(self, *args, **kwargs):
         """perform navigation actions chain
         navigate from any where to anywhere"""
         try:
-            for navigation in self.actions:
-                navigation[0](*args, **kwargs)
-                self.current_page = str(navigation[1])
+            for i in range(len(self.actions)):
+                self.actions[i](*args, **kwargs)
+                self.current_page = str(self.nodes[i].object)
         finally:
             self.actions = []
             self.cost = None

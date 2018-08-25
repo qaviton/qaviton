@@ -194,7 +194,7 @@ class Platform:
         :param request: pytest fixture request
         :rtype: TestCase
         """
-        name = request.add_node.name
+        name = request.node.name
         self.platform["desired_capabilities"]["name"] = name
         self.platform["desired_capabilities"]["logName"] = name + '.log'
         self.platform["desired_capabilities"]["videoName"] = name + '.mp4'
