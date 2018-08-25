@@ -6,7 +6,7 @@ def test_graph():
     graph = Graph()
 
     # add nodes
-    graph.addNodes({'S','a','b','c','d','e','f','h','p','q','r','G'})
+    graph.nodes({'S', 'a', 'b', 'c', 'd', 'e', 'f', 'h', 'p', 'q', 'r', 'G'})
 
     # describe node connections
     graph.connect('S', 'd', 'S -> d', 3)

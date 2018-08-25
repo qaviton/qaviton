@@ -2,9 +2,14 @@
 Uniform Cost Search
 """
 
-
+import inspect
 import heapq
 from qaviton.page import Page
+from qaviton.drivers.common.webdriver import WebDriver
+
+
+default_weight = 100
+page_attributes = dir(Page)
 
 
 class PriorityQueue:
@@ -44,7 +49,6 @@ class Node:
         self.neighbors[node.uuid] = (node, action, weight)
 
 
-# TODO: prevent long term loops and re-occurrences
 class Graph:
     """class implementation of a graph directed with weight
     The graph not supports multiple edges with the same extremes
@@ -56,21 +60,25 @@ class Graph:
         """
         self.nodes = {}
         
-    def addNodes(self, nodes):
-        """add nodes to graph by unique keys"""
+    def add_nodes(self, nodes):
+        """add nodes to graph
+        :param nodes: a list of node_objects
+        """
         for node in nodes:
-            self.addNode(node)
+            self.add_node(node)
     
-    def addNode(self, node):
-        """add node to graph by unique key"""
+    def add_node(self, node):
+        """add node to graph
+        :param node: a node_object
+        """
         if str(node) not in self.nodes:
             self.nodes[str(node)] = Node(node)
 
     def connect(self, source, destination, action, weight):
         """checks if keys exists in the graph and connect the nodes
         
-        :param source_id: source node uuid
-        :param destination_id: destination node uuid
+        :param source: source node uuid or node_object
+        :param destination: destination node uuid or node_object
         :param action: the action/function to take in order to advance in the graph
         :param weight: cost to the neighbor
         """
@@ -85,37 +93,38 @@ class Graph:
 
     def find_path(self, start, goal):
         if str(start) not in self.nodes or str(goal) not in self.nodes:
-            raise Exception('graph is missing node_key_start \'%s\' or node_key_goal \'%s\' does not exist' % (start, goal))
+            raise Exception('graph is missing start_node {} or goal_node {} does not exist'.format(start, goal))
         else:
             # UCS uses priority queue, priority is the cumulative cost (smaller cost)
             queue = PriorityQueue()
 
-            # insert initial neighbor ids to priority queue
+            # insert initial neighbors (cost, actions, nodes) to priority queue
             for neighbor in self.nodes[str(start)].neighbors.values():
-                # each item of queue is a tuple (neighbor, cumulative_cost, [real functions to take])
-                queue.insert((neighbor[2], [(neighbor[1], neighbor[0])]), neighbor[2])
+                # each item of queue is a tuple (neighbor cumulative_cost, actions to take, nodes to go through)
+                queue.insert((neighbor[2], [neighbor[1]], [neighbor[0]]), neighbor[2])
 
             reached_goal, cumulative_cost_goal = False, -1
 
             while not queue.is_empty():
                 # pop queue item: tuple(neighbor, cumulative_cost, [real functions to take])
-                cost, actions = queue.pop()
+                cost, actions, nodes = queue.pop()
 
                 # if goal has been reached
-                if actions[-1][1].uuid == str(goal):
+                if nodes[-1].uuid == str(goal):
                     reached_goal, cumulative_cost_goal = True, cost
                     break
 
-                # get all neighbor_ids from current_node_id
-                neighbor_ids = self.get_neighbors_ids(actions[-1][1].uuid)
-
-                if neighbor_ids:
-                    # insert all neighbors of current_node_id to priority queue
-                    for neighbor_id in neighbor_ids:
-                        cumulative_cost = self.get_neighbor_weight(actions[-1][1].uuid, neighbor_id) + cost
-                        tmp_actions = list(actions)
-                        tmp_actions.append((self.nodes[actions[-1][1].uuid].neighbors[neighbor_id][1], self.nodes[neighbor_id]))
-                        queue.insert((cumulative_cost, tmp_actions), cumulative_cost)
+                # insert all neighbors of current node to priority queue
+                for neighbor in nodes[-1].neighbors:
+                    # check for loops, don't add neighbors that already exist
+                    if nodes[-1].neighbors[neighbor][0] not in nodes:
+                        cumulative_cost = self.get_neighbor_weight(nodes[-1].uuid, neighbor) + cost
+                        new_actions, new_nodes = list(actions), list(nodes)
+                        new_actions.append(self.nodes[nodes[-1].uuid].neighbors[neighbor][1])
+                        new_nodes.append(self.nodes[neighbor])
+                        # insert a new path item into the priority queue.
+                        # a tuple (neighbor cumulative_cost, actions to take, nodes to go through)
+                        queue.insert((cumulative_cost, new_actions, new_nodes), cumulative_cost)
 
             if reached_goal:
                 return cumulative_cost_goal, actions
@@ -123,44 +132,209 @@ class Graph:
                 raise Exception('path is unreachable')
 
 
-class Navigator(Page):
-    """this is a really cool feature meant to do navigation automatically
-    please try not to use any arguments with your navigations to keep the process simple
-    if you must try to use lambda functions or make sure all your navigations can receive any kind of argument
+class Navigator:
+    """this is a really cool feature meant to do navigation automatically.
+        Warnings:
+          - please try not to use any arguments with your navigations to keep the process simple,
+            if you must try to use lambda functions or make sure all your navigations can receive any kind of argument,
+            for extreme cases just use the pull_path method instead of perform.
+
+          - don't use more than 1 instance per page object,
+            it will be painfull for the auto-connect function of the navigator.
+
+
     """
 
-    def __init__(self, driver, landing_page, timeout=None):
-        Page.__init__(self, driver, timeout)
-        self.driver = driver
+    def __init__(self, landing_page, auto_connect=None):
+        """
+        :type landing_page: Page
+        :type auto_connect: Page | None
+        """
         self.current_page = landing_page
+        self.from_page = landing_page
         self.actions = []
         self.cost = None
         self.graph = Graph()
+        if auto_connect is not None:
+            self.auto_connect(auto_connect)
 
-    def node(self, page):
-        self.graph.addNode(page)
+    def add_node(self, page):
+        """ create a new node from page as a node_object
+        and add the new node to the Uniform Cost Search Graph
 
-    def nodes(self, pages):
+        :type page: Page
+        """
+        self.graph.add_node(page)
+
+    def add_nodes(self, *pages):
+        """ create new nodes from list with pages as a node_objects
+        and add the nodes to the Uniform Cost Search Graph
+
+        :type pages: list[Page] | tuple(Page)
+        """
         for page in pages:
-            self.node(page)
+            self.add_node(page)
 
-    def connect(self, page_bound_navigation, page_to_navigate, weight=100):
-        self.nodes((page_bound_navigation.__self__, page_to_navigate))
+    def connect(self, page_bound_navigation, page_to_navigate, weight=default_weight):
+        """ connect 2 nodes with pages as node_objects with a bound page navigation method
+
+        :param page_bound_navigation: Page action to take to advance to the neighbor Page
+        :param page_to_navigate: the Page neighbor of the Page with the bound method
+        :param weight: navigation cost
+        :return:
+        """
+        self.add_nodes(page_bound_navigation.__self__, page_to_navigate)
         self.graph.connect(page_bound_navigation.__self__, page_to_navigate, page_bound_navigation, weight)
 
     def connect_all(self, *connections):
+        """ create multiple nodes connections with lists of (pages as node_objects with a bound page navigation method)
+
+        :param connections: (page_bound_navigation, page_to_navigate, weight=100),
+                            (page_bound_navigation, page_to_navigate, weight=100)
+        """
         for connection in connections:
             self.connect(*connection)
 
+    def auto_connect(self, app):
+        """parse the app for pages/components with
+            def {put any thing here}navigate_to_{exact class name of navigated page}(self, optional_but_not_recommended_args, *args, **kwargs):
+
+            example:
+                ###########
+                # imports #
+                ###########
+
+                from qaviton.page import Page
+                from qaviton.locator import Locator
+                from qaviton.drivers.webdriver import WebDriver
+
+
+                #########
+                # pages #
+                #########
+
+                class BaddaPage(Page):
+                    pass
+
+
+                class BoogiPage(Page):
+                    def goPro_navigate_to_BaddaPage(self, weight=5):
+                        self.find(Locator.id('badda')).click(timeout=weight * 3)
+                        self.wait_until_page_loads()
+
+                    def navigate_to_BaddaPage(self):
+                        self.find(Locator.id('badda')).click(timeout=5)
+
+
+                ###################
+                # model based app #
+                ###################
+
+                class App(Page):
+                    def __init__(self, driver):
+                        Page.__init__(self, driver)
+                        self.boogi_page = BoogiPage(driver)
+                        self.badda_page = BaddaPage(driver)
+                        self.navigate = Navigator(self.boogi_page, auto_connect=self)
+
+
+                # create app with driver (if you wanna try this example make sure to send a real webdriver object to your app instead of 0)
+                app = App(0)
+
+                # magic!
+                print(app.navigate.graph.nodes)
+                print(app.navigate.to(app.badda_page).get_path())
+
+                # make sure to send a real webdriver object to your app (app = App(WebDriver()))
+                app.navigate.to(app.badda_page).perform()
+
+            in this example the navigation would carry through
+            the goPro_navigate_to_BaddaPage which has a timeout of 15 seconds
+            instead of the navigate_to_BaddaPage with only 5 seconds to timeout.
+            that's because the default weight for navigation functions is 100.
+            your best practice would be passing your navigation methods a weight
+            equal to a 1/3 of its timeout or equal to the navigation's median run time.
+
+        :type app: Page
+        """
+        def find_pages_to_navigate():
+            for page_connections in connections:
+                for i in range(len(page_connections)):
+                    for page in pages.values():
+                        if page_connections[i][1] == page.__class__.__name__:
+                            page_connections[i] = (page_connections[i][0], page, page_connections[i][2])
+                            break
+
+        def find_navigations():
+            for page in navigation_attributes:
+                connections.append([])
+                for i in range(len(navigation_attributes[page])):
+                    try:
+                        at = getattr(pages[page], navigation_attributes[page][i])
+                        class_name = navigation_attributes[page][i].split('navigate_to_')[1]
+                        if len(class_name) > 0:
+                            sig = inspect.signature(at)
+                            if 'weight' in sig.parameters:
+                                try:
+                                    weight = float(str(sig.parameters['weight']).split('=')[1])
+                                except:
+                                    weight = default_weight
+                            else:
+                                weight = default_weight
+                            connections[-1].append((at, class_name, weight))
+                    except:
+                        pass
+
+        def find_all_pages(page):
+            if str(page) not in pages:
+                pages[str(page)] = page
+                navigation_attributes[str(page)] = []
+                attributes = [m
+                    for m in dir(page)
+                    if m not in page_attributes
+                    and m not in {'timeout', 'driver', 'url'}]
+
+                for i in range(len(attributes)):
+                    if 'navigate_to_' in attributes[i]:
+                        navigation_attributes[str(page)].append(attributes[i])
+                    else:
+                        try:
+                            at = getattr(page, attributes[i])
+                            if issubclass(at.__class__, Page):
+                                find_all_pages(getattr(page, attributes[i]))
+                        except:
+                            pass
+
+        pages = {}
+        navigation_attributes = {}
+        connections = []
+
+        find_all_pages(app)
+        find_navigations()
+        find_pages_to_navigate()
+
+        for c in connections:
+            self.connect_all(*c)
+
     def froM(self, page):
-        self.current_page = page
+        """navigate from specific page
+
+        :type page: Page
+        """
+        self.set_from_page(page)
         return self
 
     def to(self, page):
-        self.cost, self.actions = self.graph.find_path(self.current_page, page)
+        """find the best path to navigate to a page
+
+        :type page: Page
+        """
+        self.cost, self.actions = self.graph.find_path(self.from_page, page)
         return self
 
     def perform(self, *args, **kwargs):
+        """perform navigation actions chain
+        navigate from any where to anywhere"""
         try:
             for navigation in self.actions:
                 navigation[0](*args, **kwargs)
@@ -168,11 +342,29 @@ class Navigator(Page):
         finally:
             self.actions = []
             self.cost = None
+            self.from_page = self.current_page
 
-    def set_current_page(self, page):
-        self.current_page = page
+    def set_from_page(self, page):
+        """set the page from which to start the navigation chain"""
+        self.from_page = self.graph.nodes[str(page)].object
 
-    def get_navigations(self):
+    def update_current_page(self, page):
+        """update the navigator with the application's current page"""
+        self.current_page = self.graph.nodes[str(page)].object
+        self.set_from_page(page)
+
+    def get_path(self):
+        return self.actions
+
+    def reset_path(self):
+        self.actions = []
+
+    def pull_path(self):
+        """use this method if you want to perform the path
+        of navigation actions chain outside of the navigator
+        to get a list of the navigation methods
+        and reset the navigator's path
+        """
         navigations = self.actions
         self.actions = []
         return navigations
