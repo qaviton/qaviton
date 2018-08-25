@@ -13,7 +13,4 @@ class App(Page):
         self.google_search = GoogleSearchPage(driver)
         self.linkedin_home = LinkedinHomePage(driver)
 
-        self.navigate = Navigator(driver, self.google_home)
-        self.navigate.connect_all(
-            (self.google_home.navigate_to_GoogleSearchPage, self.google_search),
-            (self.google_search.navigate_to_LinkedinHomePage, self.linkedin_home))
+        self.navigate = Navigator(self.google_home, auto_connect=self)

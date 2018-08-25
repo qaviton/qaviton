@@ -36,7 +36,6 @@ class Node:
         :param uuid: unique id - each node in the graph should possess a distinguished id
         self.neighbors represents weight of edges
         """
-        self.uuid = str(node_object)
         self.neighbors = {}
         self.object = node_object
 
@@ -46,7 +45,7 @@ class Node:
         :type node: Node
         :param weight: cost to the neighbor
         """
-        self.neighbors[node.uuid] = (node, action, weight)
+        self.neighbors[str(node.object)] = (node, action, weight)
 
 
 class Graph:
@@ -110,7 +109,7 @@ class Graph:
                 cost, actions, nodes = queue.pop()
 
                 # if goal has been reached
-                if nodes[-1].uuid == str(goal):
+                if str(nodes[-1].object) == str(goal):
                     reached_goal, cumulative_cost_goal = True, cost
                     break
 
@@ -118,9 +117,9 @@ class Graph:
                 for neighbor in nodes[-1].neighbors:
                     # check for loops, don't add neighbors that already exist
                     if nodes[-1].neighbors[neighbor][0] not in nodes:
-                        cumulative_cost = self.get_neighbor_weight(nodes[-1].uuid, neighbor) + cost
+                        cumulative_cost = self.get_neighbor_weight(str(nodes[-1].object), neighbor) + cost
                         new_actions, new_nodes = list(actions), list(nodes)
-                        new_actions.append(self.nodes[nodes[-1].uuid].neighbors[neighbor][1])
+                        new_actions.append(self.nodes[str(nodes[-1].object)].neighbors[neighbor][1])
                         new_nodes.append(self.nodes[neighbor])
                         # insert a new path item into the priority queue.
                         # a tuple (neighbor cumulative_cost, actions to take, nodes to go through)
@@ -142,8 +141,79 @@ class Navigator:
           - don't use more than 1 instance per page object,
             it will be painfull for the auto-connect function of the navigator.
 
+            examples:
+                ###########
+                # imports #
+                ###########
 
-    """
+                from qaviton.page import Page
+                from qaviton.locator import Locator
+                from qaviton.drivers.webdriver import WebDriver
+
+
+                #########
+                # pages #
+                #########
+
+                class BaddaPage(Page):
+                    pass
+
+
+                class BoogiPage(Page):
+                    def goPro_navigate_to_BaddaPage(self, weight=5):
+                        self.find(Locator.id('badda')).click(timeout=weight * 3)
+                        self.wait_until_page_loads()
+
+                    def navigate_to_BaddaPage(self):
+                        self.find(Locator.id('badda')).click(timeout=5)
+
+            example 1
+
+                ###################
+                # model based app #
+                ###################
+
+                class App(Page):
+                    def __init__(self, driver):
+                        Page.__init__(self, driver)
+                        self.boogi_page = BoogiPage(driver)
+                        self.badda_page = BaddaPage(driver)
+                        self.navigate = Navigator(self.boogi_page, auto_connect=self)
+
+                # create app with driver (if you wanna try this example make sure to send a real webdriver object to your app instead of 0)
+                app = App(0)
+
+                # magic!
+                print(app.navigate.graph.nodes)
+                print(app.navigate.to(app.badda_page).get_path())
+
+                # make sure to send a real webdriver object to your app (app = App(WebDriver()))
+                app.navigate.to(app.badda_page).perform()
+
+            example 2
+
+                ###################
+                # model based app #
+                ###################
+
+                class App(Page):
+                    def __init__(self, driver):
+                        Page.__init__(self, driver)
+                        self.boogi_page = BoogiPage(driver)
+                        self.badda_page = BaddaPage(driver)
+
+                navigate = Navigator(self.boogi_page, auto_connect=self)
+                navigate.connect_all(
+                    (app.boogi_page.goPro_navigate_to_BaddaPage, badda_page, 5),
+                    (app.boogi_page.navigate_to_BaddaPage, badda_page))
+
+                app = App(0)
+                print(navigate.graph.nodes)
+                print(navigate.to(app.badda_page).get_path())
+
+                # make sure to send a real webdriver object to your app (app = App(WebDriver()))
+                navigate.to(app.badda_page).perform()
+        """
 
     def __init__(self, landing_page, auto_connect=None):
         """
