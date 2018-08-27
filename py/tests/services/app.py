@@ -3,6 +3,7 @@ from qaviton.navigator import Navigator
 from tests.pages.google_search import GoogleSearchPage
 from tests.pages.google_home import GoogleHomePage
 from tests.pages.linkedin_home import LinkedinHomePage
+from tests.pages.ynet_home import YnetHomePage
 
 
 class App(Page):
@@ -12,5 +13,6 @@ class App(Page):
         self.google_home = GoogleHomePage(driver)
         self.google_search = GoogleSearchPage(driver)
         self.linkedin_home = LinkedinHomePage(driver)
+        self.ynet_home = YnetHomePage(driver)
 
         self.navigate = Navigator(self.google_home, auto_connect=self)

@@ -23,6 +23,16 @@ class WebElement(WebFunctions, WE):
         if isinstance(parent, Remote):
             self.clear = web_clear
 
+    def try_to_click(self, timeout=0):
+        """ try to click on an element
+        :type timeout: int
+        :rtype: WebElement | None
+        """
+        try:
+            return self.click(timeout)
+        except:
+            return None
+
     def click_at(self):
         ActionChains(self.parent).move_to_element_with_offset(self, self.size["width"]/2, self.size["height"]/2).click().perform()
         return self

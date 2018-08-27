@@ -51,3 +51,7 @@ def any_in_many_any(a, b):
         if any_in_any(a, c):
             return True
     return False
+
+
+def relatedclass(o: object, c):
+    return issubclass(o.__class__, c)

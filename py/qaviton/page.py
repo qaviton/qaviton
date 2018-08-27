@@ -32,6 +32,7 @@ from qaviton.drivers.common.webelement import WebElement
 from qaviton.crosstest import WebDriver, MobileDriver
 from qaviton import settings
 from qaviton.utils.helpers import dynamic_delay
+from qaviton.crosstest import get_driver, get_drivers
 
 
 class Page:
@@ -51,6 +52,14 @@ class Page:
     @property
     def title(self):
         return self.driver.title
+
+    @classmethod
+    def from_platform(cls, platform, request):
+        return cls(get_driver(platform, request))
+
+    @classmethod
+    def from_platforms(cls, platforms, request):
+        return [cls(driver) for driver in get_drivers(platforms, request)]
 
     def find(self, locator: tuple, timeout: int = 0, index=0):
         """find element with locator value

@@ -1,15 +1,17 @@
 from qaviton.page import Page
 from tests.services.locators import locator
+from tests.pages.components.google_search_bar import GoogleSearchBar
+from selenium.webdriver.common.keys import Keys
 
 
 class GoogleHomePage(Page):
-    def google_search_bar(self):
-        return self.find(locator.google_search_bar)
+    def __init__(self, driver):
+        Page.__init__(self, driver)
+        self.search_bar = GoogleSearchBar(driver)
 
     def google_search_button(self):
         return self.find(locator.google_search_button)
 
-    def navigate_to_GoogleSearchPage(self, search=locator.google_linkedin_search_result):
-        self.google_search_bar().send_keys(search)
-        self.google_search_button().click_at()
-        self.wait_until_page_loads()
+    def navigate_to_GoogleSearchPage(self, weight=5, *args, **kwargs):
+        self.search_bar.button().send_keys(Keys.ENTER)
+

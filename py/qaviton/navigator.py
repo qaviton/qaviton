@@ -5,7 +5,7 @@ Uniform Cost Search
 import inspect
 import heapq
 from qaviton.page import Page
-from qaviton.drivers.common.webdriver import WebDriver
+from qaviton.exceptions import PathUnreachableException
 
 
 default_weight = 100
@@ -91,8 +91,10 @@ class Graph:
         return self.nodes[node_id].neighbors.keys()
 
     def find_path(self, start, goal):
-        if str(start) not in self.nodes or str(goal) not in self.nodes:
-            raise Exception('graph is missing start_node {} or goal_node {} does not exist'.format(start, goal))
+        if str(start) == str(goal):
+            return 0, [], []
+        elif str(start) not in self.nodes or str(goal) not in self.nodes:
+            raise PathUnreachableException('graph is missing start_node {} or goal_node {} does not exist'.format(start, goal))
         else:
             # UCS uses priority queue, priority is the cumulative cost (smaller cost)
             queue = PriorityQueue()
@@ -128,7 +130,7 @@ class Graph:
             if reached_goal:
                 return cumulative_cost_goal, actions, nodes
             else:
-                raise Exception('path is unreachable')
+                raise PathUnreachableException('path is unreachable')
 
 
 class Navigator:
@@ -228,6 +230,9 @@ class Navigator:
         self.graph = Graph()
         if auto_connect is not None:
             self.auto_connect(auto_connect)
+
+    def __call__(self, page, *args, **kwargs):
+        self.to(page).perform(*args, **kwargs)
 
     def add_node(self, page):
         """ create a new node from page as a node_object
@@ -409,7 +414,7 @@ class Navigator:
         try:
             for i in range(len(self.actions)):
                 self.actions[i](*args, **kwargs)
-                self.current_page = str(self.nodes[i].object)
+                self.current_page = self.nodes[i].object
         finally:
             self.actions = []
             self.cost = None

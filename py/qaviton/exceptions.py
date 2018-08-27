@@ -74,6 +74,19 @@ class DiffException(Exception):
         return exception_msg
 
 
+class PathUnreachableException(Exception):
+    """
+    Thrown when navigation request is impossible.
+    """
+
+    def __init__(self, msg=None):
+        self.msg = msg
+
+    def __str__(self):
+        exception_msg = "Message: %s\n" % self.msg
+        return exception_msg
+
+
 class ClickExpectationException(WebDriverException):
     """
     Thrown after click expectation fail.

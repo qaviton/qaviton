@@ -52,6 +52,20 @@ class WebDriver(WebFunctions):
         element._execute(Command.CLICK_ELEMENT)
         return element
 
+    def quit(self):
+        """
+        Quits the driver and closes every associated window.
+
+        :Usage:
+            driver.quit()
+        """
+        try:
+            self.execute(Command.QUIT)
+        except:
+            pass
+        finally:
+            self.stop_client()
+
     @staticmethod
     def find_element_last_children(element, timeout=0):
         """ get the last elements in the tree from the root element

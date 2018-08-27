@@ -13,6 +13,7 @@ class ByExtension(By):
     TUPLE = 'tuple'
     ELEMENT = 'element'
     ELEMENTS = 'elements'
+    INDEX = 'index'
 
 
 class ByExtensionMap:
@@ -116,6 +117,13 @@ class Locator:
         else:
             by, value = Locator.xpath_translator(by, value)
         return by, value
+
+    @staticmethod
+    def index(locator, index=0):
+        """ return an element from a list
+        :type locator: tuple
+        :param index: what element to return """
+        return ByExtension.INDEX, index, locator
 
     @staticmethod
     def list(list_of_locators):

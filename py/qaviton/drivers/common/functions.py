@@ -22,7 +22,6 @@ this common functionality will provide the best flexibility
 possible for automating simple and complex scenarios
 """
 
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from qaviton.locator import ByExtension
 from qaviton.locator import Locator
@@ -42,6 +41,20 @@ class presence_of_element_located(object):
 
     def __call__(self, driver):
         return WebFunctions.find(self.locator, driver, self.index)
+
+
+class presence_of_all_elements_located(object):
+    """ An expectation for checking that there is at least one element present
+    on a web page.
+    webLocator is used to find the element
+    returns the list of WebElements once they are located
+    :rtype: list[WebElement]
+    """
+    def __init__(self, locator):
+        self.locator = locator
+
+    def __call__(self, driver):
+        return WebFunctions.find_all(self.locator, driver)
 
 
 class WebFunctions:
@@ -74,9 +87,11 @@ class WebFunctions:
 
         # use this locate method if timeout > 0
         def slow(locate):
-            return WebDriverWait(self, timeout).until(EC.presence_of_element_located(locate))
+            return WebDriverWait(self, timeout).until(presence_of_element_located(locate))
 
         # classify locator method
+        if locator[0] == ByExtension.INDEX:
+            return self.find_all(locator[2])[locator[1]]
         by, value = Locator.any(locator)
         if by == ByExtension.ELEMENTS:
             return value[index]
@@ -94,23 +109,20 @@ class WebFunctions:
             # set healing parameters
             locators_to_heal = []
             element = None
-            for location in value:
+            for i in range(len(value)):
                 try:
                     # find element
-                    element = get(location)
+                    element = self.find(value[i])
                     break
-                except:
-                    locators_to_heal.append(location)
-
-            # raise error if healing is impossible
-            if element is None:
-                raise NoSuchElementException
+                except Exception as e:
+                    locators_to_heal.append(value[i])
+                    if len(value) == i+1:
+                        raise e
 
             # heal and return
-            else:
-                if len(locators_to_heal) > 0:
-                    self.heal(element, locators_to_heal, locator)
-                return element
+            if len(locators_to_heal) > 0:
+                self.heal(element, locators_to_heal, locator)
+            return element
 
         # choose finding method
         if timeout > 0:
@@ -133,9 +145,11 @@ class WebFunctions:
 
         # use this locate method if timeout > 0
         def slow(locate):
-            return WebDriverWait(self, timeout).until(EC.presence_of_all_elements_located(locate))
+            return WebDriverWait(self, timeout).until(presence_of_all_elements_located(locate))
 
         # classify locator method
+        if locator[0] == ByExtension.INDEX:
+            return self.find_all(locator[2])[locator[1]]
         by, value = Locator.any(locator)
         if by == ByExtension.ELEMENTS:
             return value
@@ -153,23 +167,20 @@ class WebFunctions:
             # set healing parameters
             locators_to_heal = []
             elements = None
-            for location in value:
+            for i in range(len(value)):
                 try:
                     # find elements
-                    elements = get(location)
+                    elements = self.find_all(value[i])
                     break
-                except:
-                    locators_to_heal.append(location)
-
-            # raise error if healing is impossible
-            if elements is None:
-                raise NoSuchElementException
+                except Exception as e:
+                    locators_to_heal.append(value[i])
+                    if len(value) == i+1:
+                        raise e
 
             # heal and return
-            else:
-                if len(locators_to_heal) > 0:
-                    self.heal(elements[0], locators_to_heal, locator)
-                return elements
+            if len(locators_to_heal) > 0:
+                self.heal(elements[0], locators_to_heal, locator)
+            return elements
 
         # choose finding method
         if timeout > 0:

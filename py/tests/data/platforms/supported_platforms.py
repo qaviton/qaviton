@@ -9,7 +9,7 @@ app = [
     # 'file://' + path.of(__file__)('../../apps/ContactManager/ContactManager.html'),
     # 'file:///home/ubuntu/ContactManager.html',
     # mobile
-    path.of(__file__)('../../apps/ContactManager/ContactManager.apk')
+    path.of(__file__)('../../../apps/ContactManager/ContactManager.apk')
 ]
 
 screenResolution = "800x600x24"
