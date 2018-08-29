@@ -53,5 +53,17 @@ def any_in_many_any(a, b):
     return False
 
 
+def match(a, b):
+    """return true if all items of 'a' are matched in 'b', else return false.
+    examples:
+    match((0,1,2), (0,1,2)) will return True
+    match((0,1,2), (0,1,3)) will return False
+    """
+    if str(a) == str(b):
+        return True
+    else:
+        return False
+
+
 def relatedclass(o: object, c):
     return issubclass(o.__class__, c)

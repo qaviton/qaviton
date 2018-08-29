@@ -1,4 +1,4 @@
-# import pytest
+import pytest
 # import datetime
 # import os
 # from tests.utils.helpers import ensure_dir
@@ -29,3 +29,6 @@
 #     logcat_dir = request.config.logcat_dir
 #     screenshot_dir = request.config.screen_shot_dir
 #     return DeviceLogger(logcat_dir, screenshot_dir)
+
+
+from qaviton.fixtures import *

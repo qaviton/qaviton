@@ -136,3 +136,16 @@ class ElementPresenceException(WebDriverException):
             stacktrace = "\n".join(self.stacktrace)
             exception_msg += "Stacktrace:\n%s" % stacktrace
         return exception_msg
+
+
+class DependencyException(Exception):
+    """
+    Thrown when test Dependency is missing or yet to have finished running
+    """
+
+    def __init__(self, msg=None):
+        self.msg = msg
+
+    def __str__(self):
+        exception_msg = "Message: %s\n" % self.msg
+        return exception_msg

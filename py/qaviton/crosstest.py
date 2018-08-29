@@ -352,10 +352,10 @@ id = lambda i: str(i.id)
 
 
 # get driver from platform
-def get_driver(platform, request):
+def get_driver(platform: Platform, request):
     return platform.setup(request).driver()
 
 
 # get drivers from platform
-def get_drivers(platform, request):
+def get_drivers(platform: Platform, request):
     return platform.setup(request).drivers()

@@ -3,12 +3,12 @@ import time
 from qaviton.utils import unique_id
 from qaviton import crosstest
 from qaviton.navigator import Navigator
-from tests.data.platforms.navigation_platforms import platforms, sessionTimeout
+from tests.data.platforms.navigation_platforms import platforms
 from qaviton.exceptions import PathUnreachableException
 from tests.services.app import App
+from qaviton.utils.crosstest_dependency import dependencies
 
 
-@pytest.mark.timeout(sessionTimeout*1.5)
 @pytest.mark.parametrize('platform', platforms.get(), ids=unique_id.id)
 def test_navigator(platform: crosstest.Platform, request):
     t = time.time()
@@ -50,7 +50,6 @@ def test_navigator(platform: crosstest.Platform, request):
     app.driver.quit()
 
 
-@pytest.mark.timeout(sessionTimeout*1.5)
 @pytest.mark.parametrize('platform', platforms.get(), ids=unique_id.id)
 def test_navigator_with_auto_connect(platform, request):
     app = App.from_platform(platform, request)
@@ -65,7 +64,6 @@ def test_navigator_with_auto_connect(platform, request):
     app.driver.quit()
 
 
-@pytest.mark.timeout(sessionTimeout*1.5)
 @pytest.mark.parametrize('platform', platforms.get(), ids=unique_id.id)
 def test_navigator_2_navigations(platform, request):
     app = App.from_platform(platform, request)
@@ -83,7 +81,6 @@ def test_navigator_2_navigations(platform, request):
     app.driver.quit()
 
 
-@pytest.mark.timeout(sessionTimeout*1.5)
 @pytest.mark.parametrize('platform', platforms.get(), ids=unique_id.id)
 def test_navigate_to_self_with_no_possible_navigation(platform, request):
     app = App.from_platform(platform, request)
@@ -94,7 +91,6 @@ def test_navigate_to_self_with_no_possible_navigation(platform, request):
     app.driver.quit()
 
 
-@pytest.mark.timeout(sessionTimeout*1.5)
 @pytest.mark.parametrize('platform', platforms.get(), ids=unique_id.id)
 def test_navigate_with_no_possible_navigation(platform, request):
     app = App.from_platform(platform, request)
@@ -105,7 +101,6 @@ def test_navigate_with_no_possible_navigation(platform, request):
     app.driver.quit()
 
 
-@pytest.mark.timeout(sessionTimeout*1.5)
 @pytest.mark.parametrize('platform', platforms.get(), ids=unique_id.id)
 def test_navigate_to_self_with_remote_looped_navigation(platform, request):
     app = App.from_platform(platform, request)
@@ -114,7 +109,6 @@ def test_navigate_to_self_with_remote_looped_navigation(platform, request):
     app.driver.quit()
 
 
-@pytest.mark.timeout(sessionTimeout*1.5)
 @pytest.mark.parametrize('platform', platforms.get(), ids=unique_id.id)
 def test_navigate_to_self_with_looped_navigation(platform, request):
     # setup
