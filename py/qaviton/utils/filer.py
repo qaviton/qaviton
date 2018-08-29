@@ -90,6 +90,10 @@ def deep_files_search(root_directory, pattern="*.txt"):
     return results
 
 
+def get_dir_files(dir_path):
+    return [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
+
+
 def get_file_full_name(path):
     head, tail = ntpath.split(path)
     return tail or ntpath.basename(head)
@@ -101,6 +105,8 @@ def get_file_name_and_type(file_full_name):
 
 def create_file(file_path):
     create_directory(file_path)
+    with open(file_path, 'w+') as f:
+        pass
 
 
 def get_file_name(file_path):

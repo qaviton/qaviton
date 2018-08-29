@@ -1,17 +1,17 @@
 import pytest
 from qaviton.utils import unique_id
-from qaviton.fixtures.dependency import Depend, DependencyException, dependency, dependencies, depend
+from qaviton.fixtures.dependency import Depend, DependencyException, dependency, Dependencies
 from qaviton.utils.helpers import funcname
 
 
 @pytest.fixture
-def add_dep_label(dependencies):
+def add_dep_label(scope='session'):
     """label options are:
     0 - dependency is ok
     1 - dependency has failed
     2 - dependency has skipped
     """
-    dependencies['label-red'] = 0
+    Dependencies.add_and_set('label-red', '0')
 
 
 @pytest.mark.run(order=1)

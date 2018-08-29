@@ -58,9 +58,8 @@ setup(
         'pytest>=3.7.1',
         'pytest-xdist>=1.22.5',
         'pytest-cov>=2.5.1',
-        'pytest-dependency>=0.3.2',
+        'pytest-ordering>=0.5',
         'pytest-forked>=0.2',
-        'pytest-timeout>=1.3.1',
         'threaders>=0.2.12',
         'PyYAML>=3.13'
     ]
