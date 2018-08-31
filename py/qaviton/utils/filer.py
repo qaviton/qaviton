@@ -9,6 +9,7 @@ from io import BytesIO
 import imageio
 from qaviton.utils.operating_system import s
 import yaml
+import glob
 
 
 #############################################################################
@@ -92,6 +93,20 @@ def deep_files_search(root_directory, pattern="*.txt"):
 
 def get_dir_files(dir_path):
     return [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
+
+
+def rename_file(name, new_name):
+    os.rename(name, new_name)
+
+
+def delete_file(name):
+    os.remove(name)
+
+
+def delete_all_files(dir):
+    files = glob.glob(dir + s + '*')
+    for f in files:
+        os.remove(f)
 
 
 def get_file_full_name(path):

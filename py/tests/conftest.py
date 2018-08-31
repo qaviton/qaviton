@@ -30,5 +30,17 @@ import pytest
 #     screenshot_dir = request.config.screen_shot_dir
 #     return DeviceLogger(logcat_dir, screenshot_dir)
 
-
+from qaviton.fixtures.dependency import Dependencies
+from qaviton.utils import path
 from qaviton.fixtures import *
+
+
+def pytest_configure(config):
+    Dependencies.set_path(path.of(__file__)('dependencies'))
+    if not hasattr(config, "slaveinput"):
+        Dependencies.remove_all()
+
+
+def pytest_unconfigure(config):
+    if not hasattr(config, "slaveinput"):
+        Dependencies.remove_all()

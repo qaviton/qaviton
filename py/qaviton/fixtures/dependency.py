@@ -1,13 +1,61 @@
 import pytest
-from qaviton.utils import path
 from qaviton.exceptions import DependencyException
 from qaviton.utils import filer
 from qaviton.utils.operating_system import s
 
 
+class Dependencies:
+    path = None
+
+    running = ''
+    passed = '0'
+    failed = '1'
+    skipped = '2'
+
+    @staticmethod
+    def set_path(path):
+        Dependencies.path = path
+
+    @staticmethod
+    def add(name):
+        filer.create_file(Dependencies.path + s + name)
+
+    @staticmethod
+    def get(name):
+        with open(Dependencies.path + s + name) as f:
+            return f.read()
+
+    @staticmethod
+    def get_all():
+        return filer.get_dir_files(Dependencies.path)
+
+    @staticmethod
+    def set(name, status):
+        with open(Dependencies.path + s + name, 'w+') as f:
+            f.write(str(status))
+
+    @staticmethod
+    def rename(name, new_name):
+        filer.rename_file(Dependencies.path + s + name, Dependencies.path + s + new_name)
+
+    @staticmethod
+    def add_and_set(name, status):
+        Dependencies.add(name)
+        Dependencies.set(name, status)
+
+    @staticmethod
+    def remove(name):
+        filer.delete_file(Dependencies.path + s + name)
+
+    @staticmethod
+    def remove_all():
+        filer.delete_all_files(Dependencies.path)
+
+
 class Depend:
-    def __init__(self, request):
-        self.request = request
+    dependencies = Dependencies
+
+    def __init__(self):
         self.behave_when_dependency_fails = pytest.skip
         self.behave_when_dependency_is_skipped = pytest.skip
 
@@ -31,21 +79,26 @@ class Depend:
         for dependency in dependencies:
             if dependency in Dependencies.get_all():
                 status = Dependencies.get(dependency)
-                if status == '':
+
+                if status == Dependencies.running:
                     raise DependencyException("Test dependency {} has not yet finished running.\n"
                                               "please consider using pytest-ordering.\n"
                                               "more info at: https://github.com/ftobia/pytest-ordering"
                                               .format(dependency))
-                elif status == '1':
+
+                elif status == Dependencies.failed:
                     self.behave_when_dependency_fails("Test dependency {} failed".format(dependency))
-                elif status == '2':
+
+                elif status == Dependencies.skipped:
                     self.behave_when_dependency_is_skipped("Test dependency {} skipped".format(dependency))
+
             else:
-                raise DependencyException("Test dependency {} is either missing or miss-ordered.\n"
-                                          "In the miss-ordered case please consider reordering your tests "
-                                          "with pytest-ordering.\n"
-                                          "more info at: https://github.com/ftobia/pytest-ordering"
-                                          .format(dependency))
+                raise DependencyException(
+                    "Test dependency {} is either missing or miss-ordered.\n"
+                    "In the miss-ordered case please consider reordering your tests "
+                    "with pytest-ordering.\n"
+                    "more info at: https://github.com/ftobia/pytest-ordering"
+                    .format(dependency))
 
     def on_pattern(self, *dependency_patterns):
         for pattern in dependency_patterns:
@@ -54,15 +107,19 @@ class Depend:
                 if pattern in dependency or pattern == dependency:
                     pattern_found = True
                     status = Dependencies.get(dependency)
-                    if status == '':
+
+                    if status == Dependencies.running:
                         raise DependencyException("Test dependency {} has not yet finished running.\n"
                                                   "please consider using pytest-ordering.\n"
                                                   "more info at: https://github.com/ftobia/pytest-ordering".
                                                   format(dependency))
-                    elif status == '1':
+
+                    elif status == Dependencies.failed:
                         self.behave_when_dependency_fails("Test dependency {} failed".format(dependency))
-                    elif status == '2':
+
+                    elif status == Dependencies.skipped:
                         self.behave_when_dependency_is_skipped("Test dependency {} skipped".format(dependency))
+
             if pattern_found is False:
                 raise DependencyException(
                     "Test dependency with pattern {} is either missing or miss-ordered.\n"
@@ -77,15 +134,19 @@ class Depend:
                 if pattern == dependency.split("[")[0]:
                     pattern_found = True
                     status = Dependencies.get(dependency)
-                    if status == '':
+
+                    if status == Dependencies.running:
                         raise DependencyException("Test dependency {} has not yet finished running.\n"
                                                   "please consider using pytest-ordering.\n"
                                                   "more info at: https://github.com/ftobia/pytest-ordering".
                                                   format(dependency))
-                    elif status == '1':
+
+                    elif status == Dependencies.failed:
                         self.behave_when_dependency_fails("Test dependency {} failed".format(dependency))
-                    elif status == '2':
+
+                    elif status == Dependencies.skipped:
                         self.behave_when_dependency_is_skipped("Test dependency {} skipped".format(dependency))
+
             if pattern_found is False:
                 raise DependencyException(
                     "Test dependency with pattern {}[ is either missing or miss-ordered.\n"
@@ -94,51 +155,45 @@ class Depend:
                     .format(pattern))
 
 
-class Dependencies:
-    dep = path.of(__file__)('../../tests/dependencies')
+class Dependency:
+    dependencies = Dependencies
 
-    @staticmethod
-    def add(name):
-        filer.create_file(Dependencies.dep+s+name)
-
-    @staticmethod
-    def get(name):
-        with open(Dependencies.dep+s+name) as f:
-            return f.read()
-
-    @staticmethod
-    def get_all():
-        return filer.get_dir_files(Dependencies.dep)
-
-    @staticmethod
-    def set(name, status):
-        with open(Dependencies.dep + s + name, 'w+') as f:
-            f.write(status)
-
-    @staticmethod
-    def add_and_set(name, status):
+    def __init__(self, name):
+        self.name = name
         Dependencies.add(name)
-        with open(Dependencies.dep + s + name, 'w+') as f:
-            f.write(status)
+        self.depend = Depend()
+
+    def set(self, name):
+        Dependencies.rename(self.name, name)
+        self.name = name
+        return self
+
+    def get(self):
+        return self.name
 
 
 @pytest.fixture()
 def dependency(request):
-    Dependencies.add(request.node.name)
-    yield
+    dep = Dependency(request.node.name)
+    yield dep
     if request.node.rep_setup.failed:
-        Dependencies.set(request.node.name, '1')
+        Dependencies.set(dep.name, Dependencies.failed)
     elif request.node.rep_setup.skipped:
-        Dependencies.set(request.node.name, '2')
+        Dependencies.set(dep.name, Dependencies.skipped)
     else:
         if request.node.rep_call.failed:
-            Dependencies.set(request.node.name, '1')
+            Dependencies.set(dep.name, Dependencies.failed)
         elif request.node.rep_call.skipped:
-            Dependencies.set(request.node.name, '2')
+            Dependencies.set(dep.name, Dependencies.skipped)
         else:
-            Dependencies.set(request.node.name, '0')
+            Dependencies.set(dep.name, Dependencies.passed)
 
 
 @pytest.fixture()
-def depend(request):
-    return Depend(request)
+def dependencies():
+    return Dependencies
+
+
+@pytest.fixture()
+def depend():
+    return Depend()
