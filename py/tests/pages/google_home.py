@@ -1,4 +1,4 @@
-from qaviton.page import Page
+from tests.pages.components.page import Page
 from tests.services.locators import locator
 from tests.pages.components.google_search_bar import GoogleSearchBar
 from selenium.webdriver.common.keys import Keys
@@ -13,5 +13,6 @@ class GoogleHomePage(Page):
         return self.find(locator.google_search_button)
 
     def navigate_to_GoogleSearchPage(self, weight=5, *args, **kwargs):
-        self.search_bar.button().send_keys(Keys.ENTER)
+        self.search_bar.button().send('search').send_keys(Keys.ENTER)
+        self.wait_until_page_loads()
 

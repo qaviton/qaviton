@@ -1,5 +1,5 @@
 from selenium.webdriver.common.keys import Keys
-from qaviton.page import Page
+from tests.pages.components.page import Page
 from tests.services.locators import locator
 
 

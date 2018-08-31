@@ -21,7 +21,7 @@ class WebElement(WebFunctions, WE):
     def __init__(self, parent, id_, w3c=False):
         super(self.__class__, self).__init__(parent, id_, w3c)
         if isinstance(parent, Remote):
-            self.clear = web_clear
+            self.clear = lambda: web_clear(self)
 
     def try_to_click(self, timeout=0):
         """ try to click on an element
@@ -52,8 +52,12 @@ class WebElement(WebFunctions, WE):
                     .until(EC.element_to_be_clickable(Locator.element(self), index))._execute(Command.CLICK_ELEMENT)
             return self
         else:
-            element = WebDriverWait(self.parent, timeout).until(EC.element_to_be_clickable(locator, index))
-            element._execute(Command.CLICK_ELEMENT)
+            if timeout == 0:
+                element = self.find(locator)
+                element.click()
+            else:
+                element = WebDriverWait(self.parent, timeout).until(EC.element_to_be_clickable(locator, index))
+                element._execute(Command.CLICK_ELEMENT)
             return element
 
     def find_last_children(self, timeout=0):
@@ -108,6 +112,14 @@ class WebElement(WebFunctions, WE):
         """
         ActionChains(self.parent).move_to_element(self).click(self).perform()
         return self
+
+    def send(self, keys, timeout=0):
+        """ click on element, clear element text, send keys to element.
+        :type keys: str
+        :type timeout: float | int
+        :rtype: WebElement
+        """
+        return self.click(timeout=timeout).clear().send_keys(keys)
 
     def send_keys(self, *value):
         """Simulates typing into the element.

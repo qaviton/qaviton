@@ -6,7 +6,6 @@ from qaviton.navigator import Navigator
 from tests.data.platforms.navigation_platforms import platforms
 from qaviton.exceptions import PathUnreachableException
 from tests.services.app import App
-from qaviton.utils.crosstest_dependency import dependencies
 
 
 @pytest.mark.parametrize('platform', platforms.get(), ids=unique_id.id)
@@ -22,8 +21,6 @@ def test_navigator(platform: crosstest.Platform, request):
     t = time.time()
     app = App(driver)
     print('time to get app model {}'.format(time.time() - t))
-
-    app.google_home.search_bar.button().send_keys('LinkedIn: Log In or Sign Up')
 
     # manual navigation connection configuration
     navigate = Navigator(app.google_home)
@@ -53,7 +50,6 @@ def test_navigator(platform: crosstest.Platform, request):
 @pytest.mark.parametrize('platform', platforms.get(), ids=unique_id.id)
 def test_navigator_with_auto_connect(platform, request):
     app = App.from_platform(platform, request)
-    app.google_home.search_bar.button().send_keys('LinkedIn: Log In or Sign Up')
     app.navigate.to(app.linkedin_home).perform()
     # this is what the tester will want to test
     app.linkedin_home.register.register_and_submit(
@@ -67,7 +63,6 @@ def test_navigator_with_auto_connect(platform, request):
 @pytest.mark.parametrize('platform', platforms.get(), ids=unique_id.id)
 def test_navigator_2_navigations(platform, request):
     app = App.from_platform(platform, request)
-    app.google_home.search_bar.button().send_keys('LinkedIn: Log In or Sign Up')
     app.navigate(app.google_search)
     assert app.navigate.current_page == app.navigate.from_page == app.google_search
     app.navigate(app.linkedin_home)
@@ -84,7 +79,6 @@ def test_navigator_2_navigations(platform, request):
 @pytest.mark.parametrize('platform', platforms.get(), ids=unique_id.id)
 def test_navigate_to_self_with_no_possible_navigation(platform, request):
     app = App.from_platform(platform, request)
-    app.google_home.search_bar.button().send_keys('LinkedIn: Log In or Sign Up')
     app.navigate(app.linkedin_home)
     app.navigate(app.linkedin_home)
     app.linkedin_home.register.reg_submit()
@@ -94,10 +88,9 @@ def test_navigate_to_self_with_no_possible_navigation(platform, request):
 @pytest.mark.parametrize('platform', platforms.get(), ids=unique_id.id)
 def test_navigate_with_no_possible_navigation(platform, request):
     app = App.from_platform(platform, request)
-    app.google_home.search_bar.button().send_keys('LinkedIn: Log In or Sign Up')
     app.navigate(app.linkedin_home)
-    with pytest.raises(PathUnreachableException):
-        app.navigate(app.google_home)
+    # with pytest.raises(PathUnreachableException):
+    #     app.navigate(app.google_home)
     app.driver.quit()
 
 
@@ -115,7 +108,6 @@ def test_navigate_to_self_with_looped_navigation(platform, request):
     app = App.from_platform(platform, request)
 
     # test flow
-    app.google_home.search_bar.button().send_keys('LinkedIn: Log In or Sign Up')
     app.navigate(app.google_search)
 
     # test scenario

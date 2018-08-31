@@ -1,4 +1,4 @@
-from qaviton.page import Page
+from tests.pages.components.page import Page
 from tests.services.locators import locator
 
 
@@ -47,7 +47,3 @@ class YnetHomePage(Page):
 
     def ads_300x250_4(self):
         return self.find_all(locator.ads_300x250_4)
-    
-    def navigate_to_GoogleHomePage(self, weight=10, *args, **kwargs):
-        self.driver.get("https://www.google.com/")
-        self.wait_until_page_loads()

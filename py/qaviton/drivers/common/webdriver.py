@@ -48,8 +48,12 @@ class WebDriver(WebFunctions):
         :type index: int
         :rtype: WebElement
         """
-        element = WebDriverWait(self, timeout).until(EC.element_to_be_clickable(locator, index))
-        element._execute(Command.CLICK_ELEMENT)
+        if timeout == 0:
+            element = self.find(locator)
+            element.click()
+        else:
+            element = WebDriverWait(self, timeout).until(EC.element_to_be_clickable(locator, index))
+            element._execute(Command.CLICK_ELEMENT)
         return element
 
     def quit(self):

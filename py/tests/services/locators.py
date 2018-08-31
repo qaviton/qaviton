@@ -2,7 +2,7 @@ from qaviton.locator import Locator
 
 
 class locator(Locator):
-    google_search_bar = ('tuple', (('id', 'lst-ib'), ('index', 2, ('xpath', '//input'))))
+    google_search_bar = ('tuple', (('id', 'lst-ib'), ('index', 2, ('xpath', '//input')), ('xpath', '//input[@type="text"][@value=""]')))
     google_search_button = ('name', 'btnK')
     google_linkedin_search_result = ('text', 'LinkedIn: Log In or Sign Up')
 

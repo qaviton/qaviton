@@ -19,6 +19,7 @@ py==1.5.4
 pytest==3.7.1
 pytest-cov==2.5.1
 pytest-forked==0.2
+pytest-lazy-fixture==0.4.1
 pytest-ordering==0.5
 pytest-rerunfailures==4.1
 pytest-xdist==1.22.5

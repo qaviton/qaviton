@@ -13,7 +13,7 @@ app = [
 ]
 
 screenResolution = "800x600x24"
-sessionTimeout = 60
+sessionTimeout = 600
 
 
 # create cross-platform testing object

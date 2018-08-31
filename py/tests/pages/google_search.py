@@ -1,6 +1,7 @@
-from qaviton.page import Page
+from tests.pages.components.page import Page
 from tests.services.locators import locator
 from tests.pages.components.google_search_bar import GoogleSearchBar
+from selenium.webdriver.common.keys import Keys
 
 
 class GoogleSearchPage(Page):
@@ -12,26 +13,38 @@ class GoogleSearchPage(Page):
         return self.find(locator.text(text))
 
     def go_to(self, search):
-        self.google_search_result(search).click()
+        self.search_bar.button().send(search).send_keys(Keys.ENTER)
         self.wait_until_page_loads()
-
-    def navigate_to_LinkedinHomePage(self, weight=5, *args, **kwargs):
         try:
-            self.go_to('LinkedIn: Log In or Sign Up')
+            self.google_search_result(search).click()
+            self.wait_until_page_loads()
         except Exception as e:
+            import traceback
+            print(traceback.format_exc())
             text = []
             for span in self.find_all(locator.xpath('//span[@dir="ltr"]')):
-                if 'LinkedIn: Log In or Sign Up' in span.text or 'LinkedIn: Log In or Sign Up' == span.text:
+                if search in span.text or search == span.text:
                     span.click_at()
                     span.try_to_click()
                     self.wait_until_page_loads()
                     assert self.no_such_element(locator.xpath('//span[@dir="ltr"]'))
                     return
                 text.append(span.text)
-            raise Exception('LinkedIn: Log In or Sign Up - text not found: {}'.format(text)) from e
+            raise Exception('{} - text not found: {}'.format(search, text)) from e
+        
+    def navigate_to_LinkedinHomePage(self, weight=5, *args, **kwargs):
+        try:
+            self.go_to('LinkedIn: Log In or Sign Up')
+        except:
+            self.get_page("https://www.linkedin.com/")
+            self.wait_until_page_loads()
 
     def navigate_to_YnetHomePage(self, weight=5, *args, **kwargs):
-        self.go_to('ynet - חדשות, כלכלה, ספורט, בריאות')
+        try:
+            self.go_to('ynet - חדשות, כלכלה, ספורט, בריאות')
+        except:
+            self.get_page("https://www.ynet.co.il")
+            self.wait_until_page_loads()
 
     def navigate_to_GoogleSearchPage(self, weight=5, *args, **kwargs):
-        self.go_to('')
+        pass

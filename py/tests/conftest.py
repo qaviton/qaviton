@@ -33,14 +33,26 @@ import pytest
 from qaviton.fixtures.dependency import Dependencies
 from qaviton.utils import path
 from qaviton.fixtures import *
+from tests.services.app import App
+from tests.data.platforms.navigation_platforms import platforms
 
 
 def pytest_configure(config):
+    # adding dependency feature
     Dependencies.set_path(path.of(__file__)('dependencies'))
     if not hasattr(config, "slaveinput"):
         Dependencies.remove_all()
 
 
 def pytest_unconfigure(config):
+    # adding dependency feature
     if not hasattr(config, "slaveinput"):
         Dependencies.remove_all()
+
+
+@pytest.fixture(scope='session', params=platforms.get())
+def app(request):
+    """fixture for cross-platform model-based application"""
+    APP = App.from_platform(request.param, request)
+    request.addfinalizer(APP.driver.quit)
+    return APP

@@ -1,4 +1,4 @@
-from qaviton.page import Page
+from tests.pages.components.page import Page
 from tests.services.locators import locator
 from threaders import threaders
 import threading
@@ -20,7 +20,7 @@ class LinkedinRegister(Page):
     def reg_submit(self):
         return self.find(locator.linkedin_reg_submit)
 
-    def register_and_submit(self, firstname, lastname, email, password):
+    def register_and_submit(self, firstname=None, lastname=None, email=None, password=None):
         # first = threaders.thread(self.reg_firstname)
         # last = threaders.thread(self.reg_lastname)
         # mail = threaders.thread(self.reg_email)
@@ -41,5 +41,6 @@ class LinkedinRegister(Page):
         # mail.join()
         # pss.join()
 
-        self.reg_submit().click()
-        assert threading.active_count() < 3
+        # self.reg_submit().click()
+        self.reg_submit()
+        # assert threading.active_count() < 3

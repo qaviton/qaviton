@@ -1,4 +1,4 @@
-from qaviton.page import Page
+from tests.pages.components.page import Page
 from tests.pages.components.linkedin_register import LinkedinRegister
 
 class LinkedinHomePage(Page):
