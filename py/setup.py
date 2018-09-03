@@ -27,7 +27,7 @@ from setuptools import setup
 
 setup(
     name='qaviton',
-    version='0.0.0',
+    version=version,
     description='python implementation of qaviton',
     keywords=['qaviton'],
     author='Yehonadav Bar Elan',
@@ -41,12 +41,13 @@ setup(
         'Environment :: Console',
         'Environment :: MacOS X',
         'Environment :: Win32 (MS Windows)',
-        'Intended Audience :: Developers',
+        'Intended Audience :: Developers, Testers',
         'Intended Audience :: Other Audience',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Topic :: Software Development :: Quality Assurance',
-        'Topic :: Software Development :: Testing'
+        'Topic :: Software Development :: Testing',
+        'Topic :: Software Development :: Libraries :: Application Frameworks',
     ],
     install_requires=[
         'Appium-Python-Client>=0.28',
