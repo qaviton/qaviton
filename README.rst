@@ -25,12 +25,33 @@ Install and update using `pip`_:
     pip install -U qaviton
 
 
-A Simple Example
-----------------
+Simple Examples
+---------------
 
 .. code-block:: python
 
-    #coming soon! =)
+    python -m qaviton create
+    python -m pytest tests
+
+.. code-block:: python
+
+    python -m qaviton create tests
+    python -m pytest tests
+
+.. code-block:: python
+
+    python -m qaviton create web tests
+    python -m pytest tests
+
+.. code-block:: python
+
+    python -m qaviton create mobile tests
+    python -m pytest tests
+
+.. code-block:: python
+
+    python -m qaviton create web,mobile tests
+    python -m pytest tests
 
 .. code-block:: text
 
@@ -47,6 +68,21 @@ A Simple Example
      *  \  \  \________/  /   \    | |        | |    \ \  / /    | |      | |      | |     | | | | \ | |
      *   \  \____________/  /\ \_  | |        | |     \ \/ /     | |      | |      | |_____| | | |\ \| |
      *    \________________/  \__| |_|        |_|      \__/      |_|      |_|       \_______/  |_| \___|
+
+
+run tests with local hub
+------------------------
+
+install docker:
+https://docs.docker.com/install/
+
+install selenoid:
+go to option 2 to install with docker
+https://github.com/aerokube/selenoid/blob/master/docs/quick-start-guide.adoc
+
+go to your secret file and change your hub url to local host:
+/project/tests/data/secret.py
+hub='http://localhost:4444/wd/hub'
 
 
 Community
