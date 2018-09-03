@@ -39,7 +39,7 @@ setup(
         'Environment :: Console',
         'Environment :: MacOS X',
         'Environment :: Win32 (MS Windows)',
-        'Intended Audience :: Developers, Testers',
+        'Intended Audience :: Developers',
         'Intended Audience :: Other Audience',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
