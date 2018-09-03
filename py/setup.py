@@ -15,13 +15,11 @@
 
 
 import io
-import re
+from qaviton.version import __version__ as version
 
 with io.open('README.rst', 'rt', encoding='utf8') as f:
     readme = f.read()
 
-with io.open('qaviton/__init__.py', 'rt', encoding='utf8') as f:
-    version = re.search(r'__version__ = \'(.*?)\'', f.read()).group(1)
 from setuptools import setup
 
 
