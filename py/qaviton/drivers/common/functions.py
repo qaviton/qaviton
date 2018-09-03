@@ -71,7 +71,7 @@ class WebFunctions:
         """
         pass
 
-    def find(self, locator: tuple, timeout: int = 0, index=0):
+    def find(self, locator: tuple, timeout: int=0, index=0):
         """find element with locator value
         :param locator: locate by method like id and value
         :param timeout: how long to search
@@ -89,40 +89,34 @@ class WebFunctions:
         def slow(locate):
             return WebDriverWait(self, timeout).until(presence_of_element_located(locate))
 
-        # classify locator method
+        # redundancy & healing functionality
+        if isinstance(locator[0], tuple) or isinstance(locator[0], list):
+            locators_to_heal = []
+            element = None
+            for i in range(len(locator)):
+                try:
+                    element = self.find(locator[i], timeout=timeout, index=index)
+                    break
+                except Exception as e:
+                    locators_to_heal.append(locator[i])
+                    if len(locator) == i + 1:
+                        raise e
+            if len(locators_to_heal) > 0:
+                self.heal(element, locators_to_heal, locator)
+            return element
+
+        # find with index
         if locator[0] == ByExtension.INDEX:
             return self.find_all(locator[2])[locator[1]]
+
+        # find with any other strategy
         by, value = Locator.any(locator)
+
+        # if element is already found
         if by == ByExtension.ELEMENTS:
             return value[index]
         elif by == ByExtension.ELEMENT:
             return value
-
-        # healing functionality
-        elif by in (ByExtension.TUPLE, ByExtension.LIST):
-            # choose finding method
-            if timeout > 0:
-                get = slow
-            else:
-                get = fast
-
-            # set healing parameters
-            locators_to_heal = []
-            element = None
-            for i in range(len(value)):
-                try:
-                    # find element
-                    element = self.find(value[i])
-                    break
-                except Exception as e:
-                    locators_to_heal.append(value[i])
-                    if len(value) == i+1:
-                        raise e
-
-            # heal and return
-            if len(locators_to_heal) > 0:
-                self.heal(element, locators_to_heal, locator)
-            return element
 
         # choose finding method
         if timeout > 0:
@@ -133,7 +127,7 @@ class WebFunctions:
         # find element
         return get((by, value))
 
-    def find_all(self, locator: tuple, timeout: int = 0):
+    def find_all(self, locator: tuple, timeout: int=0):
         """find all elements with locator value
         :param timeout: how long to search
         :param locator: locate by method like id and value
@@ -147,40 +141,34 @@ class WebFunctions:
         def slow(locate):
             return WebDriverWait(self, timeout).until(presence_of_all_elements_located(locate))
 
-        # classify locator method
+        # redundancy & healing functionality
+        if isinstance(locator[0], tuple) or isinstance(locator[0], list):
+            locators_to_heal = []
+            elements = None
+            for i in range(len(locator)):
+                try:
+                    elements = self.find_all(locator[i], timeout=timeout)
+                    break
+                except Exception as e:
+                    locators_to_heal.append(locator[i])
+                    if len(locator) == i+1:
+                        raise e
+            if len(locators_to_heal) > 0:
+                self.heal(elements[0], locators_to_heal, locator)
+            return elements
+
+        # find with index
         if locator[0] == ByExtension.INDEX:
             return self.find_all(locator[2])[locator[1]]
+
+        # find with any other strategy
         by, value = Locator.any(locator)
+
+        # if element is already found
         if by == ByExtension.ELEMENTS:
             return value
         elif by == ByExtension.ELEMENT:
             return [value]
-
-        # healing functionality
-        elif by in (ByExtension.TUPLE, ByExtension.LIST):
-            # choose finding method
-            if timeout > 0:
-                get = slow
-            else:
-                get = fast
-
-            # set healing parameters
-            locators_to_heal = []
-            elements = None
-            for i in range(len(value)):
-                try:
-                    # find elements
-                    elements = self.find_all(value[i])
-                    break
-                except Exception as e:
-                    locators_to_heal.append(value[i])
-                    if len(value) == i+1:
-                        raise e
-
-            # heal and return
-            if len(locators_to_heal) > 0:
-                self.heal(elements[0], locators_to_heal, locator)
-            return elements
 
         # choose finding method
         if timeout > 0:

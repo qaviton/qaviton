@@ -102,7 +102,8 @@ class Graph:
             # insert initial neighbors (cost, actions, nodes) to priority queue
             for neighbor in self.nodes[str(start)].neighbors.values():
                 # each item of queue is a tuple (neighbor cumulative_cost, actions to take, nodes to go through)
-                queue.insert((neighbor[2], [neighbor[1]], [neighbor[0]]), neighbor[2])
+                if neighbor[0].object != start:
+                    queue.insert((neighbor[2], [neighbor[1]], [neighbor[0]]), neighbor[2])
 
             reached_goal, cumulative_cost_goal = False, -1
 
@@ -118,7 +119,7 @@ class Graph:
                 # insert all neighbors of current node to priority queue
                 for neighbor in nodes[-1].neighbors:
                     # check for loops, don't add neighbors that already exist
-                    if nodes[-1].neighbors[neighbor][0] not in nodes:
+                    if nodes[-1].neighbors[neighbor][0] not in nodes and nodes[-1].neighbors[neighbor][0].object != start:
                         cumulative_cost = self.get_neighbor_weight(str(nodes[-1].object), neighbor) + cost
                         new_actions, new_nodes = list(actions), list(nodes)
                         new_actions.append(self.nodes[str(nodes[-1].object)].neighbors[neighbor][1])
@@ -231,8 +232,9 @@ class Navigator:
         if auto_connect is not None:
             self.auto_connect(auto_connect)
 
-    def __call__(self, page, *args, **kwargs):
-        self.to(page).perform(*args, **kwargs)
+    def __call__(self, page: Page, *args, **kwargs):
+        """:rtype: page"""
+        return self.to(page).perform(*args, **kwargs)
 
     def add_node(self, page):
         """ create a new node from page as a node_object
@@ -419,6 +421,7 @@ class Navigator:
             self.actions = []
             self.cost = None
             self.from_page = self.current_page
+            return self.current_page
 
     def set_from_page(self, page):
         """set the page from which to start the navigation chain"""

@@ -6,6 +6,7 @@ from qaviton.utils.helpers import funcname
 
 """
 expectation:
+tests total: 40
 tests passed: 26
 tests ignored: 12
 tests failed: 2

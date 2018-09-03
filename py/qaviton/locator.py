@@ -9,8 +9,6 @@ class ByExtension(By):
     This is an extension to the By class
     use this class to choose a locating strategy for web elements!
     """
-    LIST = 'list'
-    TUPLE = 'tuple'
     ELEMENT = 'element'
     ELEMENTS = 'elements'
     INDEX = 'index'
@@ -126,18 +124,18 @@ class Locator:
         return ByExtension.INDEX, index, locator
 
     @staticmethod
-    def list(list_of_locators):
+    def list(*list_of_locators):
         """ return a mapped list of locators
-        :type list_of_locators: list[tuple]
+        :type list_of_locators: list or tuple
         :param list_of_locators: a list of locator tuples """
-        return ByExtension.LIST, list_of_locators
+        return [locator for locator in list_of_locators]
 
     @staticmethod
-    def tuple(tuple_of_locators):
+    def tuple(*tuple_of_locators):
         """ return a mapped tuple of locators
-        :type tuple_of_locators: tuple[tuple]
+        :type tuple_of_locators: tuple or list
         :param tuple_of_locators: a tuple of locator tuples """
-        return ByExtension.TUPLE, tuple_of_locators
+        return tuple_of_locators
 
     @staticmethod
     def element(web_element):

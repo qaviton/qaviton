@@ -2,9 +2,15 @@ import pytest
 from qaviton.exceptions import DependencyException
 from qaviton.utils import filer
 from qaviton.utils.operating_system import s
+from qaviton.utils.random_util import random_number
+import time
 
 
 class Dependencies:
+    max_wait_period: int = 600
+    min_wait_period: float = 0.1
+    max_read_tries: int = max_wait_period * 10
+
     path = None
 
     running = ''
@@ -13,8 +19,13 @@ class Dependencies:
     skipped = '2'
 
     @staticmethod
+    def wait_iterations():
+        return int(Dependencies.max_wait_period/Dependencies.min_wait_period)
+
+    @staticmethod
     def set_path(path):
         Dependencies.path = path
+        filer.create_directory(path)
 
     @staticmethod
     def add(name):
@@ -22,8 +33,14 @@ class Dependencies:
 
     @staticmethod
     def get(name):
-        with open(Dependencies.path + s + name) as f:
-            return f.read()
+        for i in range(Dependencies.max_read_tries):
+            try:
+                with open(Dependencies.path + s + name) as f:
+                    return f.read()
+            except Exception as e:
+                if i+1 == Dependencies.max_read_tries:
+                    raise e
+                time.sleep(random_number(1, 1000)*0.0001)
 
     @staticmethod
     def get_all():
@@ -31,8 +48,15 @@ class Dependencies:
 
     @staticmethod
     def set(name, status):
-        with open(Dependencies.path + s + name, 'w+') as f:
-            f.write(str(status))
+        for i in range(Dependencies.max_read_tries):
+            try:
+                with open(Dependencies.path + s + name, 'w+') as f:
+                    f.write(str(status))
+                    return
+            except Exception as e:
+                if i+1 == Dependencies.max_read_tries:
+                    raise e
+                time.sleep(random_number(1, 1000)*0.0001)
 
     @staticmethod
     def rename(name, new_name):
@@ -77,26 +101,40 @@ class Depend:
 
     def on(self, *dependencies):
         for dependency in dependencies:
+
+            # check if dependency is registered
+            for _ in range(Dependencies.wait_iterations()):
+                if dependency not in Dependencies.get_all():
+                    time.sleep(Dependencies.min_wait_period)
+                else:
+                    break
+
             if dependency in Dependencies.get_all():
                 status = Dependencies.get(dependency)
 
-                if status == Dependencies.running:
-                    raise DependencyException("Test dependency {} has not yet finished running.\n"
-                                              "please consider using pytest-ordering.\n"
-                                              "more info at: https://github.com/ftobia/pytest-ordering"
-                                              .format(dependency))
+                # check if dependency is still running
+                for _ in range(Dependencies.wait_iterations()):
+                    if status == Dependencies.running:
+                        time.sleep(Dependencies.min_wait_period)
+                    else:
+                        break
 
-                elif status == Dependencies.failed:
+                if status == Dependencies.failed:
                     self.behave_when_dependency_fails("Test dependency {} failed".format(dependency))
 
                 elif status == Dependencies.skipped:
                     self.behave_when_dependency_is_skipped("Test dependency {} skipped".format(dependency))
 
+                elif status == Dependencies.running:
+                    raise DependencyException(
+                        "Test dependency {} has not yet finished running.\n"
+                        "please consider using pytest-ordering or increase Dependencies.max_wait_period.\n"
+                        "more info at: https://github.com/ftobia/pytest-ordering"
+                        .format(dependency))
             else:
                 raise DependencyException(
                     "Test dependency {} is either missing or miss-ordered.\n"
-                    "In the miss-ordered case please consider reordering your tests "
-                    "with pytest-ordering.\n"
+                    "In the miss-ordered case please consider reordering your tests with pytest-ordering.\n"
                     "more info at: https://github.com/ftobia/pytest-ordering"
                     .format(dependency))
 
@@ -104,6 +142,14 @@ class Depend:
         for pattern in dependency_patterns:
             pattern_found = False
             for dependency in Dependencies.get_all():
+
+                # # check if dependency is registered
+                # for _ in range(Dependencies.wait_iterations()):
+                #     if pattern not in Dependencies.get_all():
+                #         time.sleep(Dependencies.min_wait_period)
+                #     else:
+                #         break
+
                 if pattern in dependency or pattern == dependency:
                     pattern_found = True
                     status = Dependencies.get(dependency)
@@ -160,7 +206,7 @@ class Dependency:
 
     def __init__(self, name):
         self.name = name
-        Dependencies.add(name)
+        # Dependencies.add(name)
         self.depend = Depend()
 
     def set(self, name):

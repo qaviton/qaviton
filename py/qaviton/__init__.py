@@ -9,3 +9,18 @@
 """
 
 __version__ = '0.0.1'
+
+
+import sys
+
+
+if len(sys.argv) > 1:
+    if sys.argv[1] == 'create':
+        from qaviton.scripts import create
+
+        if len(sys.argv) > 3:
+            if 'web' in sys.argv[2]:
+                create.web(sys.argv[3])
+        elif len(sys.argv) > 2:
+            if 'web' in sys.argv[2]:
+                create.web()

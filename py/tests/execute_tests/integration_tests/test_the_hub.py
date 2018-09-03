@@ -1,7 +1,7 @@
 import pytest
 from qaviton import crosstest
 from qaviton.utils import unique_id
-from tests.data.platforms.supported_platforms import platforms, sessionTimeout
+from tests.data.supported_platforms import platforms, sessionTimeout
 from qaviton.utils.condition import relatedclass
 
 

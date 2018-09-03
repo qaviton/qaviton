@@ -4,7 +4,7 @@ import os
 import pathlib
 import shutil
 import zipfile
-from fnmatch import fnmatch
+from fnmatch import fnmatch, filter
 from io import BytesIO
 import imageio
 from qaviton.utils.operating_system import s
@@ -17,6 +17,29 @@ import glob
 #                              Directories                                  #
 #                                                                           #
 #############################################################################
+
+
+def find_replace(directory, find, replace, pattern):
+    for path, dirs, files in os.walk(os.path.abspath(directory)):
+        for filename in filter(files, pattern):
+            filepath = os.path.join(path, filename)
+            with open(filepath) as f:
+                s = f.read()
+            s = s.replace(find, replace)
+            with open(filepath, "w") as f:
+                f.write(s)
+
+
+def copy_directory(src, dest):
+    "dest should be a directory path that does not exist"
+    try:
+        shutil.copytree(src, dest)
+    except OSError as e:
+        # If the error was caused because the source wasn't a directory
+        if e.errno == errno.ENOTDIR:
+            shutil.copy(src, dest)
+        else:
+            raise Exception('Directory not copied') from e
 
 
 def get_directory(__file__: str):

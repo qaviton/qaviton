@@ -1,6 +1,6 @@
 from qaviton import crosstest
 from qaviton.utils import path
-from tests.data.private import hubip
+from tests.data.private import hub
 
 
 app = [
@@ -18,7 +18,7 @@ sessionTimeout = 600
 
 # create cross-platform testing object
 platforms = crosstest.Platforms()
-platforms.web.command_executor = 'http://'+hubip+':4444/wd/hub'
+platforms.web.command_executor = hub
 
 
 # add chrome browser support

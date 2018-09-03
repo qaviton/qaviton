@@ -30,11 +30,11 @@ import pytest
 #     screenshot_dir = request.config.screen_shot_dir
 #     return DeviceLogger(logcat_dir, screenshot_dir)
 
-from qaviton.fixtures.dependency import Dependencies
+from qaviton.fixtures.dependency import Dependencies, dependency, dependencies, depend
 from qaviton.utils import path
-from qaviton.fixtures import *
 from tests.services.app import App
-from tests.data.platforms.navigation_platforms import platforms
+from tests.data.navigation_platforms import platforms
+from qaviton.schedualer import QavitonSchedualing
 
 
 def pytest_configure(config):
@@ -50,9 +50,35 @@ def pytest_unconfigure(config):
         Dependencies.remove_all()
 
 
+def pytest_collection_finish(session):
+    # adding dependency & ordering
+    # names = Dependencies.get_all()
+    # if len(session.items) < len(names):
+    #     item_names = [item.name for item in session.items]
+    #     for name in list_diff(names, item_names):
+    for item in session.items:
+            try:
+                Dependencies.add(item.name)
+            except:
+                pass
+
+
+def pytest_xdist_make_scheduler(config, log):
+    return QavitonSchedualing(config, log)
+
+
 @pytest.fixture(scope='session', params=platforms.get())
 def app(request):
-    """fixture for cross-platform model-based application"""
+    """fixture for cross-platform model-based application
+    always use session scope for this type of fixture & parameterize your platforms
+    :rtype: App
+    """
+    if isinstance(request.param, list) or isinstance(request.param, tuple):
+        APPS = []
+        for platform in request.param:
+            APPS.append(App.from_platform(platform, request))
+            request.addfinalizer(APPS[-1].driver.quit)
+        return APPS
     APP = App.from_platform(request.param, request)
     request.addfinalizer(APP.driver.quit)
     return APP

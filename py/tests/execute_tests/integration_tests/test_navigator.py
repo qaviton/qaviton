@@ -3,8 +3,7 @@ import time
 from qaviton.utils import unique_id
 from qaviton import crosstest
 from qaviton.navigator import Navigator
-from tests.data.platforms.navigation_platforms import platforms
-from qaviton.exceptions import PathUnreachableException
+from tests.data.navigation_platforms import platforms
 from tests.services.app import App
 
 

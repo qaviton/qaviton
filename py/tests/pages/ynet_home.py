@@ -1,5 +1,5 @@
 from tests.pages.components.page import Page
-from tests.services.locators import locator
+from tests.pages.locators import locator
 
 
 class YnetHomePage(Page):

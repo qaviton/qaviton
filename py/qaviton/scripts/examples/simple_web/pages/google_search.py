@@ -39,12 +39,11 @@ class GoogleSearchPage(Page):
             self.get_page("https://www.linkedin.com/")
             self.wait_until_page_loads()
 
-    def navigate_to_YnetHomePage(self, weight=5, *args, **kwargs):
+    def navigate_to_QavitonHomePage(self, weight=5, *args, **kwargs):
         try:
-            self.go_to('ynet - חדשות, כלכלה, ספורט, בריאות')
+            self.go_to('QAVITON - NEXT GENERATION QA AUTOMATION ...')
         except:
-            self.get_page("https://www.ynet.co.il")
+            self.get_page("https://www.google.com/")
             self.wait_until_page_loads()
 
-    def navigate_to_GoogleSearchPage(self, weight=5, *args, **kwargs):
-        pass
+
