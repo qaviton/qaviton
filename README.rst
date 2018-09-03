@@ -30,16 +30,6 @@ Simple Examples
 
 .. code-block:: python
 
-    python -m qaviton create
-    python -m pytest tests
-
-.. code-block:: python
-
-    python -m qaviton create tests
-    python -m pytest tests
-
-.. code-block:: python
-
     python -m qaviton create web tests
     python -m pytest tests
 
@@ -55,7 +45,7 @@ Simple Examples
 
 .. code-block:: text
 
-    $ qaviton create tests
+    $ python -m qaviton create tests
      * creating qaviton tests
      * your testing framework is done!
      * start testing like a boss ⚛
@@ -78,10 +68,13 @@ https://docs.docker.com/install/
 
 install selenoid:
 go to option 2 to install with docker
+
 https://github.com/aerokube/selenoid/blob/master/docs/quick-start-guide.adoc
 
 go to your secret file and change your hub url to local host:
+
 /project/tests/data/secret.py
+
 hub='http://localhost:4444/wd/hub'
 
 
