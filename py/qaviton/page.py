@@ -37,7 +37,7 @@ from qaviton.crosstest import get_driver, get_drivers
 
 class Page:
 
-    def __init__(self, driver, timeout=None, url=None):
+    def __init__(self, driver, timeout=None, url=None, platform=None):
         """
         :type driver: WebDriver or MobileDriver
         :type url: str
@@ -48,6 +48,7 @@ class Page:
         self.timeout = timeout
         self.driver = driver
         self.url = url
+        self.platform = platform
 
     @property
     def title(self):
@@ -55,11 +56,17 @@ class Page:
 
     @classmethod
     def from_platform(cls, platform, request):
-        return cls(get_driver(platform, request))
+        """:rtype Page"""
+        return cls(get_driver(platform, request), platform=platform.platform)
 
     @classmethod
     def from_platforms(cls, platforms, request):
-        return [cls(driver) for driver in get_drivers(platforms, request)]
+        """:rtype list[Page]"""
+        drivers = get_drivers(platforms, request)
+        pages = []
+        for i in range(platforms):
+            pages.append(cls(drivers[i], platform=platforms[i].platform))
+        return pages
 
     def find(self, locator: tuple, timeout: int = 0, index=0):
         """find element with locator value

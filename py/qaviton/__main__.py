@@ -15,5 +15,25 @@
 # specific language governing permissions and limitations
 # under the License.
 
+"""run qaviton as a service"""
 
-__version__ = '0.0.3'
+import sys
+
+if len(sys.argv) > 1:
+    if sys.argv[1] == 'create':
+        from qaviton.scripts import create
+
+        if len(sys.argv) > 3:
+            if 'web' in sys.argv[2]:
+                create.web(sys.argv[3])
+            elif 'mobile' in sys.argv[2]:
+                create.web(sys.argv[3])
+        elif len(sys.argv) > 2:
+            if 'web' in sys.argv[2]:
+                create.web()
+            elif 'mobile' in sys.argv[2]:
+                create.web()
+            else:
+                create.web(sys.argv[2])
+        else:
+            create.web()
