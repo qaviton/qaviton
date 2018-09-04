@@ -43,7 +43,7 @@ def install_is_done(tests_dir):
         # to manage your dependencies:
         (env) path/to/tests> pip freeze > requirements.txt
 
-        # to install your requirements on a new machine:
+        # to install your requirements on a new machine(consider using git):
         (env) path/to/tests> pip install -r requirements.txt
 
             * your testing framework is done!
