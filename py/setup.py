@@ -14,6 +14,23 @@
 # limitations under the License.
 
 
+""" updating pip version:
+    --------------------
+
+1) increase qaviton.version.__version__
+
+2) make sure these are installed:
+    pip install wheel
+    python setup.py bdist_wheel --universal
+    pip install twine
+
+3) run these:
+    python setup.py sdist
+    python setup.py bdist_wheel
+    twine upload dist/*
+"""
+
+
 import io
 from qaviton.version import __version__ as version
 from setuptools import setup, find_packages
@@ -33,6 +50,7 @@ setup(
     name='qaviton',
     version=version,
     description='python implementation of qaviton',
+    long_description=readme,
     keywords=['qaviton'],
     author='Yehonadav Bar Elan',
     author_email='yehonadav@Qaviton.com',
