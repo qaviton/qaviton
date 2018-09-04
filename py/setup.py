@@ -16,11 +16,17 @@
 
 import io
 from qaviton.version import __version__ as version
+from setuptools import setup, find_packages
+
+
+packages = []
+for package in find_packages():
+    if package.startswith('qaviton'):
+        packages.append(package)
+
 
 with io.open('README.rst', 'rt', encoding='utf8') as f:
     readme = f.read()
-
-from setuptools import setup
 
 
 setup(
@@ -31,7 +37,7 @@ setup(
     author='Yehonadav Bar Elan',
     author_email='yehonadav@Qaviton.com',
     url='https://qaviton.com/',
-    packages=['qaviton'],
+    packages=packages,
     license='Apache 2.0',
     classifiers=[
         'Development Status :: 3 - Alpha',
