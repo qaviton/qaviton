@@ -6,7 +6,7 @@ class System:
     name = os.nameplatform_system = platform.system()
     platform_release = platform.release()
     slash = '/'
-    if name == 'nt' or name == 'Windows':
+    if name in ('Windows', 'nt'):
         slash = '\\'
 
 

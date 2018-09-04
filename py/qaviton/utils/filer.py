@@ -82,8 +82,14 @@ def clean_directory(root_directory: str, pattern: str):
 
 
 def delete_directory_contents(root_directory: str):
-    """ example:
-    delete_directory_contents(test_report_directory_path)
+    """delete directory and all its contents
+
+    if this does not work because of permission error consider using:
+        windows: filer.os.system('rd /s /q {}'.format(root_directory))
+        linux/mac: filer.os.system('rm -rf {}'.format(root_directory))
+
+        example:
+            delete_directory_contents(test_report_directory_path)
     """
     for the_file in os.listdir(root_directory):
         file_path = os.path.join(root_directory, the_file)
