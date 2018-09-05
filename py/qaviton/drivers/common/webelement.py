@@ -26,7 +26,7 @@ class WebElement(WebFunctions, WE):
 
     def heal(self, locators_to_heal, locator):
         """add logic"""
-        if None not in (Heal.workspace, Heal.locators):
+        if None not in (Heal.workspace, Heal.locator):
             Heal.heal_request(locators_to_heal, locator)
 
     def try_to_click(self, timeout=0):

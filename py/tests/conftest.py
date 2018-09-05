@@ -70,13 +70,26 @@ def pytest_xdist_make_scheduler(config, log):
 
 @pytest.fixture(scope='session', autouse=True)
 def heal_config(request):
-    # locators file
-    from tests.parameters.locators import __file__ as locators
+    """in order to use the healing feature properly
+    your tests should run in the qaviton cloud.
+
+    use heal config to show qaviton
+    your project's file path (workspace)
+    and what locators you use.
+
+    make sure your workspace conveys your project directory.
+    the config method takes only one locator class,
+    so make sure to centralize all your locators
+    to 1 locator file with 1 locator class.
+    """
+    # locator class
+    from tests.parameters.locators import locator
     # the root directory of your project
     workspace = path.of(__file__)('../../')
 
-    Heal.config(workspace, locators)
-    request.addfinalizer(APP.driver.quit)
+    Heal.config(workspace, locator)
+    request.addfinalizer(Heal.signal_session_to_stop())
+
 
 @pytest.fixture(scope='session', params=platforms.get())
 def app(request):
@@ -93,3 +106,11 @@ def app(request):
     APP = App.from_platform(request.param, request)
     request.addfinalizer(APP.driver.quit)
     return APP
+
+import inspect
+
+
+l = locator()
+print(inspect.getfile(locator))
+print(inspect.getmodule(locator))
+print(inspect.getmodule(l))
