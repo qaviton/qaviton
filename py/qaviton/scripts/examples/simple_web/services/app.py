@@ -11,8 +11,8 @@ class App(Page):
     pages/components/api/services/flows
     in a single page application
     """
-    def __init__(self, driver):
-        Page.__init__(self, driver)
+    def __init__(self, driver, platform):
+        Page.__init__(self, driver, platform=platform)
         self.qaviton_home = QavitonHomePage(driver)
         self.linkedin_home = LinkedinHomePage(driver)
         self.google_search = GoogleSearchPage(driver)
