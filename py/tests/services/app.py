@@ -16,8 +16,8 @@ class App(Page):
 
     locator = locator
 
-    def __init__(self, driver):
-        Page.__init__(self, driver)
+    def __init__(self, driver, platform):
+        Page.__init__(self, driver, platform=platform)
         self.google_home = GoogleHomePage(driver)
         self.google_search = GoogleSearchPage(driver)
         self.linkedin_home = LinkedinHomePage(driver)
