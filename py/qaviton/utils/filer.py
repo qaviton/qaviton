@@ -20,6 +20,9 @@ import glob
 
 
 def find_replace(directory, find, replace, pattern):
+    """replace file patterns
+    search for files with certain name patterns
+    and find & replace a pattern inside the files"""
     for path, dirs, files in os.walk(os.path.abspath(directory)):
         for filename in filter(files, pattern):
             filepath = os.path.join(path, filename)
@@ -42,18 +45,20 @@ def copy_directory(src, dest):
             raise Exception('Directory not copied') from e
 
 
-def get_directory(__file__: str):
+def get_directory_from_file(__file__: str):
     return os.path.dirname(os.path.abspath(__file__))
 
 
 def create_directory(directory_path: str):
-    if not os.path.exists(os.path.dirname(directory_path)):
+    if not os.path.exists(directory_path):
         try:
-            os.makedirs(os.path.dirname(directory_path))
+            os.makedirs(directory_path, exist_ok=True)
         except OSError as exc:  # Guard against race condition
             if exc.errno != errno.EEXIST:
                 raise
-
+        except Exception as e:
+            if not os.path.exists(directory_path):
+                raise e
 
 def get_subdirectories(directory_path: str):
     """ example:
@@ -97,6 +102,19 @@ def delete_directory_contents(root_directory: str):
             os.unlink(file_path)
         elif os.path.isdir(file_path):
             shutil.rmtree(file_path)
+
+
+def delete_directory(directory):
+    """delete directory and all its contents
+    preferably use delete_directory_contents function instead
+    """
+    if s == '\\':
+        os.system('rd /s /q {}'.format(directory))
+    else:
+        os.system('rm -rf {}'.format(directory))
+    if os.path.exists(directory):
+        raise Exception("directory could not be deleted")
+
 
 #############################################################################
 #                                                                           #
@@ -149,8 +167,11 @@ def get_file_name_and_type(file_full_name):
 
 def create_file(file_path):
     create_directory(file_path)
-    with open(file_path, 'w+') as f:
-        pass
+    try:
+        open(file_path, 'w+').close()
+    except Exception as e:
+        if not os.path.exists(file_path):
+            raise e
 
 
 def get_file_name(file_path):
@@ -159,6 +180,18 @@ def get_file_name(file_path):
 
 def get_file_directory(path):
     return os.path.dirname(os.path.realpath(path))
+
+
+def copy_file(src_file, dest_file):
+    """use this in cases where another program
+    might try to copy to same dest_file
+    """
+    if not os.path.exists(dest_file):
+        try:
+            shutil.copyfile(src_file, dest_file)
+        except Exception as e:
+            if not os.path.exists(dest_file):
+                raise e
 
 
 #############################################################################
@@ -232,6 +265,7 @@ def open_zip_from_inside_zip(zip_obj, zfile_name):
 #                                 YAML                                      #
 #                                                                           #
 #############################################################################
+
 
 class parse:
     @staticmethod

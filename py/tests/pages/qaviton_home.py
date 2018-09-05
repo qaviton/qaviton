@@ -1,5 +1,5 @@
 from tests.pages.components.page import Page
-from tests.pages.locators import locator
+from tests.parameters.locators import locator
 
 
 class QavitonHomePage(Page):

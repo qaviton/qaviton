@@ -1,6 +1,6 @@
 from qaviton import crosstest
 from qaviton.utils import path
-from tests.data.private import hub
+from tests.parameters.private import hub
 
 
 app = [

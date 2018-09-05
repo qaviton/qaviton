@@ -62,15 +62,6 @@ class WebFunctions:
     to add same functionality to both driver & element
     """
 
-    def heal(self, element, locators_to_heal, locators):
-        """ find element attributes and try to send healing info to qaviton.com/proj/heal
-        :type element: WebElement
-        :type locators_to_heal: list
-        :type locators: tuple
-        :return:
-        """
-        pass
-
     def find(self, locator: tuple, timeout: int=0, index=0):
         """find element with locator value
         :param locator: locate by method like id and value
@@ -102,7 +93,7 @@ class WebFunctions:
                     if len(locator) == i + 1:
                         raise e
             if len(locators_to_heal) > 0:
-                self.heal(element, locators_to_heal, locator)
+                self.element.heal(locators_to_heal, locator)
             return element
 
         # find with index
@@ -154,7 +145,7 @@ class WebFunctions:
                     if len(locator) == i+1:
                         raise e
             if len(locators_to_heal) > 0:
-                self.heal(elements[0], locators_to_heal, locator)
+                self.elements[0].heal(locators_to_heal, locator)
             return elements
 
         # find with index

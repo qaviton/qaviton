@@ -1,4 +1,5 @@
 from qaviton.navigator import Navigator
+from tests.parameters.locators import locator
 from tests.pages.components.page import Page
 from tests.pages.google_search import GoogleSearchPage
 from tests.pages.google_home import GoogleHomePage
@@ -12,6 +13,9 @@ class App(Page):
     pages/components/api/services/flows
     in a single page application
     """
+
+    locator = locator
+
     def __init__(self, driver):
         Page.__init__(self, driver)
         self.google_home = GoogleHomePage(driver)

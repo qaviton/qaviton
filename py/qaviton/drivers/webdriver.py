@@ -95,3 +95,14 @@ class WebDriver(WE, Remote):
                     raise e
                 sleep(POLL_FREQUENCY)
         return element
+
+    def get_attributes(self, element):
+        """ get all the attributes
+        :rtype: dict
+        """
+        return self.execute_script(
+            "var items = {}; "
+            "for (index = 0; index < arguments[0].attributes.length; ++index) { "
+            "items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; "
+            "return items;",
+            element)

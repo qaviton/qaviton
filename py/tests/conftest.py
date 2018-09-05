@@ -30,11 +30,12 @@ import pytest
 #     screenshot_dir = request.config.screen_shot_dir
 #     return DeviceLogger(logcat_dir, screenshot_dir)
 
-from qaviton.fixtures.dependency import Dependencies, dependency, dependencies, depend
+from qaviton.fixtures.dependency import Dependencies
 from qaviton.utils import path
 from tests.services.app import App
-from tests.data.navigation_platforms import platforms
+from tests.parameters.navigation_platforms import platforms
 from qaviton.schedualer import QavitonSchedualing
+from qaviton.heal import Heal
 
 
 def pytest_configure(config):
@@ -66,6 +67,16 @@ def pytest_collection_finish(session):
 def pytest_xdist_make_scheduler(config, log):
     return QavitonSchedualing(config, log)
 
+
+@pytest.fixture(scope='session', autouse=True)
+def heal_config(request):
+    # locators file
+    from tests.parameters.locators import __file__ as locators
+    # the root directory of your project
+    workspace = path.of(__file__)('../../')
+
+    Heal.config(workspace, locators)
+    request.addfinalizer(APP.driver.quit)
 
 @pytest.fixture(scope='session', params=platforms.get())
 def app(request):

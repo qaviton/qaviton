@@ -2,8 +2,8 @@
 import pytest
 
 # things for the tests
-from tests.data.supported_platforms import platforms
-from tests.data.count_functions import from_zero_to_hero
+from tests.parameters.supported_platforms import platforms
+from tests.parameters.count_functions import from_zero_to_hero
 
 # things to test
 from qaviton.crosstest import WebDriver

@@ -6,6 +6,7 @@ from appium.webdriver.webelement import WebElement as WE
 from qaviton.drivers.common.functions import WebFunctions
 from qaviton.drivers.support import expected_conditions as EC
 from qaviton.locator import Locator
+from qaviton.heal import Heal
 
 
 def web_clear(self):
@@ -22,6 +23,11 @@ class WebElement(WebFunctions, WE):
         super(self.__class__, self).__init__(parent, id_, w3c)
         if isinstance(parent, Remote):
             self.clear = lambda: web_clear(self)
+
+    def heal(self, locators_to_heal, locator):
+        """add logic"""
+        if None not in (Heal.workspace, Heal.locators):
+            Heal.heal_request(locators_to_heal, locator)
 
     def try_to_click(self, timeout=0):
         """ try to click on an element
@@ -156,3 +162,7 @@ class WebElement(WebFunctions, WE):
         for c in chars:
             self.send_keys(c)
         return self
+
+    def get_attributes(self):
+        """only for selenium"""
+        return self.parent.get_attributes(self)

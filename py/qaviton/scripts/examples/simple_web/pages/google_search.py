@@ -1,5 +1,5 @@
 from tests.pages.components.page import Page
-from tests.pages.locators import locator
+from tests.parameters.locators import locator
 from tests.pages.components.google_search_bar import GoogleSearchBar
 from selenium.webdriver.common.keys import Keys
 
