@@ -60,6 +60,19 @@ def create_directory(directory_path: str):
             if not os.path.exists(directory_path):
                 raise e
 
+
+def create_directory_from_file(file_path: str):
+    if not os.path.exists(file_path):
+        try:
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        except OSError as exc:  # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
+        except Exception as e:
+            if not os.path.exists(os.path.dirname(file_path)):
+                raise e
+
+
 def get_subdirectories(directory_path: str):
     """ example:
     default_products_directory = settings.project_directory + 'products' + s
@@ -165,8 +178,7 @@ def get_file_name_and_type(file_full_name):
     return file_full_name.split('.')
 
 
-def create_file(file_path):
-    create_directory(file_path)
+def create_file(file_path: str):
     try:
         open(file_path, 'w+').close()
     except Exception as e:
