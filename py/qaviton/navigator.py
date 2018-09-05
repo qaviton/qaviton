@@ -22,7 +22,7 @@ Uniform Cost Search
 import inspect
 import heapq
 from qaviton.page import Page
-from qaviton.exceptions import PathUnreachableException
+from qaviton.exceptions import PathUnreachableException, PageNavigationException
 
 
 default_weight = 100
@@ -434,11 +434,13 @@ class Navigator:
             for i in range(len(self.actions)):
                 self.actions[i](*args, **kwargs)
                 self.current_page = self.nodes[i].object
+        except Exception as e:
+            raise PageNavigationException("navigation interruption at {}".format(self.current_page)) from e
         finally:
             self.actions = []
             self.cost = None
             self.from_page = self.current_page
-            return self.current_page
+        return self.current_page
 
     def set_from_page(self, page):
         """set the page from which to start the navigation chain"""
