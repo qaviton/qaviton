@@ -149,3 +149,16 @@ class DependencyException(Exception):
     def __str__(self):
         exception_msg = "Message: %s\n" % self.msg
         return exception_msg
+
+
+class PageNavigationException(Exception):
+    """
+    Thrown when page navigation failed
+    """
+
+    def __init__(self, msg=None):
+        self.msg = msg
+
+    def __str__(self):
+        exception_msg = "Message: %s\n" % self.msg
+        return exception_msg
