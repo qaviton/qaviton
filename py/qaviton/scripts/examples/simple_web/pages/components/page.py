@@ -13,5 +13,5 @@ class Page(page):
         self.wait_until_page_loads()
 
     def navigate_to_QavitonHomePage(self, weight=3, *args, **kwargs):
-        self.driver.get("https://www.google.com/")
+        self.driver.get("https://www.qaviton.com/")
         self.wait_until_page_loads()
