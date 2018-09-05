@@ -1,12 +1,12 @@
-def test_app1(app):
+def test_linkedin_registration(app):
     app.navigate(app.linkedin_home).register.register_and_submit()
 
 
-def test_app2(app):
+def test_linkedin_registration_again(app):
     app.navigate(app.linkedin_home).register.register_and_submit()
 
 
-def test_app3(app):
+def test_google_search_linkedin(app):
     navigated_page = app.navigate(app.google_search)
     assert app.navigate.current_page == app.navigate.from_page == app.google_search == navigated_page
     navigated_page = app.navigate(app.linkedin_home)
@@ -14,20 +14,20 @@ def test_app3(app):
     app.linkedin_home.register.register_and_submit()
 
 
-def test_app4(app):
+def test_navigation_works(app):
     app.navigate(app.linkedin_home)
     app.navigate(app.linkedin_home).register.register_and_submit()
 
 
-def test_app5(app):
-    app.navigate(app.linkedin_home)
+def test_qaviton_home(app):
+    app.navigate(app.qaviton_home)
 
 
-def test_app6(app):
+def test_google_home(app):
     app.navigate(app.google_home).google_search_button()
 
 
-def test_app7(app):
-    app.navigate(app.google_search)
-    app.navigate(app.google_search)
-    app.google_search.search_bar.button()
+def test_qaviton_demo(app):
+    app.navigate(app.google_search).search_bar.button()
+    app.navigate(app.qaviton_home)
+    app.qaviton_home.qaviton_send_demo_request()
