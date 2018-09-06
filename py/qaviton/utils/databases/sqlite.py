@@ -22,12 +22,14 @@ class DataBase:
                 password text);'''
 
         # preferably use 'with' to automatically commit and close the connection
-        with DataBase('db', command) as db:
+        with DataBase('db') as db:
+            db.command = command
             db.execute(db.command.drop_table.format('users'))
             db.execute(db.command.create_users_table)
             db.execute(db.command.add_user.format('id123', 'password1'))
 
-        db = DataBase('db', command)
+        db = DataBase('db')
+        db.command = command
         db.execute(db.command.add_user.format('id777', 'password1'))
         user1 = db.execute(db.command.get_user_by_id.format('id123'))
         user2 = db.execute(db.command.get_user_by_id.format('id777'))

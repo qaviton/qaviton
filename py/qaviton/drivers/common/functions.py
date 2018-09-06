@@ -80,20 +80,16 @@ class WebFunctions:
         def slow(locate):
             return WebDriverWait(self, timeout).until(presence_of_element_located(locate))
 
-        # redundancy & healing functionality
+        # redundancy
         if isinstance(locator[0], tuple) or isinstance(locator[0], list):
-            locators_to_heal = []
             element = None
             for i in range(len(locator)):
                 try:
                     element = self.find(locator[i], timeout=timeout, index=index)
                     break
                 except Exception as e:
-                    locators_to_heal.append(locator[i])
                     if len(locator) == i + 1:
                         raise e
-            if len(locators_to_heal) > 0:
-                self.element.heal(locators_to_heal, locator)
             return element
 
         # find with index
@@ -132,20 +128,16 @@ class WebFunctions:
         def slow(locate):
             return WebDriverWait(self, timeout).until(presence_of_all_elements_located(locate))
 
-        # redundancy & healing functionality
+        # redundancy
         if isinstance(locator[0], tuple) or isinstance(locator[0], list):
-            locators_to_heal = []
             elements = None
             for i in range(len(locator)):
                 try:
                     elements = self.find_all(locator[i], timeout=timeout)
                     break
                 except Exception as e:
-                    locators_to_heal.append(locator[i])
                     if len(locator) == i+1:
                         raise e
-            if len(locators_to_heal) > 0:
-                self.elements[0].heal(locators_to_heal, locator)
             return elements
 
         # find with index

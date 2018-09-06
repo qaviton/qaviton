@@ -1,7 +1,7 @@
 from qaviton.utils.log_handler import get_logger, log_levels
 
 
-def test_logger():
+def testlogger():
     log1 = get_logger('log1.txt', log_name='log1')
     log1.debug('debug msg')
     log1.info('info msg')

@@ -1,3 +1,22 @@
+# Licensed to the Software Freedom Conservancy (SFC) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The SFC licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+"""implementation of common element behavior"""
+
 from selenium.webdriver import Remote
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
@@ -19,15 +38,21 @@ def web_clear(self):
 
 
 class WebElement(WebFunctions, WE):
+    """Represents a DOM element.
+
+        Generally, all interesting operations that interact with a document will be
+        performed through this interface.
+
+        All method calls will do a freshness check to ensure that the element
+        reference is still valid.  This essentially determines whether or not the
+        element is still attached to the DOM.  If this test fails, then an
+        ``StaleElementReferenceException`` is thrown, and all future calls to this
+        instance will fail."""
+
     def __init__(self, parent, id_, w3c=False):
         super(self.__class__, self).__init__(parent, id_, w3c)
         if isinstance(parent, Remote):
             self.clear = lambda: web_clear(self)
-
-    def heal(self, locators_to_heal, locator):
-        """add logic"""
-        if None not in (Heal.workspace, Heal.locator):
-            Heal.heal_request(locators_to_heal, locator)
 
     def try_to_click(self, timeout=0):
         """ try to click on an element
