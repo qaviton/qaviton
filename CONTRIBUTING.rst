@@ -57,7 +57,7 @@ First time setup
 
 - Add the main repository as a remote to update later::
 
-        git remote add pallets https://github.com/qaviton/qaviton
+        git remote add qaviton https://github.com/qaviton/qaviton
         git fetch dev
 
 - Create a virtualenv (make sure python3 is installed properlly) and run py/create_env.sh::
