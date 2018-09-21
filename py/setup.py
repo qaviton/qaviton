@@ -15,7 +15,7 @@
 
 
 """ updating pip version:
-    --------------------
+    ---------------------
 
 1) increase qaviton.version.__version__
 
