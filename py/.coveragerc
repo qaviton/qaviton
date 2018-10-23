@@ -1,0 +1,11 @@
+[run]
+branch = True
+source =
+    threaders
+    tests
+
+[paths]
+source =
+    threaders
+    .tox/*/lib/python*/site-packages/threaders
+    .tox/pypy/site-packages/threaders
