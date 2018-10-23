@@ -83,7 +83,7 @@ setup(
         'pytest-cov>=2.5.1',
         'pytest-ordering>=0.5',
         'pytest-forked>=0.2',
-        'threaders>=0.2.12',
+        'threaders>=0.2.13',
         'PyYAML>=3.13',
         'requests>=2.19.1'
     ]
