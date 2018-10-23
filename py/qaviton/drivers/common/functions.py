@@ -40,7 +40,7 @@ class presence_of_element_located(object):
         self.index = index
 
     def __call__(self, driver):
-        return WebFunctions.find(self.locator, driver, self.index)
+        return WebFunctions.find(driver, self.locator, self.index)
 
 
 class presence_of_all_elements_located(object):
@@ -54,7 +54,7 @@ class presence_of_all_elements_located(object):
         self.locator = locator
 
     def __call__(self, driver):
-        return WebFunctions.find_all(self.locator, driver)
+        return WebFunctions.find_all(driver, self.locator)
 
 
 class WebFunctions:
