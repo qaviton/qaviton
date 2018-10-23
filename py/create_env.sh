@@ -7,11 +7,8 @@
 ## Instalation
 ## Create a virtualenv, and activate this:
 python -m pip install --upgrade pip
-pip install virtualenv
-
-virtualenv env
-
-source env/bin/activate || env\Scripts\activate
+python -m venv venv
+source env/bin/activate || env\Scripts\activate  # 'deactivate' to exit
 
 # use:
 # pip freeze > requirements.txt

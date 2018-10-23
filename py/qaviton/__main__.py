@@ -23,17 +23,19 @@ if len(sys.argv) > 1:
     if sys.argv[1] == 'create':
         from qaviton.scripts import create
 
-        if len(sys.argv) > 3:
-            if 'web' in sys.argv[2]:
-                create.web(sys.argv[3])
-            elif 'mobile' in sys.argv[2]:
-                create.web(sys.argv[3])
-        elif len(sys.argv) > 2:
-            if 'web' in sys.argv[2]:
-                create.web()
-            elif 'mobile' in sys.argv[2]:
-                create.web()
-            else:
-                create.web(sys.argv[2])
-        else:
-            create.web()
+        params = []
+        tests_dir = 'tests'
+        frameworks = ['web']
+
+        if len(sys.argv) > 2:
+            frameworks = sys.argv[2].split(',')
+
+            if len(sys.argv) > 3:
+                if not sys.argv[3].startswith('--'):
+                    tests_dir = sys.argv[3]
+                    if len(sys.argv) > 4:
+                        params = sys.argv[4:]
+                else:
+                    params = sys.argv[3:]
+
+        create.framework(frameworks, tests_dir, params)

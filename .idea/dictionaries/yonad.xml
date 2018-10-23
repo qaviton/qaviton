@@ -2,6 +2,16 @@
   <dictionary name="yonad">
     <words>
       <w>appium</w>
+      <w>flacky</w>
+      <w>htmlunit</w>
+      <w>htmlunitwithjs</w>
+      <w>internetexplorer</w>
+      <w>ipad</w>
+      <w>mobiledriver</w>
+      <w>phantomjs</w>
+      <w>selenoid</w>
+      <w>webdriver</w>
+      <w>webkitgtk</w>
     </words>
   </dictionary>
 </component>

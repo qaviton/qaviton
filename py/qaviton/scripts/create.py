@@ -28,23 +28,12 @@ def install_is_done(tests_dir):
             @ installation done @
             @@@@@@@@@@@@@@@@@@@@@
 
-        ------------------------------------------
-        activate your testing virtual environment:
-        ------------------------------------------
-        """)
-    print("linux\mac: path/to/project> cd {} & source env/bin/activate".format(tests_dir))
-    print("~~windows: path/to/project> cd {} & env\\Scripts\\activate".format(tests_dir))
-    print("""
-
-        # to exit your virtual environment:
-        (env) path/to/tests>deactivate
-
         # use pip install, uninstall & freeze 
         # to manage your dependencies:
-        (env) path/to/tests> pip freeze > requirements.txt
+        (venv) path/to/tests> pip freeze > test_requirements.txt
 
         # to install your requirements on a new machine(consider using git):
-        (env) path/to/tests> pip install -r requirements.txt
+        (venv) path/to/tests> pip install -r test_requirements.txt
 
             * your testing framework is done!
             * start testing like a boss ⚛
@@ -235,101 +224,26 @@ def add_pytest_ini(tests_dir):
                 ";addopts = --cov=your_app")
     
 
-def add_create_env(tests_dir):
-    if not filer.os.path.exists(cwd+s+'create_env.sh'):
-        with open(cwd+s+tests_dir+s+'create_env.sh', 'w+') as f:
-            f.write("#!/bin/bash\n"
-                    "\n"
-                    "\n"
-                    "## Requirements\n"
-                    "## gcc, make, Python 3.7+, python-pip, virtualenv\n"
-                    "\n"
-                    "## Instalation\n"
-                    "## Create a virtualenv, and activate this:\n"
-                    "python -m pip install --upgrade pip\n"
-                    "pip install virtualenv\n"
-                    "\n"
-                    "virtualenv env\n"
-                    "\n"
-                    "source env/bin/activate || env\Scripts\\activate\n"
-                    "\n"
-                    "# use:\n"
-                    "# pip freeze > requirements.txt\n"
-                    "# to update your requirements\n"
-                    "pip install -r requirements.txt\n"
-                    "\n"
-                    "\n")
-        return True
-        
-
 def add_requirements(tests_dir):
-    if not filer.os.path.exists(cwd + s + 'requirements.txt'):
-        with open(cwd+s+tests_dir+s+'requirements.txt', 'w+') as f:
-            f.write("apipkg==1.5\n"
-                    "Appium-Python-Client==0.28\n"
-                    "atomicwrites==1.1.5\n"
-                    "attrs==18.1.0\n"
-                    "certifi==2018.8.24\n"
-                    "chardet==3.0.4\n"
-                    "colorama==0.3.9\n"
-                    "coverage==4.5.1\n"
-                    "execnet==1.5.0\n"
-                    "Faker==0.8.17\n"
-                    "gitdb2==2.0.4\n"
-                    "idna==2.7\n"
-                    "imageio==2.3.0\n"
-                    "jsondiff==1.1.2\n"
-                    "keyboard==0.13.2\n"
-                    "more-itertools==4.3.0\n"
-                    "mouse==0.7.0\n"
-                    "numpy==1.15.0\n"
-                    "Pillow==5.2.0\n"
-                    "pkginfo==1.4.2\n"
-                    "pluggy==0.7.1\n"
-                    "psutil==5.4.6\n"
-                    "py==1.5.4\n"
-                    "pytest==3.7.1\n"
-                    "pytest-cov==2.5.1\n"
-                    "pytest-forked==0.2\n"
-                    "pytest-lazy-fixture==0.4.1\n"
-                    "pytest-metadata==1.7.0\n"
-                    "pytest-ordering==0.5\n"
-                    "pytest-rerunfailures==4.1\n"
-                    "pytest-xdist==1.22.5\n"
-                    "python-dateutil==2.7.3\n"
-                    "PyYAML==3.13\n"
-                    "requests==2.19.1\n"
-                    "requests-toolbelt==0.8.0\n"
-                    "selenium==3.14.0\n"
-                    "six==1.11.0\n"
-                    "smmap2==2.0.4\n"
-                    "text-unidecode==1.2\n"
-                    "threaders==0.2.12\n"
-                    "tqdm==4.25.0\n"
-                    "twine==1.11.0\n"
-                    "urllib3==1.23\n"
-                    "virtualenv==16.0.0\n")
-        return True
-        
-        
-def install(tests_dir, create_env, create_requirements):
-    if create_env:
-        os.system('cd ' + tests_dir + ' & pip install virtualenv & virtualenv env')
-        if create_requirements:
-            os.system('cd ' + tests_dir + ' & pip install -r requirements.txt')
-        else:
-            os.system('pip install -r requirements.txt')
-    install_is_done(tests_dir)
+    if not filer.os.path.exists(cwd + s + 'test_requirements.txt'):
+        open(cwd+s+tests_dir+s+'test_requirements.txt', 'w+').close()
+        os.system('cd ' + tests_dir + ' & pip freeze > test_requirements.txt')
 
 
+# TODO: add more content for different frameworks
 @initial_msg
-def web(tests_dir='tests'):
-    filer.copy_directory(examples+s+'simple_web', cwd+s+tests_dir)
+def framework(frameworks, tests_dir, params):
+    if '--example' in params:
+        filer.copy_directory(examples + s + 'simple_web', cwd + s + tests_dir)
+        add_readme(tests_dir)
+
+    else:
+        filer.copy_directory(examples+s+'new_project', cwd+s+tests_dir)
+
     if tests_dir != 'tests':
         filer.find_replace(cwd+s+tests_dir, 'from tests.', 'from '+tests_dir+'.', "*.py")
-    add_readme(tests_dir)
+
     add_pytest_ini(tests_dir)
     add_gitignore(tests_dir)
-    create_env = add_create_env(tests_dir)
-    create_requirements = add_requirements(tests_dir)
-    install(tests_dir, create_env, create_requirements)
+    add_requirements(tests_dir)
+    install_is_done(tests_dir)
