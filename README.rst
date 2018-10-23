@@ -18,11 +18,25 @@ Installing
 ----------
 
 make sure you have python 3.7+ installed.
+
+we recommend using venv:
+
+.. code-block:: text
+
+    python -m venv venv
+    source venv/bin/activate || venv\\Scripts\\activate
+
 Install and update using `pip`_:
 
 .. code-block:: text
 
     pip install -U qaviton
+
+to exit your virtual environment:
+
+.. code-block:: text
+
+    (venv) path/to/tests>deactivate
 
 
 Simple Examples
@@ -31,16 +45,14 @@ Simple Examples
 .. code-block:: python
 
     python -m qaviton create web tests
-    python -m pytest tests
-
-.. code-block:: python
-
-    python -m qaviton create mobile tests
-    python -m pytest tests
 
 .. code-block:: python
 
     python -m qaviton create web,mobile tests
+
+.. code-block:: python
+
+    python -m qaviton create web tests --example
     python -m pytest tests
 
 .. code-block:: text
