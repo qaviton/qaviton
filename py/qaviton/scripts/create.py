@@ -4,7 +4,6 @@ from qaviton.utils import path
 from qaviton.utils.operating_system import s
 from qaviton.version import __version__
 
-
 cwd = os.getcwd()
 examples = path.of(__file__)('examples')
 
@@ -14,9 +13,10 @@ def initial_msg(f):
         print("""
             QAVITON VERSION {}
             creating qaviton framework and test examples
-            
+
             """.format(__version__))
         f(*args, **kwargs)
+
     return dec
 
 
@@ -30,10 +30,10 @@ def install_is_done(tests_dir):
 
         # use pip install, uninstall & freeze 
         # to manage your dependencies:
-        (venv) path/to/tests> pip freeze > test_requirements.txt
+        (venv) path/to/project> pip freeze > test_requirements.txt
 
         # to install your requirements on a new machine(consider using git):
-        (venv) path/to/tests> pip install -r test_requirements.txt
+        (venv) path/to/project> pip install -r test_requirements.txt
 
             * your testing framework is done!
             * start testing like a boss ⚛
@@ -51,7 +51,7 @@ def install_is_done(tests_dir):
 
 
 def add_readme(tests_dir):
-    with open(cwd+s+tests_dir+s+'README.rst', 'w+') as f:
+    with open(cwd + s + tests_dir + s + 'README.rst', 'w+') as f:
         f.write("this should be changed to a custom README file for your project\n"
                 "you have a nice starting point from here.\n"
                 "\n"
@@ -215,19 +215,19 @@ def add_gitignore(tests_dir):
 
 
 def add_pytest_ini(tests_dir):
-    with open(cwd+s+tests_dir+s+'pytest.ini', 'w+') as f:
+    with open(cwd + s + tests_dir + s + 'pytest.ini', 'w+') as f:
         f.write("[pytest]\n"
                 ";addopts = -n 3\n"
                 ";addopts = --html=report.html\n"
                 ";addopts = --junitxml=\path\\to\\reports\n"
                 ";addopts = --collect-only\n"
                 ";addopts = --cov=your_app")
-    
+
 
 def add_requirements(tests_dir):
     if not filer.os.path.exists(cwd + s + 'test_requirements.txt'):
-        open(cwd+s+tests_dir+s+'test_requirements.txt', 'w+').close()
-        os.system('cd ' + tests_dir + ' & pip freeze > test_requirements.txt')
+        open(cwd + s + 'test_requirements.txt', 'w+').close()
+        os.system('pip freeze > test_requirements.txt')
 
 
 # TODO: add more content for different frameworks
@@ -238,10 +238,10 @@ def framework(frameworks, tests_dir, params):
         add_readme(tests_dir)
 
     else:
-        filer.copy_directory(examples+s+'new_project', cwd+s+tests_dir)
+        filer.copy_directory(examples + s + 'new_project', cwd + s + tests_dir)
 
     if tests_dir != 'tests':
-        filer.find_replace(cwd+s+tests_dir, 'from tests.', 'from '+tests_dir+'.', "*.py")
+        filer.find_replace(cwd + s + tests_dir, 'from tests.', 'from ' + tests_dir + '.', "*.py")
 
     add_pytest_ini(tests_dir)
     add_gitignore(tests_dir)
