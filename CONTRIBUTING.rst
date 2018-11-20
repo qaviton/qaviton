@@ -60,7 +60,7 @@ First time setup
         git remote add qaviton https://github.com/qaviton/qaviton
         git fetch dev
 
-- Create a virtualenv (make sure python3 is installed properlly) and run:
+- Create a virtualenv (make sure python3 is installed properlly) and run::
 
         python -m pip install --upgrade pip
         python -m venv venv        
