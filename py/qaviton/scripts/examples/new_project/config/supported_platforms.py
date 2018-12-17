@@ -1,5 +1,5 @@
 from qaviton import crosstest
-from tests.parameters.secret import hub
+from tests.config.secret import hub
 
 
 web_app = 'https://www.qaviton.com/'

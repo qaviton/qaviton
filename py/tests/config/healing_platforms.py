@@ -1,6 +1,6 @@
 from qaviton import crosstest
-from tests.parameters.private import hub
-from tests.parameters.navigation_platforms import sessionTimeout, app, screenResolution
+from tests.config.private import hub
+from tests.config.navigation_platforms import sessionTimeout, app, screenResolution
 
 
 # create cross-platform testing object

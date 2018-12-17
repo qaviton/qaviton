@@ -1,6 +1,6 @@
 import pytest
 from tests.services.app import App
-from tests.parameters.navigation_platforms import platforms
+from tests.config.navigation_platforms import platforms
 # from qaviton.fixtures.dependency import Dependencies, depend, dependencies, dependency
 # from qaviton.schedualer import QavitonSchedualing
 # from qaviton.heal import Heal

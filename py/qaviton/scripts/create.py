@@ -30,10 +30,10 @@ def install_is_done(tests_dir):
 
         # use pip install, uninstall & freeze 
         # to manage your dependencies:
-        (venv) path/to/project> pip freeze > test_requirements.txt
+        (venv) path/to/project> pip freeze > requirements-test.txt
 
         # to install your requirements on a new machine(consider using git):
-        (venv) path/to/project> pip install -r test_requirements.txt
+        (venv) path/to/project> pip install -r requirements-test.txt
 
             * your testing framework is done!
             * start testing like a boss ⚛
@@ -225,9 +225,9 @@ def add_pytest_ini(tests_dir):
 
 
 def add_requirements(tests_dir):
-    if not filer.os.path.exists(cwd + s + 'test_requirements.txt'):
-        open(cwd + s + 'test_requirements.txt', 'w+').close()
-        os.system('pip freeze > test_requirements.txt')
+    if not filer.os.path.exists(cwd + s + 'requirements-test.txt'):
+        open(cwd + s + 'requirements-test.txt', 'w+').close()
+        os.system('pip freeze > requirements-test.txt')
 
 
 # TODO: add more content for different frameworks
