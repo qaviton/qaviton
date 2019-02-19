@@ -56,6 +56,8 @@ setup(
     author_email='yehonadav@Qaviton.com',
     url='https://qaviton.com/',
     packages=packages,
+    data_files=[('qaviton', ['qaviton/steps.json'])],
+    include_package_data=True,
     license='Apache 2.0',
     classifiers=[
         'Development Status :: 3 - Alpha',
