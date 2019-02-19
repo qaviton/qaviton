@@ -1,8 +1,8 @@
 import pytest
 from qaviton.utils import filer
 from qaviton.utils import condition
-from tests.parameters.file_paths import yaml1
-from tests.parameters.file_paths import yaml2
+from tests.config.file_paths import yaml1
+from tests.config.file_paths import yaml2
 
 
 @pytest.fixture

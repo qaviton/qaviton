@@ -1,5 +1,5 @@
 from qaviton.navigator import Navigator
-from tests.parameters.locators import locator
+from tests.config.locators import locator
 from tests.pages.components.page import Page
 from tests.pages.google_search import GoogleSearchPage
 from tests.pages.google_home import GoogleHomePage
