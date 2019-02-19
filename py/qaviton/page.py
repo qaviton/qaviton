@@ -227,7 +227,7 @@ class Page:
         return elements
 
     def drag_and_drop(self, source_locator, target_locator, timeout=0):
-        """ drag and drop source element on a target element or on a (x,y) offset
+        """ drag and drop source element on a target element
         :type source_locator: tuple(str, str | list[WebElement] | WebElement)
         :type target_locator: tuple(str, str | list[WebElement] | WebElement)
         :type timeout: int
@@ -238,7 +238,7 @@ class Page:
         return source
 
     def drag_to_offset(self, locator, offset_x, offset_y, timeout=0):
-        """ drag and drop source element on a target element or on a (x,y) offset
+        """ drag and drop source element on a (x,y) offset
         :type locator: tuple(str, str | list[WebElement] | WebElement)
         :type offset_x: int
         :type offset_y: int
@@ -248,10 +248,10 @@ class Page:
         return self.driver.drag_to_offset(self.find(locator, timeout), offset_x, offset_y)
 
     def hover(self, locator, timeout=0):
-        """ drag and drop source element on a target element or on a (x,y) offset
+        """ hover/move cursor to element
         :type locator: tuple(str, str | list[WebElement] | WebElement)
         :type timeout: int
-        :rtype: Page
+        :rtype: WebElement
         """
         return self.driver.hover(self.find(locator, timeout))
 
@@ -259,7 +259,7 @@ class Page:
         """ hover/move cursor to element and click
         :type locator: tuple(str, str | list[WebElement] | WebElement)
         :type timeout: int
-        :rtype: Page
+        :rtype: WebElement
         """
         return self.driver.hover_and_click(self.find(locator, timeout))
 
@@ -284,7 +284,7 @@ class Page:
         """
         return self.click(locator, timeout).clear().send_keys(keys)
 
-    def send_chars(self, locator, chars='', timeout=0):
+    def send_chars(self, locator, chars, timeout=0):
         """ click on element, clear element text, send individual characters to element.
         this function is useful in flacky applications, where the send keys function can cause issues.
         :type locator: (tuple(str, str | list[WebElement] | WebElement)
@@ -355,7 +355,7 @@ class Page:
     def try_to_click_until_element_is_created(self, locator_to_click, locator_of_created_element,
                                               retries=7, timeout=2, delay=POLL_FREQUENCY):
         """ try to click on element, check if condition element is created, if not, click again.
-        return True for success or Exception for failure,
+        return None for success or Exception for failure,
         if an exception occurred in the last try, it will be returned.
 
         :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
@@ -372,7 +372,7 @@ class Page:
             try:
                 self.click(locator_to_click, timeout)
                 if len(self.try_to_find_all(locator_of_created_element, timeout)) > initial_results:
-                    return True
+                    return
                 elif i == retries:
                     return ClickExpectationException("element creation failed")
             except Exception as e:
@@ -383,7 +383,7 @@ class Page:
     def click_until_element_is_created(self, locator_to_click, locator_of_created_element,
                                        retries=7, timeout=2, delay=POLL_FREQUENCY):
         """ click on element, check if condition element is created, if not, click again.
-        return True for success or raise Exception for failure.
+        return None for success or raise Exception for failure.
 
         :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
         :type locator_of_created_element: tuple(str, str | list[WebElement] | WebElement)
@@ -399,7 +399,7 @@ class Page:
             try:
                 self.click(locator_to_click, timeout)
                 if len(self.try_to_find_all(locator_of_created_element, timeout)) > initial_results:
-                    return True
+                    return
                 elif i == retries:
                     raise ClickExpectationException("element creation failed")
             except Exception as e:
@@ -412,7 +412,7 @@ class Page:
                                                  retries=7, timeout=2, delay=POLL_FREQUENCY):
         """ try to click on element, check if:
         locator_condition count is equal to condition_expected_count_results, if not, click again.
-        return True for success or Exception for failure,
+        return None for success or Exception for failure,
         if an exception occurred in the last try, it will be returned.
 
         :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
@@ -428,7 +428,7 @@ class Page:
             try:
                 self.click(locator_to_click, timeout)
                 if len(self.try_to_find_all(locator_condition, timeout)) == condition_expected_count_results:
-                    return True
+                    return
                 elif i == retries:
                     return ClickExpectationException("elements count expectation failed")
             except Exception as e:
@@ -441,7 +441,7 @@ class Page:
                                           retries=7, timeout=2, delay=POLL_FREQUENCY):
         """ click on element, check if:
         locator_condition count is equal to condition_expected_count_results, if not, click again.
-        return True for success or raise Exception for failure.
+        return None for success or raise Exception for failure.
 
         :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
         :type locator_condition: tuple(str, str | list[WebElement] | WebElement)
@@ -456,7 +456,7 @@ class Page:
             try:
                 self.click(locator_to_click, timeout)
                 if len(self.try_to_find_all(locator_condition, timeout)) == condition_expected_count_results:
-                    return True
+                    return
                 elif i == retries:
                     raise ClickExpectationException("elements count expectation failed")
             except Exception as e:
@@ -468,7 +468,7 @@ class Page:
                                               retries=7, timeout=2, delay=POLL_FREQUENCY):
         """ try to click on element, check if:
         locator_of_deleted_element has been deleted, if its not deleted retry!
-        return True for success or return Exception for failure.
+        return None for success or return Exception for failure.
 
         :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
         :type locator_of_deleted_element: tuple(str, str | list[WebElement] | WebElement)
@@ -487,7 +487,7 @@ class Page:
             try:
                 self.click(locator_to_click, timeout)
                 if len(self.try_to_find_all(locator_of_deleted_element, timeout)) < initial_results:
-                    return True
+                    return
                 elif i == retries:
                     return ClickExpectationException("element deletion failed")
             except Exception as e:
@@ -499,7 +499,7 @@ class Page:
                                        retries=7, timeout=2, delay=POLL_FREQUENCY):
         """ click on element, check if:
         locator_of_deleted_element has been deleted, if its not deleted retry!
-        return True for success or raise Exception for failure.
+        return None for success or raise Exception for failure.
 
         :type locator_to_click: tuple(str, str | list[WebElement] | WebElement)
         :type locator_of_deleted_element: tuple(str, str | list[WebElement] | WebElement)
@@ -518,7 +518,7 @@ class Page:
             try:
                 self.click(locator_to_click, timeout)
                 if len(self.try_to_find_all(locator_of_deleted_element, timeout)) < initial_results:
-                    return True
+                    return
                 elif i == retries:
                     raise ClickExpectationException("element deletion failed")
             except Exception as e:
@@ -530,7 +530,7 @@ class Page:
                                           retries=7, timeout=2, delay=POLL_FREQUENCY):
         """ try to find element, confirm element has been deleted with expected_count_results,
         check if element exist... if its not deleted retry!
-        return True for success or return Exception for failure.
+        return None for success or return Exception for failure.
 
         :type locator: tuple(str, str | list[WebElement] | WebElement)
         :type expected_count_results: int
@@ -543,7 +543,7 @@ class Page:
             t = time()
             try:
                 if len(self.try_to_find_all(locator, timeout)) <= expected_count_results:
-                    return True
+                    return
                 elif i == retries:
                     return ElementPresenceException("element should not exist")
             except Exception as e:
@@ -555,7 +555,7 @@ class Page:
                                    retries=7, timeout=2, delay=POLL_FREQUENCY):
         """ try to find element, confirm element has been deleted with expected_count_results,
         check if element exist... if its not deleted retry!
-        return True for success or raise Exception for failure.
+        return None for success or raise Exception for failure.
 
         :type locator: tuple(str, str | list[WebElement] | WebElement)
         :type expected_count_results: int
@@ -568,7 +568,7 @@ class Page:
             t = time()
             try:
                 if len(self.try_to_find_all(locator, timeout)) <= expected_count_results:
-                    return True
+                    return
                 elif i == retries:
                     raise ElementPresenceException("element should not exist")
             except Exception as e:
@@ -579,7 +579,7 @@ class Page:
     def refresh_page_until_element_is_found(self, locator, timeout=30, retries=2):
         """ let's say you landed on an unexpected page/content
         and you want to refresh and assert you have the correct content (really weird scenario)
-        method to find element, if element is not found method will refresh the page and retry.
+        this method will search for an element, if the search result is 0 it will refresh the page and retry.
 
         :type locator: tuple(str, str | list[WebElement] | WebElement)
         :type timeout: int
@@ -616,7 +616,7 @@ class Page:
                 if i == retries:
                     raise ClickExpectationException("url did not change") from e
             if url != self.driver.current_url:
-                return True
+                return
             elif i == retries:
                 raise ClickExpectationException("url did not change")
             dynamic_delay(t, delay)
@@ -654,7 +654,7 @@ class Page:
         :rtype: bool
         """
         if locator_expectation is None:
-            locator_expectation = locator_to_click
+            locator_expectation = ('css', '*')
 
         initial_results = len(self.try_to_find_all(locator_expectation))
 

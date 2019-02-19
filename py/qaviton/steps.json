@@ -1,0 +1,530 @@
+[
+  {
+    "project": "qaviton",
+    "steps": [
+      {
+        "title": "get page title",
+        "call": "app.title",
+        "args": [],
+        "return": ["title"],
+        "import": null,
+        "description": "Returns the title of the current page."
+      },
+      {
+        "name": "find element",
+        "call": "app.find",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"},
+          {"name": "index", "default": "0"}
+        ],
+        "return": ["element"],
+        "import": null,
+        "description": "find element with locator value"
+      },
+      {
+        "name": "find elements",
+        "call": "app.find_all",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["elements"],
+        "import": null,
+        "description": "find all elements with locator value"
+      },
+      {
+        "name": "try to find element",
+        "call": "app.try_to_find",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"},
+          {"name": "index", "default": "0"}
+        ],
+        "return": ["element"],
+        "import": null,
+        "description": "try to find element"
+      },
+      {
+        "name": "try to find elements",
+        "call": "app.try_to_find_all",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["elements"],
+        "import": null,
+        "description": "try to find elements"
+      },
+      {
+        "name": "get elements text",
+        "call": "app.get_elements_text",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["text_list"],
+        "import": null,
+        "description": "get text from elements"
+      },
+      {
+        "name": "find element's last children",
+        "call": "app.find_last_children",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["elements"],
+        "import": null,
+        "description": "get the last elements in the tree from the root element"
+      },
+      {
+        "name": "find elements last children",
+        "call": "app.find_all_last_children",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["elements"],
+        "import": null,
+        "description": "get the last elements in the tree from the root elements"
+      },
+      {
+        "name": "find element children",
+        "call": "app.find_children",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["elements"],
+        "import": null,
+        "description": "get the children of the parent element"
+      },
+      {
+        "name": "find elements children",
+        "call": "app.find_all_children",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["elements"],
+        "import": null,
+        "description": "get the children of the parent elements"
+      },
+      {
+        "name": "zoom",
+        "call": "app.zoom",
+        "args": [
+          {"name": "percent", "default": "200"},
+          {"name": "element", "default": "None"},
+          {"name": "steps", "default": "50"}
+        ],
+        "return": [],
+        "import": null,
+        "description": "zoom in/out (might not work for any web browser)"
+      },
+      {
+        "name": "go to page",
+        "call": "app.get_page",
+        "args": [
+          {"name": "url", "default": "None"}
+        ],
+        "return": [],
+        "import": null,
+        "description": "works on web, not mobile.\nIf url is set to None nothing will happen"
+      },
+      {
+        "name": "wait until page loads",
+        "call": "app.wait_until_page_loads",
+        "args": [
+          {"name": "timeout", "default": "None"}
+        ],
+        "return": [],
+        "import": null,
+        "description": "check that the page has finished loading and all elements are present"
+      },
+      {
+        "name": "count all the elements in the page",
+        "call": "app.count_all_elements_in_the_page",
+        "args": [],
+        "return": ["number"],
+        "import": null,
+        "description": "count all the elements in the page"
+      },
+      {
+        "name": "find all the elements in the page",
+        "call": "app.find_all_elements_in_the_page",
+        "args": [],
+        "return": ["elements"],
+        "import": null,
+        "description": "finds all the elements in the page"
+      },
+      {
+        "name": "click on element",
+        "call": "app.click",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"},
+          {"name": "index", "default": "0"}
+        ],
+        "return": ["element"],
+        "import": null,
+        "description": "click on an element"
+      },
+      {
+        "name": "try to click on element",
+        "call": "app.try_to_click",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"},
+          {"name": "index", "default": "0"}
+        ],
+        "return": ["element"],
+        "import": null,
+        "description": "click on an element"
+      },
+      {
+        "name": "click on elements",
+        "call": "app.click_all",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["elements"],
+        "import": null,
+        "description": "click on elements"
+      },
+      {
+        "name": "drag and drop",
+        "call": "app.drag_and_drop",
+        "args": [
+          {"name": "source_locator"},
+          {"name": "target_locator"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["source_element"],
+        "import": null,
+        "description": "drag and drop source element on a target element"
+      },
+      {
+        "name": "drag to offset",
+        "call": "app.drag_to_offset",
+        "args": [
+          {"name": "locator"},
+          {"name": "offset_x"},
+          {"name": "offset_y"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["source_element"],
+        "import": null,
+        "description": "drag and drop source element on a (x,y) offset"
+      },
+      {
+        "name": "hover on element",
+        "call": "app.hover",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["element"],
+        "import": null,
+        "description": "hover/move cursor to element"
+      },
+      {
+        "name": "hover and click on element",
+        "call": "app.hover_and_click",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["element"],
+        "import": null,
+        "description": "hover/move cursor to element and click"
+      },
+      {
+        "name": "scroll element into view",
+        "call": "app.scroll_element_into_view",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"},
+          {"name": "retries", "default": "5"}
+        ],
+        "return": ["element"],
+        "import": null,
+        "description": "selenium only: scrolling function to scroll until element is visible (whole window scroll)"
+      },
+      {
+        "name": "clear element's text",
+        "call": "app.clear",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["element"],
+        "import": null,
+        "description": "clears the text if it's a text entry element."
+      },
+      {
+        "name": "send keys to element",
+        "call": "app.send",
+        "args": [
+          {"name": "locator"},
+          {"name": "keys"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["element"],
+        "import": null,
+        "description": "click on element, clear element text, send keys to element."
+      },
+      {
+        "name": "send key by key to element",
+        "call": "app.send_chars",
+        "args": [
+          {"name": "locator"},
+          {"name": "chars"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["element"],
+        "import": null,
+        "description": "click on element, clear element text, send individual characters to element.\nthis function is useful in flacky applications, where the send keys function can cause issues."
+      },
+      {
+        "name": "send keys to elements",
+        "call": "app.send_all",
+        "args": [
+          {"name": "locator"},
+          {"name": "keys"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["elements"],
+        "import": null,
+        "description": "send text to multiple elements."
+      },
+      {
+        "name": "select element",
+        "call": "app.select",
+        "args": [
+          {"name": "locator"},
+          {"name": "choice", "default": "None"},
+          {"name": "timeout", "default": "0"},
+          {"name": "index", "default": "None"}
+        ],
+        "return": ["select"],
+        "import": null,
+        "description": "select options that match the choice."
+      },
+      {
+        "name": "select element from dropdown",
+        "call": "app.select_from_dropdown",
+        "args": [
+          {"name": "locator"},
+          {"name": "choice", "default": "None"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["element"],
+        "import": null,
+        "description": "select a choice from a drop down list."
+      },
+      {
+        "name": "select elements from dropdown",
+        "call": "app.multi_select_from_dropdown",
+        "args": [
+          {"name": "locator_open_list"},
+          {"name": "locator_list"},
+          {"name": "choice"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": ["element"],
+        "import": null,
+        "description": "select a choice from a drop down list."
+      },
+      {
+        "name": "replace url pattern",
+        "call": "app.replace_url",
+        "args": [
+          {"name": "pattern"},
+          {"name": "replace"}
+        ],
+        "return": [],
+        "import": null,
+        "description": "replace page url pattern."
+      },
+      {
+        "name": "try to click until element is created",
+        "call": "app.try_to_click_until_element_is_created",
+        "args": [
+          {"name": "locator_to_click"},
+          {"name": "locator_of_created_element"},
+          {"name": "retries", "default": "7"},
+          {"name": "timeout", "default": "2"},
+          {"name": "delay", "default": "0.5"}
+        ],
+        "return": ["error"],
+        "import": null,
+        "description": "try to click on element, check if condition element is created, if not, click again.\nreturn None for success or Exception for failure,\nif an exception occurred in the last try, it will be returned."
+      },
+      {
+        "name": "click until element is created",
+        "call": "app.click_until_element_is_created",
+        "args": [
+          {"name": "locator_to_click"},
+          {"name": "locator_of_created_element"},
+          {"name": "retries", "default": "7"},
+          {"name": "timeout", "default": "2"},
+          {"name": "delay", "default": "0.5"}
+        ],
+        "return": [],
+        "import": null,
+        "description": "click on element, check if condition element is created, if not, click again.\nraise Exception for failure."
+      },
+      {
+        "name": "try to click until condition as expected",
+        "call": "app.try_to_click_until_condition_as_expected",
+        "args": [
+          {"name": "locator_to_click"},
+          {"name": "locator_condition"},
+          {"name": "condition_expected_count_results"},
+          {"name": "retries", "default": "7"},
+          {"name": "timeout", "default": "2"},
+          {"name": "delay", "default": "0.5"}
+        ],
+        "return": ["error"],
+        "import": null,
+        "description": "try to click on element, check if:\nlocator_condition count is equal to condition_expected_count_results, if not, click again.\nreturn None for success or Exception for failure,\nif an exception occurred in the last try, it will be returned."
+      },
+      {
+        "name": "click until condition as expected",
+        "call": "app.click_until_condition_as_expected",
+        "args": [
+          {"name": "locator_to_click"},
+          {"name": "locator_condition"},
+          {"name": "condition_expected_count_results"},
+          {"name": "retries", "default": "7"},
+          {"name": "timeout", "default": "2"},
+          {"name": "delay", "default": "0.5"}
+        ],
+        "return": [],
+        "import": null,
+        "description": "click on element, check if:\nlocator_condition count is equal to condition_expected_count_results, if not, click again.\nraise Exception for failure."
+      },
+      {
+        "name": "try to click until element is deleted",
+        "call": "app.try_to_click_until_element_is_deleted",
+        "args": [
+          {"name": "locator_to_click"},
+          {"name": "locator_of_deleted_element", "default": "None"},
+          {"name": "retries", "default": "7"},
+          {"name": "timeout", "default": "2"},
+          {"name": "delay", "default": "0.5"}
+        ],
+        "return": ["error"],
+        "import": null,
+        "description": "try to click on element, check if:\nlocator_of_deleted_element has been deleted, if its not deleted retry!\nreturn None for success or return Exception for failure."
+      },
+      {
+        "name": "click until element is deleted",
+        "call": "app.click_until_element_is_deleted",
+        "args": [
+          {"name": "locator_to_click"},
+          {"name": "locator_of_deleted_element", "default": "None"},
+          {"name": "retries", "default": "7"},
+          {"name": "timeout", "default": "2"},
+          {"name": "delay", "default": "0.5"}
+        ],
+        "return": [],
+        "import": null,
+        "description": "click on element, check if:\nlocator_of_deleted_element has been deleted, if its not deleted retry!\nraise Exception for failure."
+      },
+      {
+        "name": "try to confirm element is deleted",
+        "call": "app.try_to_confirm_element_is_deleted",
+        "args": [
+          {"name": "locator"},
+          {"name": "expected_count_results", "default": "0"},
+          {"name": "retries", "default": "7"},
+          {"name": "timeout", "default": "2"},
+          {"name": "delay", "default": "0.5"}
+        ],
+        "return": ["error"],
+        "import": null,
+        "description": "try to find element, confirm element has been deleted with expected_count_results,\ncheck if element exist... if its not deleted retry!\nreturn None for success or return Exception for failure."
+      },
+      {
+        "name": "confirm element is deleted",
+        "call": "app.confirm_element_is_deleted",
+        "args": [
+          {"name": "locator"},
+          {"name": "expected_count_results", "default": "0"},
+          {"name": "retries", "default": "7"},
+          {"name": "timeout", "default": "2"},
+          {"name": "delay", "default": "0.5"}
+        ],
+        "return": [],
+        "import": null,
+        "description": "try to find element, confirm element has been deleted with expected_count_results,\ncheck if element exist... if its not deleted retry!\nraise Exception for failure."
+      },
+      {
+        "name": "refresh page until elements are found",
+        "call": "app.refresh_page_until_element_is_found",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "30"},
+          {"name": "retries", "default": "2"}
+        ],
+        "return": ["elements"],
+        "import": null,
+        "description": "let's say you landed on an unexpected page/content\nand you want to refresh and assert you have the correct content (really weird scenario)\nthis method will search for an element, if the search result is 0 it will refresh the page and retry."
+      },
+      {
+        "name": "click until url changes",
+        "call": "app.click_until_url_changes",
+        "args": [
+          {"name": "locator"},
+          {"name": "retries", "default": "5"},
+          {"name": "timeout", "default": "2"},
+          {"name": "delay", "default": "0.5"}
+        ],
+        "return": [],
+        "import": null,
+        "description": "click on element, check if url changed, if not, click again."
+      },
+      {
+        "name": "assert element is not clickable",
+        "call": "assert app.not_clickable",
+        "args": [
+          {"name": "locator"},
+          {"name": "timeout", "default": "0"}
+        ],
+        "return": [],
+        "import": null,
+        "description": "some elements might be click-able but the click action does nothing,\nin that case use something like click_do_nothing(locator_to_click, locator_expectation)\nwhere you can check if some event happened."
+      },
+      {
+        "name": "assert clicking has no effect",
+        "call": "assert app.click_do_nothing",
+        "args": [
+          {"name": "locator_to_click"},
+          {"name": "locator_expectation", "default": "None"},
+          {"name": "retries", "default": "5"},
+          {"name": "timeout", "default": "2"},
+          {"name": "delay", "default": "0.5"}
+        ],
+        "return": [],
+        "import": null,
+        "description": "check if some event(locator_expectation) happened after trying to click."
+      },
+      {
+        "name": "assert element does not exist",
+        "call": "assert app.no_such_element",
+        "args": [
+          {"name": "locator_to_click"},
+          {"name": "expected_elements", "default": "0"},
+          {"name": "timeout", "default": "2"}
+        ],
+        "return": [],
+        "import": null,
+        "description": "check if some event(locator_expectation) happened after trying to click.\nsearch for element, expect not to find it."
+      }
+    ]
+  }
+]
