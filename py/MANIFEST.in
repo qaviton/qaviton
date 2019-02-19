@@ -1,0 +1,6 @@
+include Makefile LICENSE tox.ini
+include qaviton/steps.json
+
+graft tests
+
+global-exclude *.py[co]
