@@ -3,7 +3,7 @@
     "project": "qaviton",
     "steps": [
       {
-        "title": "get page title",
+        "name": "get page title",
         "call": "app.title",
         "args": [],
         "return": ["title"],
