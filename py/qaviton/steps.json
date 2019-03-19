@@ -8,6 +8,7 @@
         "args": [],
         "return": ["title"],
         "import": null,
+        "require": "app",
         "description": "Returns the title of the current page."
       },
       {
@@ -20,6 +21,7 @@
         ],
         "return": ["element"],
         "import": null,
+        "require": "app",
         "description": "find element with locator value"
       },
       {
@@ -31,6 +33,7 @@
         ],
         "return": ["elements"],
         "import": null,
+        "require": "app",
         "description": "find all elements with locator value"
       },
       {
@@ -43,6 +46,7 @@
         ],
         "return": ["element"],
         "import": null,
+        "require": "app",
         "description": "try to find element"
       },
       {
@@ -54,6 +58,7 @@
         ],
         "return": ["elements"],
         "import": null,
+        "require": "app",
         "description": "try to find elements"
       },
       {
@@ -65,6 +70,7 @@
         ],
         "return": ["text_list"],
         "import": null,
+        "require": "app",
         "description": "get text from elements"
       },
       {
@@ -76,6 +82,7 @@
         ],
         "return": ["elements"],
         "import": null,
+        "require": "app",
         "description": "get the last elements in the tree from the root element"
       },
       {
@@ -87,6 +94,7 @@
         ],
         "return": ["elements"],
         "import": null,
+        "require": "app",
         "description": "get the last elements in the tree from the root elements"
       },
       {
@@ -98,6 +106,7 @@
         ],
         "return": ["elements"],
         "import": null,
+        "require": "app",
         "description": "get the children of the parent element"
       },
       {
@@ -109,6 +118,7 @@
         ],
         "return": ["elements"],
         "import": null,
+        "require": "app",
         "description": "get the children of the parent elements"
       },
       {
@@ -121,6 +131,7 @@
         ],
         "return": [],
         "import": null,
+        "require": "app",
         "description": "zoom in/out (might not work for any web browser)"
       },
       {
@@ -131,6 +142,7 @@
         ],
         "return": [],
         "import": null,
+        "require": "app",
         "description": "works on web, not mobile.\nIf url is set to None nothing will happen"
       },
       {
@@ -141,6 +153,7 @@
         ],
         "return": [],
         "import": null,
+        "require": "app",
         "description": "check that the page has finished loading and all elements are present"
       },
       {
@@ -149,6 +162,7 @@
         "args": [],
         "return": ["number"],
         "import": null,
+        "require": "app",
         "description": "count all the elements in the page"
       },
       {
@@ -157,6 +171,7 @@
         "args": [],
         "return": ["elements"],
         "import": null,
+        "require": "app",
         "description": "finds all the elements in the page"
       },
       {
@@ -169,6 +184,7 @@
         ],
         "return": ["element"],
         "import": null,
+        "require": "app",
         "description": "click on an element"
       },
       {
@@ -181,6 +197,7 @@
         ],
         "return": ["element"],
         "import": null,
+        "require": "app",
         "description": "click on an element"
       },
       {
@@ -192,6 +209,7 @@
         ],
         "return": ["elements"],
         "import": null,
+        "require": "app",
         "description": "click on elements"
       },
       {
@@ -204,6 +222,7 @@
         ],
         "return": ["source_element"],
         "import": null,
+        "require": "app",
         "description": "drag and drop source element on a target element"
       },
       {
@@ -217,6 +236,7 @@
         ],
         "return": ["source_element"],
         "import": null,
+        "require": "app",
         "description": "drag and drop source element on a (x,y) offset"
       },
       {
@@ -228,6 +248,7 @@
         ],
         "return": ["element"],
         "import": null,
+        "require": "app",
         "description": "hover/move cursor to element"
       },
       {
@@ -239,6 +260,7 @@
         ],
         "return": ["element"],
         "import": null,
+        "require": "app",
         "description": "hover/move cursor to element and click"
       },
       {
@@ -251,6 +273,7 @@
         ],
         "return": ["element"],
         "import": null,
+        "require": "app",
         "description": "selenium only: scrolling function to scroll until element is visible (whole window scroll)"
       },
       {
@@ -262,6 +285,7 @@
         ],
         "return": ["element"],
         "import": null,
+        "require": "app",
         "description": "clears the text if it's a text entry element."
       },
       {
@@ -274,6 +298,7 @@
         ],
         "return": ["element"],
         "import": null,
+        "require": "app",
         "description": "click on element, clear element text, send keys to element."
       },
       {
@@ -286,6 +311,7 @@
         ],
         "return": ["element"],
         "import": null,
+        "require": "app",
         "description": "click on element, clear element text, send individual characters to element.\nthis function is useful in flacky applications, where the send keys function can cause issues."
       },
       {
@@ -298,6 +324,7 @@
         ],
         "return": ["elements"],
         "import": null,
+        "require": "app",
         "description": "send text to multiple elements."
       },
       {
@@ -311,6 +338,7 @@
         ],
         "return": ["select"],
         "import": null,
+        "require": "app",
         "description": "select options that match the choice."
       },
       {
@@ -323,6 +351,7 @@
         ],
         "return": ["element"],
         "import": null,
+        "require": "app",
         "description": "select a choice from a drop down list."
       },
       {
@@ -336,6 +365,7 @@
         ],
         "return": ["element"],
         "import": null,
+        "require": "app",
         "description": "select a choice from a drop down list."
       },
       {
@@ -347,6 +377,7 @@
         ],
         "return": [],
         "import": null,
+        "require": "app",
         "description": "replace page url pattern."
       },
       {
@@ -361,6 +392,7 @@
         ],
         "return": ["error"],
         "import": null,
+        "require": "app",
         "description": "try to click on element, check if condition element is created, if not, click again.\nreturn None for success or Exception for failure,\nif an exception occurred in the last try, it will be returned."
       },
       {
@@ -375,6 +407,7 @@
         ],
         "return": [],
         "import": null,
+        "require": "app",
         "description": "click on element, check if condition element is created, if not, click again.\nraise Exception for failure."
       },
       {
@@ -390,6 +423,7 @@
         ],
         "return": ["error"],
         "import": null,
+        "require": "app",
         "description": "try to click on element, check if:\nlocator_condition count is equal to condition_expected_count_results, if not, click again.\nreturn None for success or Exception for failure,\nif an exception occurred in the last try, it will be returned."
       },
       {
@@ -405,6 +439,7 @@
         ],
         "return": [],
         "import": null,
+        "require": "app",
         "description": "click on element, check if:\nlocator_condition count is equal to condition_expected_count_results, if not, click again.\nraise Exception for failure."
       },
       {
@@ -419,6 +454,7 @@
         ],
         "return": ["error"],
         "import": null,
+        "require": "app",
         "description": "try to click on element, check if:\nlocator_of_deleted_element has been deleted, if its not deleted retry!\nreturn None for success or return Exception for failure."
       },
       {
@@ -433,6 +469,7 @@
         ],
         "return": [],
         "import": null,
+        "require": "app",
         "description": "click on element, check if:\nlocator_of_deleted_element has been deleted, if its not deleted retry!\nraise Exception for failure."
       },
       {
@@ -447,6 +484,7 @@
         ],
         "return": ["error"],
         "import": null,
+        "require": "app",
         "description": "try to find element, confirm element has been deleted with expected_count_results,\ncheck if element exist... if its not deleted retry!\nreturn None for success or return Exception for failure."
       },
       {
@@ -461,6 +499,7 @@
         ],
         "return": [],
         "import": null,
+        "require": "app",
         "description": "try to find element, confirm element has been deleted with expected_count_results,\ncheck if element exist... if its not deleted retry!\nraise Exception for failure."
       },
       {
@@ -473,6 +512,7 @@
         ],
         "return": ["elements"],
         "import": null,
+        "require": "app",
         "description": "let's say you landed on an unexpected page/content\nand you want to refresh and assert you have the correct content (really weird scenario)\nthis method will search for an element, if the search result is 0 it will refresh the page and retry."
       },
       {
@@ -486,6 +526,7 @@
         ],
         "return": [],
         "import": null,
+        "require": "app",
         "description": "click on element, check if url changed, if not, click again."
       },
       {
@@ -497,6 +538,7 @@
         ],
         "return": [],
         "import": null,
+        "require": "app",
         "description": "some elements might be click-able but the click action does nothing,\nin that case use something like click_do_nothing(locator_to_click, locator_expectation)\nwhere you can check if some event happened."
       },
       {
@@ -511,6 +553,7 @@
         ],
         "return": [],
         "import": null,
+        "require": "app",
         "description": "check if some event(locator_expectation) happened after trying to click."
       },
       {
@@ -523,6 +566,7 @@
         ],
         "return": [],
         "import": null,
+        "require": "app",
         "description": "check if some event(locator_expectation) happened after trying to click.\nsearch for element, expect not to find it."
       }
     ]
