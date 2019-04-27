@@ -3,157 +3,127 @@
     "project": "qaviton",
     "steps": [
       {
+        "name": "go to url",
+        "call": "app.driver.get",
+        "args": ["url"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Loads a web page in the current browser session"
+      },
+      {
         "name": "get page title",
-        "call": "app.title",
-        "args": [],
-        "return": ["title"],
-        "import": null,
-        "require": "app",
-        "description": "Returns the title of the current page."
+        "block": "title = app.title",
+        "import": [],
+        "require": ["app"],
+        "description": "Returns the title of the current page"
       },
       {
         "name": "find element",
         "call": "app.find",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"},
-          {"name": "index", "default": "0"}
-        ],
+        "args": ["locator", "timeout=0", "index=0"],
         "return": ["element"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "find element with locator value"
       },
       {
         "name": "find elements",
         "call": "app.find_all",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "timeout=0"],
         "return": ["elements"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "find all elements with locator value"
       },
       {
         "name": "try to find element",
         "call": "app.try_to_find",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"},
-          {"name": "index", "default": "0"}
-        ],
+        "args": ["locator", "timeout=0", "index=0"],
         "return": ["element"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "try to find element"
       },
       {
         "name": "try to find elements",
         "call": "app.try_to_find_all",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "timeout=0"],
         "return": ["elements"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "try to find elements"
       },
       {
         "name": "get elements text",
         "call": "app.get_elements_text",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "timeout=0"],
         "return": ["text_list"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "get text from elements"
       },
       {
         "name": "find element's last children",
         "call": "app.find_last_children",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "timeout=0"],
         "return": ["elements"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "get the last elements in the tree from the root element"
       },
       {
         "name": "find elements last children",
         "call": "app.find_all_last_children",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "timeout=0"],
         "return": ["elements"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "get the last elements in the tree from the root elements"
       },
       {
         "name": "find element children",
         "call": "app.find_children",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "timeout=0"],
         "return": ["elements"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "get the children of the parent element"
       },
       {
         "name": "find elements children",
         "call": "app.find_all_children",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "timeout=0"],
         "return": ["elements"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "get the children of the parent elements"
       },
       {
         "name": "zoom",
         "call": "app.zoom",
-        "args": [
-          {"name": "percent", "default": "200"},
-          {"name": "element", "default": "None"},
-          {"name": "steps", "default": "50"}
-        ],
+        "args": ["percent=200", "element=None", "steps=50"],
         "return": [],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "zoom in/out (might not work for any web browser)"
       },
       {
         "name": "go to page",
         "call": "app.get_page",
-        "args": [
-          {"name": "url", "default": "None"}
-        ],
+        "args": ["url=None"],
         "return": [],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "works on web, not mobile.\nIf url is set to None nothing will happen"
       },
       {
         "name": "wait until page loads",
         "call": "app.wait_until_page_loads",
-        "args": [
-          {"name": "timeout", "default": "None"}
-        ],
+        "args": ["timeout=None"],
         "return": [],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "check that the page has finished loading and all elements are present"
       },
       {
@@ -161,8 +131,8 @@
         "call": "app.count_all_elements_in_the_page",
         "args": [],
         "return": ["number"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "count all the elements in the page"
       },
       {
@@ -170,404 +140,1065 @@
         "call": "app.find_all_elements_in_the_page",
         "args": [],
         "return": ["elements"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "finds all the elements in the page"
       },
       {
         "name": "click on element",
         "call": "app.click",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"},
-          {"name": "index", "default": "0"}
-        ],
+        "args": ["locator", "timeout=0", "index=0"],
         "return": ["element"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "click on an element"
       },
       {
         "name": "try to click on element",
         "call": "app.try_to_click",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"},
-          {"name": "index", "default": "0"}
-        ],
+        "args": ["locator", "timeout=0", "index=0"],
         "return": ["element"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "click on an element"
       },
       {
         "name": "click on elements",
         "call": "app.click_all",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "timeout=0"],
         "return": ["elements"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "click on elements"
       },
       {
         "name": "drag and drop",
         "call": "app.drag_and_drop",
-        "args": [
-          {"name": "source_locator"},
-          {"name": "target_locator"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["source_locator", "target_locator", "timeout=0"],
         "return": ["source_element"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "drag and drop source element on a target element"
       },
       {
         "name": "drag to offset",
         "call": "app.drag_to_offset",
-        "args": [
-          {"name": "locator"},
-          {"name": "offset_x"},
-          {"name": "offset_y"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "offset_x", "offset_y", "timeout=0"],
         "return": ["source_element"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "drag and drop source element on a (x,y) offset"
       },
       {
         "name": "hover on element",
         "call": "app.hover",
         "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"}
+          "locator"},
+          "timeout=0"}
         ],
         "return": ["element"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "hover/move cursor to element"
       },
       {
         "name": "hover and click on element",
         "call": "app.hover_and_click",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "timeout=0"],
         "return": ["element"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "hover/move cursor to element and click"
       },
       {
         "name": "scroll element into view",
         "call": "app.scroll_element_into_view",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"},
-          {"name": "retries", "default": "5"}
-        ],
+        "args": ["locator", "timeout=0", "retries=5"],
         "return": ["element"],
-        "import": null,
-        "require": "app",
+        "import": [],
+        "require": ["app"],
         "description": "selenium only: scrolling function to scroll until element is visible (whole window scroll)"
       },
       {
         "name": "clear element's text",
         "call": "app.clear",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "timeout=0"],
         "return": ["element"],
-        "import": null,
-        "require": "app",
-        "description": "clears the text if it's a text entry element."
+        "import": [],
+        "require": ["app"],
+        "description": "clears the text if it's a text entry element"
       },
       {
         "name": "send keys to element",
         "call": "app.send",
-        "args": [
-          {"name": "locator"},
-          {"name": "keys"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "keys", "timeout=0"],
         "return": ["element"],
-        "import": null,
-        "require": "app",
-        "description": "click on element, clear element text, send keys to element."
+        "import": [],
+        "require": ["app"],
+        "description": "click on element, clear element text, send keys to element"
       },
       {
         "name": "send key by key to element",
         "call": "app.send_chars",
-        "args": [
-          {"name": "locator"},
-          {"name": "chars"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "chars", "timeout=0"],
         "return": ["element"],
-        "import": null,
-        "require": "app",
-        "description": "click on element, clear element text, send individual characters to element.\nthis function is useful in flacky applications, where the send keys function can cause issues."
+        "import": [],
+        "require": ["app"],
+        "description": "click on element, clear element text, send individual characters to element.\nthis function is useful in flacky applications, where the send keys function can cause issues"
       },
       {
         "name": "send keys to elements",
         "call": "app.send_all",
-        "args": [
-          {"name": "locator"},
-          {"name": "keys"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "keys", "timeout=0"],
         "return": ["elements"],
-        "import": null,
-        "require": "app",
-        "description": "send text to multiple elements."
+        "import": [],
+        "require": ["app"],
+        "description": "send text to multiple elements"
       },
       {
         "name": "select element",
         "call": "app.select",
-        "args": [
-          {"name": "locator"},
-          {"name": "choice", "default": "None"},
-          {"name": "timeout", "default": "0"},
-          {"name": "index", "default": "None"}
-        ],
+        "args": ["locator", "choice=None", "timeout=0", "index=None"],
         "return": ["select"],
-        "import": null,
-        "require": "app",
-        "description": "select options that match the choice."
+        "import": [],
+        "require": ["app"],
+        "description": "select options that match the choice"
       },
       {
         "name": "select element from dropdown",
         "call": "app.select_from_dropdown",
-        "args": [
-          {"name": "locator"},
-          {"name": "choice", "default": "None"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "choice", "default=None", "timeout=0"],
         "return": ["element"],
-        "import": null,
-        "require": "app",
-        "description": "select a choice from a drop down list."
+        "import": [],
+        "require": ["app"],
+        "description": "select a choice from a drop down list"
       },
       {
         "name": "select elements from dropdown",
         "call": "app.multi_select_from_dropdown",
-        "args": [
-          {"name": "locator_open_list"},
-          {"name": "locator_list"},
-          {"name": "choice"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator_open_list", "locator_list", "choice", "timeout=0"],
         "return": ["element"],
-        "import": null,
-        "require": "app",
-        "description": "select a choice from a drop down list."
+        "import": [],
+        "require": ["app"],
+        "description": "select a choice from a drop down list"
       },
       {
         "name": "replace url pattern",
         "call": "app.replace_url",
-        "args": [
-          {"name": "pattern"},
-          {"name": "replace"}
-        ],
+        "args": ["pattern", "replace"],
         "return": [],
-        "import": null,
-        "require": "app",
-        "description": "replace page url pattern."
+        "import": [],
+        "require": ["app"],
+        "description": "replace page url pattern"
       },
       {
         "name": "try to click until element is created",
         "call": "app.try_to_click_until_element_is_created",
-        "args": [
-          {"name": "locator_to_click"},
-          {"name": "locator_of_created_element"},
-          {"name": "retries", "default": "7"},
-          {"name": "timeout", "default": "2"},
-          {"name": "delay", "default": "0.5"}
-        ],
+        "args": ["locator_to_click", "locator_of_created_element", "retries=7", "timeout=2", "delay=0.5"],
         "return": ["error"],
-        "import": null,
-        "require": "app",
-        "description": "try to click on element, check if condition element is created, if not, click again.\nreturn None for success or Exception for failure,\nif an exception occurred in the last try, it will be returned."
+        "import": [],
+        "require": ["app"],
+        "description": "try to click on element, check if condition element is created, if not, click again.\nreturn None for success or Exception for failure,\nif an exception occurred in the last try, it will be returned"
       },
       {
         "name": "click until element is created",
         "call": "app.click_until_element_is_created",
-        "args": [
-          {"name": "locator_to_click"},
-          {"name": "locator_of_created_element"},
-          {"name": "retries", "default": "7"},
-          {"name": "timeout", "default": "2"},
-          {"name": "delay", "default": "0.5"}
-        ],
+        "args": ["locator_to_click", "locator_of_created_element", "retries=7", "timeout=2", "delay=0.5"],
         "return": [],
-        "import": null,
-        "require": "app",
-        "description": "click on element, check if condition element is created, if not, click again.\nraise Exception for failure."
+        "import": [],
+        "require": ["app"],
+        "description": "click on element, check if condition element is created, if not, click again.\nraise Exception for failure"
       },
       {
         "name": "try to click until condition as expected",
         "call": "app.try_to_click_until_condition_as_expected",
-        "args": [
-          {"name": "locator_to_click"},
-          {"name": "locator_condition"},
-          {"name": "condition_expected_count_results"},
-          {"name": "retries", "default": "7"},
-          {"name": "timeout", "default": "2"},
-          {"name": "delay", "default": "0.5"}
-        ],
+        "args": ["locator_to_click", "locator_condition", "condition_expected_count_results", "retries=7", "timeout=2", "delay=0.5"],
         "return": ["error"],
-        "import": null,
-        "require": "app",
-        "description": "try to click on element, check if:\nlocator_condition count is equal to condition_expected_count_results, if not, click again.\nreturn None for success or Exception for failure,\nif an exception occurred in the last try, it will be returned."
+        "import": [],
+        "require": ["app"],
+        "description": "try to click on element, check if:\nlocator_condition count is equal to condition_expected_count_results, if not, click again.\nreturn None for success or Exception for failure,\nif an exception occurred in the last try, it will be returned"
       },
       {
         "name": "click until condition as expected",
         "call": "app.click_until_condition_as_expected",
-        "args": [
-          {"name": "locator_to_click"},
-          {"name": "locator_condition"},
-          {"name": "condition_expected_count_results"},
-          {"name": "retries", "default": "7"},
-          {"name": "timeout", "default": "2"},
-          {"name": "delay", "default": "0.5"}
-        ],
+        "args": ["locator_to_click", "locator_condition", "condition_expected_count_results", "retries=7", "timeout=2", "delay=0.5"],
         "return": [],
-        "import": null,
-        "require": "app",
-        "description": "click on element, check if:\nlocator_condition count is equal to condition_expected_count_results, if not, click again.\nraise Exception for failure."
+        "import": [],
+        "require": ["app"],
+        "description": "click on element, check if:\nlocator_condition count is equal to condition_expected_count_results, if not, click again.\nraise Exception for failure"
       },
       {
         "name": "try to click until element is deleted",
         "call": "app.try_to_click_until_element_is_deleted",
-        "args": [
-          {"name": "locator_to_click"},
-          {"name": "locator_of_deleted_element", "default": "None"},
-          {"name": "retries", "default": "7"},
-          {"name": "timeout", "default": "2"},
-          {"name": "delay", "default": "0.5"}
-        ],
+        "args": ["locator_to_click", "locator_of_deleted_element=None", "retries=7", "timeout=2", "delay=0.5"],
         "return": ["error"],
-        "import": null,
-        "require": "app",
-        "description": "try to click on element, check if:\nlocator_of_deleted_element has been deleted, if its not deleted retry!\nreturn None for success or return Exception for failure."
+        "import": [],
+        "require": ["app"],
+        "description": "try to click on element, check if:\nlocator_of_deleted_element has been deleted, if its not deleted retry!\nreturn None for success or return Exception for failure"
       },
       {
         "name": "click until element is deleted",
         "call": "app.click_until_element_is_deleted",
-        "args": [
-          {"name": "locator_to_click"},
-          {"name": "locator_of_deleted_element", "default": "None"},
-          {"name": "retries", "default": "7"},
-          {"name": "timeout", "default": "2"},
-          {"name": "delay", "default": "0.5"}
-        ],
+        "args": ["locator_to_click", "locator_of_deleted_element=None", "retries=7", "timeout=2", "delay=0.5"],
         "return": [],
-        "import": null,
-        "require": "app",
-        "description": "click on element, check if:\nlocator_of_deleted_element has been deleted, if its not deleted retry!\nraise Exception for failure."
+        "import": [],
+        "require": ["app"],
+        "description": "click on element, check if:\nlocator_of_deleted_element has been deleted, if its not deleted retry!\nraise Exception for failure"
       },
       {
         "name": "try to confirm element is deleted",
         "call": "app.try_to_confirm_element_is_deleted",
-        "args": [
-          {"name": "locator"},
-          {"name": "expected_count_results", "default": "0"},
-          {"name": "retries", "default": "7"},
-          {"name": "timeout", "default": "2"},
-          {"name": "delay", "default": "0.5"}
-        ],
+        "args": ["locator", "expected_count_results=0", "retries=7", "timeout=2", "delay=0.5"],
         "return": ["error"],
-        "import": null,
-        "require": "app",
-        "description": "try to find element, confirm element has been deleted with expected_count_results,\ncheck if element exist... if its not deleted retry!\nreturn None for success or return Exception for failure."
+        "import": [],
+        "require": ["app"],
+        "description": "try to find element, confirm element has been deleted with expected_count_results,\ncheck if element exist... if its not deleted retry!\nreturn None for success or return Exception for failure"
       },
       {
         "name": "confirm element is deleted",
         "call": "app.confirm_element_is_deleted",
-        "args": [
-          {"name": "locator"},
-          {"name": "expected_count_results", "default": "0"},
-          {"name": "retries", "default": "7"},
-          {"name": "timeout", "default": "2"},
-          {"name": "delay", "default": "0.5"}
-        ],
+        "args": ["locator", "expected_count_results=0", "retries=7", "timeout=2", "delay=0.5"],
         "return": [],
-        "import": null,
-        "require": "app",
-        "description": "try to find element, confirm element has been deleted with expected_count_results,\ncheck if element exist... if its not deleted retry!\nraise Exception for failure."
+        "import": [],
+        "require": ["app"],
+        "description": "try to find element, confirm element has been deleted with expected_count_results,\ncheck if element exist... if its not deleted retry!\nraise Exception for failure"
       },
       {
         "name": "refresh page until elements are found",
         "call": "app.refresh_page_until_element_is_found",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "30"},
-          {"name": "retries", "default": "2"}
-        ],
+        "args": ["locator", "timeout=30", "retries=2"],
         "return": ["elements"],
-        "import": null,
-        "require": "app",
-        "description": "let's say you landed on an unexpected page/content\nand you want to refresh and assert you have the correct content (really weird scenario)\nthis method will search for an element, if the search result is 0 it will refresh the page and retry."
+        "import": [],
+        "require": ["app"],
+        "description": "let's say you landed on an unexpected page/content\nand you want to refresh and assert you have the correct content (really weird scenario)\nthis method will search for an element, if the search result is 0 it will refresh the page and retry"
       },
       {
         "name": "click until url changes",
         "call": "app.click_until_url_changes",
-        "args": [
-          {"name": "locator"},
-          {"name": "retries", "default": "5"},
-          {"name": "timeout", "default": "2"},
-          {"name": "delay", "default": "0.5"}
-        ],
+        "args": ["locator", "retries=5", "timeout=2", "delay=0.5"],
         "return": [],
-        "import": null,
-        "require": "app",
-        "description": "click on element, check if url changed, if not, click again."
+        "import": [],
+        "require": ["app"],
+        "description": "click on element, check if url changed, if not, click again"
       },
       {
         "name": "assert element is not clickable",
         "call": "assert app.not_clickable",
-        "args": [
-          {"name": "locator"},
-          {"name": "timeout", "default": "0"}
-        ],
+        "args": ["locator", "timeout=0"],
         "return": [],
-        "import": null,
-        "require": "app",
-        "description": "some elements might be click-able but the click action does nothing,\nin that case use something like click_do_nothing(locator_to_click, locator_expectation)\nwhere you can check if some event happened."
+        "import": [],
+        "require": ["app"],
+        "description": "some elements might be click-able but the click action does nothing,\nin that case use something like click_do_nothing(locator_to_click, locator_expectation)\nwhere you can check if some event happened"
       },
       {
         "name": "assert clicking has no effect",
         "call": "assert app.click_do_nothing",
-        "args": [
-          {"name": "locator_to_click"},
-          {"name": "locator_expectation", "default": "None"},
-          {"name": "retries", "default": "5"},
-          {"name": "timeout", "default": "2"},
-          {"name": "delay", "default": "0.5"}
-        ],
+        "args": ["locator_to_click", "locator_expectation=None", "retries=5", "timeout=2", "delay=0.5"],
         "return": [],
-        "import": null,
-        "require": "app",
-        "description": "check if some event(locator_expectation) happened after trying to click."
+        "import": [],
+        "require": ["app"],
+        "description": "check if some event(locator_expectation) happened after trying to click"
       },
       {
         "name": "assert element does not exist",
         "call": "assert app.no_such_element",
-        "args": [
-          {"name": "locator_to_click"},
-          {"name": "expected_elements", "default": "0"},
-          {"name": "timeout", "default": "2"}
-        ],
+        "args": ["locator_to_click", "expected_elements=0", "timeout=2"],
         "return": [],
-        "import": null,
-        "require": "app",
-        "description": "check if some event(locator_expectation) happened after trying to click.\nsearch for element, expect not to find it."
+        "import": [],
+        "require": ["app"],
+        "description": "check if some event(locator_expectation) happened after trying to click.\nsearch for element, expect not to find it"
+      }
+    ]
+  },
+  {
+    "project": "qaviton-selenium",
+    "steps": [
+      {
+        "name": "get mobile device",
+        "block": "mobile = app.driver.mobile",
+        "import": [],
+        "require": ["app"],
+        "description": "Returns a mobile device object"
+      },
+      {
+        "name": "get browser name",
+        "block": "browser_name = app.driver.name",
+        "import": [],
+        "require": ["app"],
+        "description": "Returns the name of the underlying browser for this instance"
+      },
+      {
+        "name": "start session",
+        "call": "app.driver.start_session",
+        "args": ["capabilities", "browser_profile=None"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Creates a session with the desired capabilities"
+      },
+      {
+        "name": "create element",
+        "call": "app.driver.create_web_element",
+        "args": ["element_id"],
+        "return": ["element"],
+        "import": [],
+        "require": ["app"],
+        "description": "Creates a web element with the specified `element_id`"
+      },
+      {
+        "name": "execute command",
+        "call": "app.driver.execute",
+        "args": ["driver_command", "params=None"],
+        "return": ["response"],
+        "import": [],
+        "require": ["app"],
+        "description": "Sends a command to be executed by a command.CommandExecutor\n\n:Args:\n  driver_command: The name of the command to execute as a string\n  params: A dictionary of named parameters to send with the command\n\n:Returns:\n  The command's JSON response loaded into a dictionary object"
+      },
+      {
+        "name": "execute script",
+        "call": "app.driver.execute_script",
+        "args": ["script", "*args"],
+        "return": ["response"],
+        "import": [],
+        "require": ["app"],
+        "description": "Synchronously Executes JavaScript in the current window/frame\n\n:Args:\n  script: The JavaScript to execute\n  *args: Any applicable arguments for your JavaScript\n\n:Usage:\n  app.driver.execute_async_script(\"return document.title;\")"
+      },
+      {
+        "name": "execute async script",
+        "call": "app.driver.execute_async_script",
+        "args": ["script", "*args"],
+        "return": ["response"],
+        "import": [],
+        "require": ["app"],
+        "description": "Asynchronously Executes JavaScript in the current window/frame\n\n:Args:\n  script: The JavaScript to execute\n  *args: Any applicable arguments for your JavaScript\n\n:Usage:\n  app.driver.execute_async_script(\"var callback = arguments[arguments.length - 1]; window.setTimeout(function(){ callback('timeout') }, 3000);\")"
+      },
+      {
+        "name": "get page source",
+        "block": "url = app.driver.current_url",
+        "import": [],
+        "require": ["app"],
+        "description": "Gets the URL of the current page."
+      },
+      {
+        "name": "get page source",
+        "block": "page_source = app.driver.page_source",
+        "import": [],
+        "require": ["app"],
+        "description": "Gets the source of the current page"
+      },
+      {
+        "name": "close window",
+        "call": "app.driver.close",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Closes the current window"
+      },
+      {
+        "name": "close driver",
+        "call": "app.driver.quit",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Quits the driver and closes every associated window"
+      },
+      {
+        "name": "get current window handle",
+        "block": "window_handle = app.driver.current_window_handle",
+        "import": [],
+        "require": ["app"],
+        "description": "Returns the handle of the current window"
+      },
+      {
+        "name": "get window handles",
+        "block": "window_handles = app.driver.window_handles",
+        "import": [],
+        "require": ["app"],
+        "description": "Returns the handles of all windows within the current session"
+      },
+      {
+        "name": "maximize window",
+        "call": "app.driver.maximize_window",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Maximizes the current window that webdriver is using"
+      },
+      {
+        "name": "fullscreen window",
+        "call": "app.driver.fullscreen_window",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Invokes the window manager-specific 'full screen' operation"
+      },
+      {
+        "name": "minimize window",
+        "call": "app.driver.minimize_window",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Invokes the window manager-specific 'minimize' operation"
+      },
+      {
+        "name": "switch to active element",
+        "block": "element = app.driver.switch_to.active_element",
+        "import": [],
+        "require": ["app"],
+        "description": "Switch to (focus on) active element"
+      },
+      {
+        "name": "switch to alert",
+        "block": "alert = app.driver.switch_to.alert",
+        "import": [],
+        "require": ["app"],
+        "description": "Switch to (focus on) alert content"
+      },
+      {
+        "name": "switch to default content",
+        "call": "app.driver.switch_to.default_content",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Switch to (focus on) default content"
+      },
+      {
+        "name": "switch to frame",
+        "call": "app.driver.switch_to.frame",
+        "args": ["frame_reference"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Switch to (focus on) frame content\n\nUsage:\n  app.driver.switch_to.frame('frame_name')\n  app.driver.switch_to.frame(1)\n  app.driver.switch_to.frame(app.find_all(('tag name', 'iframe')[0])"
+      },
+      {
+        "name": "switch to parent frame",
+        "call": "app.driver.switch_to.parent_frame",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Switch to (focus on) parent frame content"
+      },
+      {
+        "name": "switch to window",
+        "call": "app.driver.switch_to.window",
+        "args": ["window_name"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Switch to (focus on) window/tab content\n\nUsage:\n  app.driver.switch_to.window('main')"
+      },
+      {
+        "name": "back",
+        "call": "app.driver.back",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Goes one step backward in the browser history"
+      },
+      {
+        "name": "forward",
+        "call": "app.driver.forward",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Goes one step forward in the browser history"
+      },
+      {
+        "name": "refresh",
+        "call": "app.driver.refresh",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Refreshes the current page"
+      },
+      {
+        "name": "get cookie",
+        "call": "app.driver.get_cookie",
+        "args": ["name"],
+        "return": ["cookie"],
+        "import": [],
+        "require": ["app"],
+        "description": "Get a single cookie by name. Returns the cookie if found, None if not"
+      },
+      {
+        "name": "get cookies",
+        "call": "app.driver.get_cookies",
+        "args": [],
+        "return": ["cookies"],
+        "import": [],
+        "require": ["app"],
+        "description": "Returns a set of dictionaries, corresponding to cookies visible in the current session"
+      },{
+        "name": "delete cookie",
+        "call": "app.driver.delete_cookie",
+        "args": ["name"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Deletes a single cookie with the given name"
+      },
+      {
+        "name": "delete cookie",
+        "call": "app.driver.delete_cookie",
+        "args": ["name"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Deletes a single cookie with the given name"
+      },
+      {
+        "name": "delete all cookies",
+        "call": "app.driver.delete_all_cookies",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Delete all cookies in the scope of the session"
+      },
+      {
+        "name": "add cookie",
+        "call": "app.driver.add_cookie",
+        "args": ["cookie_dict"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Adds a cookie to your current session.\n\n:Args:\n - cookie_dict: A dictionary object, with required keys - \"name\" and \"value\";\n   optional keys - \"path\", \"domain\", \"secure\", \"expiry\"\n\nUsage:\n    app.driver.add_cookie({'name' : 'foo', 'value' : 'bar'})\n    app.driver.add_cookie({'name' : 'foo', 'value' : 'bar', 'path' : '/'})\n    app.driver.add_cookie({'name' : 'foo', 'value' : 'bar', 'path' : '/', 'secure':True})"
+      },
+      {
+        "name": "set page load timeout",
+        "call": "app.driver.set_page_load_timeout",
+        "args": ["time_to_wait"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Set the amount of time to wait for a page load to complete before throwing an error"
+      },
+      {
+        "name": "set script timeout",
+        "call": "app.driver.set_script_timeout",
+        "args": ["time_to_wait"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Set the amount of time that the script should wait during an execute_async_script call before throwing an error"
+      },
+      {
+        "name": "implicitly wait",
+        "call": "app.driver.implicitly_wait",
+        "args": ["time_to_wait"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Sets a sticky timeout to implicitly wait for an element to be found,\nor a command to complete. This method only needs to be called one\ntime per session. To set the timeout for calls to\nexecute_async_script, see set_script_timeout"
+      },
+      {
+        "name": "set window size",
+        "call": "app.driver.set_window_size",
+        "args": ["width", "height", "windowHandle=\"current\""],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Sets the width and height of the current window"
+      },
+      {
+        "name": "get window size",
+        "call": "app.driver.get_window_size",
+        "args": ["windowHandle=\"current\""],
+        "return": ["size"],
+        "import": [],
+        "require": ["app"],
+        "description": "Gets the width and height of the current window"
+      },
+      {
+        "name": "set window position",
+        "call": "app.driver.set_window_position",
+        "args": ["x", "y", "windowHandle=\"current\""],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Sets the x,y position of the current window"
+      },
+      {
+        "name": "get window position",
+        "call": "app.driver.get_window_position",
+        "args": ["windowHandle=\"current\""],
+        "return": ["position"],
+        "import": [],
+        "require": ["app"],
+        "description": "Gets the x,y position of the current window"
+      },
+      {
+        "name": "get capabilities",
+        "block": "capabilities = app.driver.desired_capabilities",
+        "import": [],
+        "require": ["app"],
+        "description": "returns the drivers current desired capabilities being used"
+      },
+      {
+        "name": "get base64 screenshot",
+        "call": "app.driver.get_screenshot_as_base64",
+        "args": [],
+        "return": ["image"],
+        "import": [],
+        "require": ["app"],
+        "description": "Gets a base64 encoded string screenshot which is useful in embedded images in HTML"
+      },
+      {
+        "name": "save screenshot",
+        "call": "app.driver.save_screenshot",
+        "args": ["filename"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Saves a screenshot of the current window to a PNG image file.\nReturns False if there is any IOError, else returns True.\nUse full paths in your filename"
+      },
+      {
+        "name": "get screenshot",
+        "call": "app.driver.get_screenshot_as_png",
+        "args": [],
+        "return": ["image"],
+        "import": [],
+        "require": ["app"],
+        "description": "Gets the screenshot of the current window as a binary data"
+      },
+      {
+        "name": "get file detector",
+        "block": "file_detector = app.driver.file_detector",
+        "import": [],
+        "require": ["app"],
+        "description": "Gets the file detector to be used when sending keyboard input.\nBy default, this is set to a file detector that does nothing"
+      },
+      {
+        "name": "get orientation",
+        "block": "orientation = app.driver.orientation",
+        "import": [],
+        "require": ["app"],
+        "description": "Gets the current orientation of the device"
+      },
+      {
+        "name": "get application cache",
+        "block": "cache = app.driver.application_cache",
+        "import": [],
+        "require": ["app"],
+        "description": "Returns a ApplicationCache Object to interact with the browser app cache"
+      },
+      {
+        "name": "get log types",
+        "block": "log_types = app.driver.log_types",
+        "import": [],
+        "require": ["app"],
+        "description": "Gets a list of the available log types"
+      },
+      {
+        "name": "get log",
+        "call": "app.driver.get_log",
+        "args": ["log_type"],
+        "return": ["log"],
+        "import": [],
+        "require": ["app"],
+        "description": "Gets the log for a given log type: 'browser' 'driver' 'client' 'server'"
+      }
+    ]
+  },
+  {
+    "project": "qaviton-appium",
+    "steps": [
+      {
+        "name": "tab",
+        "call": "app.driver.tap",
+        "args": ["positions", "duration=None"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Taps on an particular place with up to five fingers, holding for a certain time"
+      },
+      {
+        "name": "swipe",
+        "call": "app.driver.swipe",
+        "args": ["start_x", "start_y", "end_x", "end_y", "duration=None"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Swipe from one point to another point, for an optional duration"
+      },
+      {
+        "name": "flick",
+        "call": "app.driver.flick",
+        "args": ["start_x", "start_y", "end_x", "end_y"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Flick from one point to another point"
+      },
+      {
+        "name": "pinch",
+        "call": "app.driver.pinch",
+        "args": ["element=None", "percent=200", "steps=50"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Pinch on an element a certain amount"
+      },
+      {
+        "name": "get app strings",
+        "call": "app.driver.app_strings",
+        "args": ["language=None", "string_file=None"],
+        "return": ["strings"],
+        "import": [],
+        "require": ["app"],
+        "description": "Returns the application strings from the device for the specified language"
+      },
+      {
+        "name": "reset",
+        "call": "app.driver.reset",
+        "args": ["element=None", "percent=200", "steps=50"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Resets the current application on the device"
+      },
+      {
+        "name": "hide keyboard",
+        "call": "app.driver.hide_keyboard",
+        "args": ["key_name=None", "key=None", "strategy=None"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Hides the software keyboard on the device. In iOS, use `key_name` to press\na particular key, or `strategy`. In Android, no parameters are used"
+      },
+      {
+        "name": "check keyboard is shown",
+        "call": "app.driver.is_keyboard_shown",
+        "args": ["element=None", "percent=200", "steps=50"],
+        "return": ["is_keyboard_shown"],
+        "import": [],
+        "require": ["app"],
+        "description": "Attempts to detect whether a software keyboard is present"
+      },
+      {
+        "name": "key event",
+        "call": "app.driver.keyevent",
+        "args": ["keycode", "metastate=None", "flags=None"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Sends a keycode to the device. Android only. Possible keycodes can be\nfound in http://developer.android.com/reference/android/view/KeyEvent.html"
+      },
+      {
+        "name": "press key code",
+        "call": "app.driver.press_keycode",
+        "args": ["keycode", "metastate=None"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Sends a keycode to the device. Android only. Possible keycodes can be\nfound in http://developer.android.com/reference/android/view/KeyEvent.html"
+      },
+      {
+        "name": "long press key code",
+        "call": "app.driver.long_press_keycode",
+        "args": ["keycode", "metastate=None", "flags=None"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Sends a long press keycode to the device. Android only. Possible keycodes can be\nfound in http://developer.android.com/reference/android/view/KeyEvent.html"
+      },
+      {
+        "name": "get current activity",
+        "block": "current_activity = app.driver.current_activity",
+        "import": [],
+        "require": ["app"],
+        "description": "Retrieves the current activity running on the device"
+      },
+      {
+        "name": "get current package",
+        "block": "current_package = app.driver.current_package",
+        "import": [],
+        "require": ["app"],
+        "description": "Retrieves the current package running on the device"
+      },
+      {
+        "name": "wait for activity",
+        "call": "app.driver.wait_activity",
+        "args": ["activity", "timeout", "interval=1"],
+        "return": ["is_activity"],
+        "import": [],
+        "require": ["app"],
+        "description": "Wait for an activity: block until target activity presents or time out. This is an Android-only method"
+      },
+      {
+        "name": "set element value",
+        "call": "app.driver.set_value",
+        "args": ["element", "value"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Set the value on an element in the application"
+      },
+      {
+        "name": "get file",
+        "call": "app.driver.pull_file",
+        "args": ["path"],
+        "return": ["file"],
+        "import": [],
+        "require": ["app"],
+        "description": "Retrieves the file at `path`. Returns the file's content encoded as Base64"
+      },
+      {
+        "name": "get folder",
+        "call": "app.driver.pull_folder",
+        "args": ["path"],
+        "return": ["folder"],
+        "import": [],
+        "require": ["app"],
+        "description": "Retrieves a folder at `path`. Returns the folder's contents zipped and encoded as Base64"
+      },
+      {
+        "name": "save file",
+        "call": "app.driver.push_file",
+        "args": ["path", "base64data"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Puts the data, encoded as Base64, in the file specified as `path`"
+      },
+      {
+        "name": "hide app in background",
+        "call": "app.driver.background_app",
+        "args": ["seconds"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Puts the application in the background on the device for a certain duration"
+      },
+      {
+        "name": "check if app is installed",
+        "call": "app.driver.is_app_installed",
+        "args": ["bundle_id"],
+        "return": ["is_app_installed"],
+        "import": [],
+        "require": ["app"],
+        "description": "Checks whether the application specified by `bundle_id` is installed on the device"
+      },
+      {
+        "name": "install app",
+        "call": "app.driver.install_app",
+        "args": ["app_path", "**options"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Install the application found at `app_path` on the device"
+      },
+      {
+        "name": "remove app",
+        "call": "app.driver.remove_app",
+        "args": ["app_id", "**options"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Remove the specified application from the device"
+      },
+      {
+        "name": "launch app",
+        "call": "app.driver.launch_app",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Start on the device the application specified in the desired capabilities"
+      },
+      {
+        "name": "close app",
+        "call": "app.driver.close_app",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Stop the running application, specified in the desired capabilities, on the device"
+      },
+      {
+        "name": "terminate app",
+        "call": "app.driver.terminate_app",
+        "args": ["app_id", "**options"],
+        "return": ["is_terminated"],
+        "import": [],
+        "require": ["app"],
+        "description": "Terminates the application if it is running"
+      },
+      {
+        "name": "activate app",
+        "call": "app.driver.activate_app",
+        "args": ["app_id"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Activates the application if it is not running or is running in the background"
+      },
+      {
+        "name": "get app state",
+        "call": "app.driver.query_app_state",
+        "args": ["app_id"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Queries the state of the application"
+      },
+      {
+        "name": "start activity",
+        "call": "app.driver.start_activity",
+        "args": ["app_package", "app_activity", "**opts"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Opens an arbitrary activity during a test. If the activity belongs to another application, that application is started and the activity is opened.\nThis is an Android-only method"
+      },
+      {
+        "name": "end test coverage",
+        "call": "app.driver.end_test_coverage",
+        "args": ["intent", "path"],
+        "return": ["response"],
+        "import": [],
+        "require": ["app"],
+        "description": "Ends the coverage collection and pull the coverage.ec file from the device. Android only"
+      },
+      {
+        "name": "lock",
+        "call": "app.driver.lock",
+        "args": ["seconds=None"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Lock the device. No changes are made if the device is already unlocked\n\n:Args:\n  seconds - (optional) the duration to lock the device, in seconds.\n  The device is going to be locked forever until `unlock` is called\n  if it equals or is less than zero, otherwise this call blocks until\n  the timeout expires and unlocks the screen automatically"
+      },
+      {
+        "name": "unlock",
+        "call": "app.driver.unlock",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Unlock the device. No changes are made if the device is already locked"
+      },
+      {
+        "name": "is locked",
+        "call": "app.driver.is_locked",
+        "args": [],
+        "return": ["is_locked"],
+        "import": [],
+        "require": ["app"],
+        "description": "Checks whether the device is locked"
+      },
+      {
+        "name": "shake",
+        "call": "app.driver.shake",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "shake the device"
+      },
+      {
+        "name": "touch id",
+        "call": "app.driver.touch_id",
+        "args": ["match"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Simulate touchId on iOS Simulator"
+      },
+      {
+        "name": "",
+        "call": "app.driver.",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": ""
+      },
+      {
+        "name": "toggle touch id enrollment",
+        "call": "app.driver.toggle_touch_id_enrollment",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Toggle enroll touchId on iOS Simulator"
+      },
+      {
+        "name": "open notifications",
+        "call": "app.driver.open_notifications",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Open notification shade in Android (API Level 18 and above)"
+      },
+      {
+        "name": "get network connection",
+        "block": "network_connection = app.driver.network_connection",
+        "import": [],
+        "require": ["app"],
+        "description": "Returns an integer bitmask specifying the network connection type.\nAndroid only.\nPossible values are available through the enumeration `appium.webdriver.ConnectionType`"
+      },
+      {
+        "name": "set network connection",
+        "call": "app.driver.set_network_connection",
+        "args": ["connectionType"],
+        "return": ["response"],
+        "import": [],
+        "require": ["app"],
+        "description": "Sets the network connection type. Android only.\nPossible values:\n    Value (Alias)      | Data | Wifi | Airplane Mode\n    -------------------------------------------------\n    0 (None)           | 0    | 0    | 0\n    1 (Airplane Mode)  | 0    | 0    | 1\n    2 (Wifi only)      | 0    | 1    | 0\n    4 (Data only)      | 1    | 0    | 0\n    6 (All network on) | 1    | 1    | 0\nThese are available through the enumeration `appium.webdriver.ConnectionType`\n\n:Args:\n  connectionType - a member of the enum appium.webdriver.ConnectionType"
+      },
+      {
+        "name": "get available ime engines",
+        "block": "ime_engines = app.driver.available_ime_engines",
+        "import": [],
+        "require": ["app"],
+        "description": "Get the available input methods for an Android device. Package and\nactivity are returned (e.g., ['com.android.inputmethod.latin/.LatinIME'])\nAndroid only"
+      },
+      {
+        "name": "is ime active",
+        "call": "app.driver.is_ime_active",
+        "args": [],
+        "return": ["is_ime_active"],
+        "import": [],
+        "require": ["app"],
+        "description": "Checks whether the device has IME service active. Returns True/False.\nAndroid only"
+      },
+      {
+        "name": "activate ime engine",
+        "call": "app.driver.activate_ime_engine",
+        "args": ["engine"],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Activates the given IME engine on the device.\nAndroid only"
+      },
+      {
+        "name": "deactivate ime engine",
+        "call": "app.driver.deactivate_ime_engine",
+        "args": [],
+        "return": [],
+        "import": [],
+        "require": ["app"],
+        "description": "Deactivates the currently active IME engine on the device.\nAndroid only"
+      },
+      {
+        "name": "get active ime engine",
+        "block": "ime_engine = app.driver.active_ime_engine",
+        "import": [],
+        "require": ["app"],
+        "description": "Returns the activity and package of the currently active IME engine (e.g.,\n'com.android.inputmethod.latin/.LatinIME').\nAndroid only"
       }
     ]
   }
