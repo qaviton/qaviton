@@ -192,10 +192,7 @@
       {
         "name": "hover on element",
         "call": "app.hover",
-        "args": [
-          "locator"},
-          "timeout=0"}
-        ],
+        "args": ["locator", "timeout=0"],
         "return": ["element"],
         "import": [],
         "require": ["app"],
