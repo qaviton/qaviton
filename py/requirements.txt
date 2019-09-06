@@ -31,7 +31,7 @@ pytest-rerunfailures==4.1
 pytest-xdist==1.22.5
 python-dateutil==2.7.3
 PyYAML>=4.2b1
-requests==2.19.1
+requests>=2.20.0
 requests-toolbelt==0.8.0
 selenium==3.14.0
 six==1.11.0
