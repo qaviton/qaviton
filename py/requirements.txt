@@ -20,7 +20,7 @@ Pillow==5.2.0
 pkginfo==1.4.2
 pluggy==0.7.1
 psutil==5.4.6
-py==1.5.4
+py==1.10.0
 pytest==3.7.1
 pytest-cov==2.5.1
 pytest-forked==0.2
