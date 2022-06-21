@@ -15,7 +15,7 @@ jsondiff==1.1.2
 keyboard==0.13.2
 more-itertools==4.3.0
 mouse==0.7.0
-numpy==1.15.0
+numpy==1.22.0
 Pillow==5.2.0
 pkginfo==1.4.2
 pluggy==0.7.1
